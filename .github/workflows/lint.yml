@@ -23,4 +23,10 @@ jobs:
 
       - name: Run pylint only in selected folders
         run: |
-          pylint $(git ls-files 'archival-pipeline/*.py' 'scraper-pipeline/*.py')
+          FILES=$(git ls-files 'src/*.py' 'src/**/*.py' 'app/*.py' 'app/**/*.py')
+          if [ -n "$FILES" ]; then
+            echo "Found Python files, running pylint..."
+            pylint $FILES
+          else
+            echo "No Python files to lint. Skipping."
+          fi
