@@ -1,6 +1,7 @@
 import feedparser
 import pandas as pd
-from typing import List
+from bs4 import BeautifulSoup
+import requests
 
 
 class NewsArticle:
@@ -13,8 +14,10 @@ class NewsArticle:
         self.updated = entry.get('updated', '')
         self.author = entry.get('author', '')
         self.tags = [tag['term'] for tag in entry.get('tags', [])]
+        self.content = self.article_body()
 
     def to_dict(self) -> dict:
+        """Returns a dictionary to form the the columns in the dataframe"""
         return {
             'title': self.title,
             'id': self.id,
@@ -24,10 +27,37 @@ class NewsArticle:
             'author': self.author,
             'tags': self.tags,
             'updated': self.updated,
+            'content': self.content
         }
 
+    def article_body(self) -> str:
+        """Scapes the articles body of content"""
+        response = requests.get(self.link)
 
-class RSSFeedParser:
+        if response.status_code == 200:
+            html_content = response.text
+            soup = BeautifulSoup(html_content, 'html.parser')
+            text_body = ''
+            if 'guardian' in self.link:
+                paragraphs = soup.find_all('p', class_="dcr-16w5gq9")
+                text_body = ''.join(p.get_text() for p in paragraphs)
+                if not text_body.strip():
+                    return None
+            else:
+                divs = [
+                    div for div in soup.find_all('div')
+                    if div.get('class') == ['text-description']
+                ]
+                for div in divs:
+                    paragraphs = div.find_all('p')
+                    text_body += ''.join(p.get_text() for p in paragraphs)
+            return text_body
+        else:
+            print(
+                f"Failed to retrieve the page. Status code: {response.status_code}")
+
+
+class RSSFeed:
     def __init__(self, feed_url: str):
         self.feed_url = feed_url
         self.articles = self.parse()
@@ -37,6 +67,7 @@ class RSSFeedParser:
         if not feed.entries:
             print("No articles found.")
             return
+        # return NewsArticle(feed.entries[0])
         return [NewsArticle(entry) for entry in feed.entries]
 
     def to_dataframe(self) -> pd.DataFrame:
@@ -46,42 +77,10 @@ class RSSFeedParser:
 if __name__ == "__main__":
     guardian_feed_url = "https://www.theguardian.com/politics/rss"
     express_feed_url = "https://www.express.co.uk/posts/rss/139/politics"
-    parser = RSSFeedParser("https://www.theguardian.com/politics/rss")
-    df = parser.to_dataframe()
-    print(df.head())
+    guardian = RSSFeed(guardian_feed_url)
+    express = RSSFeed(express_feed_url)
 
-
-# def news_dataframe() -> pd.DataFrame:
-#     """Creates a dataframe for the news feed"""
-#     news_columns = {
-#         'title': [],
-#         'id': [],
-#         'summary': [],
-#         'link': [],
-#         'published': [],
-#         'author': [],
-#         'tags': [],
-#         'published': [],
-#         'updated': []}
-#     return pd.DataFrame(news_columns)
-
-
-# def rss_extractor(feed_url: str) -> pd.DataFrame:
-#     """Extracts a specific rss feed"""
-#     news_df = news_dataframe()
-#     feed = feedparser.parse(feed_url)
-#     print(feed.entries[0].keys())
-#     for entry in feed.entries:
-#         new_row = {
-#             'title': [entry.title][0],
-#             'id': [entry.id][0],
-#             'summary': [entry.summary_detail['value']][0],
-#             'link': [entry.link][0],
-#             'published': [entry.published][0],
-#             'author': [entry.author][0],
-#             'tags': [entry.tags][0],
-#             'published': [entry.published][0],
-#             'updated': [entry.updated][0]}
-#         news_df = pd.concat(
-#             [news_df, pd.DataFrame([new_row])], ignore_index=True)
-#     return news_df
+    guardian_df = guardian.to_dataframe()
+    express_df = express.to_dataframe()
+    express_df.to_csv("express.csv", index=False)
+    guardian_df.to_csv("guardian.csv", index=False)
