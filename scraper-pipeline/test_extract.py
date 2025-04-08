@@ -1,0 +1,2 @@
+import pytest
+from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
