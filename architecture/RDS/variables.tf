@@ -8,14 +8,14 @@ variable "region" {
 variable "sg_name" {
     description = "Security group name for RDS"
     type = string
-    default = "c16-media-polarization-rds-sg"
+    default = "c16-media-polarisation-rds-sg"
 }
 
 
 variable "subnet_group_name" {
     description = "Subnet group name"
     type = string
-    default = "c16-media-polarization-subnet-group"
+    default = "c16-media-polarisation-subnet-group"
 }
 
 # From Tfvars 

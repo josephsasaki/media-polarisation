@@ -52,7 +52,7 @@ resource "aws_db_subnet_group" "c16-public-subnets" {
 
 
 # Create RDS
-resource "aws_db_instance" "RDS-media-sentiment" {
+resource "aws_db_instance" "RDS-media-polarisation" {
   identifier = var.rds_identifier
   allocated_storage    = 30
   db_name              = var.db_name
