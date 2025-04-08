@@ -12,7 +12,7 @@ CREATE TABLE topic (
 
 CREATE TABLE news_outlet (
     news_outlet_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
-    news_outlet_name VARCHAR NOT NULL,
+    news_outlet_name VARCHAR(15) NOT NULL,
     PRIMARY KEY (news_outlet_id)
 );
 
