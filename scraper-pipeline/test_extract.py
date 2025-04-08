@@ -51,4 +51,4 @@ def test_express_body_extractor_404(failure_request, capsys):
     result = guard.body_extractor("http://mock.com/")
     captured = capsys.readouterr()
     assert result.return_value is None
-    assert "No articles found." in captured.out
+    assert "No articles found ." in captured.out

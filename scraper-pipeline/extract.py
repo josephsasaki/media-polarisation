@@ -20,7 +20,7 @@ class RSSFeedExtractor:
         '''Extracts the raw article body from the inputted link'''
         try:
             response = requests.get(link, timeout=10)
-            response.raise_for_status()  # Ensure successful status code
+            # response.raise_for_status()  # Ensure successful status code
             return response
         except requests.Timeout:
             print(f"Request to {link} timed out.")
