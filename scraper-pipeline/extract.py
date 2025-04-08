@@ -16,7 +16,7 @@ class RSSFeedExtractor:
         self.rss_feeds = rss_feeds
         self.extract = self.extract_feeds()
 
-    def link_extractor(self, link):
+    def body_extractor(self, link):
         '''Extracts the raw article body from the inputted link'''
         try:
             response = requests.get(link, timeout=10)
@@ -29,11 +29,11 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def article_body(self, response) -> str:
-        """Scapes the article body of the given link"""
+    def body_formatter(self, response) -> str:
+        """Formats the inputted raw article body response"""
         return response
 
-    def parse(self, feed_url):
+    def rss_parser(self, feed_url):
         """Parses the given rss feed"""
         combined_article = []
         print(feed_url)
@@ -46,8 +46,8 @@ class RSSFeedExtractor:
         print(len(feed.entries))
         for entry in feed.entries:
             link = entry.get('link', '')
-            response = self.link_extractor(link)
-            body = self.article_body(response)
+            response = self.body_extractor(link)
+            body = self.body_formatter(response)
             if body:
                 combined_article.append((entry, body))
         return combined_article
@@ -56,7 +56,7 @@ class RSSFeedExtractor:
         '''Extracts the lists of rss feeds'''
         combined_feeds = []
         for feed in self.rss_feeds:
-            combined_feeds.append(self.parse(feed))
+            combined_feeds.append(self.rss_parser(feed))
         return combined_feeds
 
 
@@ -64,7 +64,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
     '''The GuardianRSSFeedExtractor class extracts all articles from the inputted Guardian rss url,
       it also scrapes each individual article's body of content'''
 
-    def article_body(self, response) -> str:
+    def body_formatter(self, response) -> str:
         """Scapes the article body of the given link"""
         if response.status_code == 200:
             html_content = response.text
@@ -85,7 +85,7 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
       Daily Express rss url, it also scrapes each individual article's body of content'''
 
-    def article_body(self, response) -> str:
+    def body_formatter(self, response) -> str:
         """Scapes the article body of the given link"""
 
         if response.status_code == 200:
