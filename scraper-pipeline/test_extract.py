@@ -1,8 +1,8 @@
-'''This file is responsible for testing the extract script'''
+
 from unittest.mock import patch, MagicMock
 import requests
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor, RSSFeedExtractor
-
+'''This file is responsible for testing the extract script'''
 # pylint: disable=protected-access
 
 
