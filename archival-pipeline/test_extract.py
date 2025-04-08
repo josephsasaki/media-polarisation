@@ -30,7 +30,7 @@ def test_create_connection(mock_connect):
         port="5432"
     )
 
-    assert db._DatabaseManager__db_connection == mock_conn
+    assert db._DatabaseManager__db_connection == mock_conn  # pylint: disable=protected-access
 
 
 @patch("extract.pd.read_sql")
