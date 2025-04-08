@@ -28,19 +28,19 @@ def failure_request():
 
 def test_guard_body_extractor_200(success_request):
     guard = GuardianRSSFeedExtractor(["http://mockcom/"])
-    result = guard.body_extractor("http://mock.com/")
+    result = guard._body_extractor("http://mock.com/")
     assert result.return_value == {"data": "valid response"}
 
 
 def test_express_body_extractor_200(success_request):
     guard = GuardianRSSFeedExtractor(["http://mockcom/"])
-    result = guard.body_extractor("http://mock.com/")
+    result = guard._body_extractor("http://mock.com/")
     assert result.return_value == {"data": "valid response"}
 
 
 def test_guard_body_extractor_404(failure_request, capsys):
     guard = GuardianRSSFeedExtractor(["http://mockcom/"])
-    result = guard.body_extractor("http://mock.com/")
+    result = guard._body_extractor("http://mock.com/")
     captured = capsys.readouterr()
     assert result.return_value is None
     assert "No articles found." in captured.out
@@ -48,7 +48,7 @@ def test_guard_body_extractor_404(failure_request, capsys):
 
 def test_express_body_extractor_404(failure_request, capsys):
     guard = GuardianRSSFeedExtractor(["http://mockcom/"])
-    result = guard.body_extractor("http://mock.com/")
+    result = guard._body_extractor("http://mock.com/")
     captured = capsys.readouterr()
     assert result.return_value is None
     assert "No articles found ." in captured.out
