@@ -7,8 +7,6 @@ import feedparser
 from bs4 import BeautifulSoup
 import requests
 
-# pylint: disable=too-few-public-methods
-
 
 class RSSFeedExtractor:
     '''The RSSFeed class extracts all articles on the inputted rss url,
@@ -29,7 +27,7 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def _body_formatter(self, response) -> str:
+    def body_formatter(self, response) -> str:
         """Formats the inputted raw article body response"""
         return response
 
@@ -46,7 +44,7 @@ class RSSFeedExtractor:
             required_entry = {}
             link = entry.get('link', '')
             response = self._body_extractor(link)
-            body = self._body_formatter(response)
+            body = self.body_formatter(response)
             required_entry['title'] = entry.get('title', '')
             required_entry['link'] = link
             required_entry['published'] = entry.get('published', '')
@@ -66,7 +64,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
     '''The GuardianRSSFeedExtractor class extracts all articles from the inputted Guardian rss url,
       it also scrapes each individual article's body of content'''
 
-    def _body_formatter(self, response) -> str:
+    def body_formatter(self, response) -> str:
         """Scapes the article body of the given link"""
         if response.status_code == 200:
             html_content = response.text
@@ -87,7 +85,7 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
       Daily Express rss url, it also scrapes each individual article's body of content'''
 
-    def _body_formatter(self, response) -> str:
+    def body_formatter(self, response) -> str:
         """Scapes the article body of the given link"""
 
         if response.status_code == 200:
