@@ -1,0 +1,10 @@
+textblob
+keybert
+rake-nltk
+yake
+nltk
+sentence-transformers
+scikit-learn
+transformers==4.40.2
+spacy
+rake
