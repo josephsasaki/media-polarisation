@@ -1,4 +1,4 @@
-'''This is an extract script for the archive pipeline. it connects the rds database 
+'''This is an extract script for the archive pipeline. it connects the RDS database 
 and converts the data into a pandas dataframe'''
 import os
 from datetime import datetime, timedelta
