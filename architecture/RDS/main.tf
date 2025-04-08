@@ -63,5 +63,6 @@ resource "aws_db_instance" "RDS-media-polarisation" {
   password             = var.db_password
   vpc_security_group_ids = [resource.aws_security_group.RDS-SG.id]
   db_subnet_group_name = resource.aws_db_subnet_group.c16-public-subnets.name
+  publicly_accessible = true
   skip_final_snapshot  = true
 }
