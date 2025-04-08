@@ -2,40 +2,59 @@
     Script defining the models relevant for the scraper pipeline.
 '''
 
+from dataclasses import dataclass
 from datetime import datetime
 
 
+@dataclass
 class Article:
-    '''Class representing an article.'''
+    '''Dataclass representing an article.'''
+    __news_outlet: str
+    __headline: str
+    __url: str
+    __published_date: datetime
+    __subjectivity: float
+    __polarity: float
 
-    def __init__(self, news_outlet: str, headline: str, url: str,
-                 published_date: datetime, subjectivity: float, polarity: float):
-        '''Initialise the article object.'''
-        self.__news_outlet = news_outlet
-        self.__headline = headline
-        self.__url = url
-        self.__published_date = published_date
-        self.__subjectivity = subjectivity
-        self.__polarity = polarity
+    def get_insert_values(self) -> tuple:
+        '''Get the article values required for inserting into database.'''
+        return (
+            self.__news_outlet,
+            self.__headline,
+            self.__url,
+            self.__published_date,
+            self.__subjectivity,
+            self.__polarity
+        )
 
 
+@dataclass
 class Topic:
-    '''Class representing a topic.'''
+    '''Dataclass representing a topic.'''
+    __topic_name: str
 
-    def __init__(self, topic_name: str):
-        '''Initialise the topic object'''
-        self.__topic_name = topic_name
+    def get_insert_values(self) -> tuple:
+        '''Get the topic values required for inserting into database.'''
+        return (self.__topic_name, )
 
 
+@dataclass
 class ArticleTopic:
-    '''Class representing the analysis of a topic within an article.'''
+    '''Dataclass representing the analysis of a topic within an article.'''
+    __article: Article
+    __topic: Topic
+    __positive_sentiment: float
+    __negative_sentiment: float
+    __neutral_sentiment: float
+    __compound_sentiment: float
 
-    def __init__(self, article: Article, topic: Topic, positive_sentiment: float,
-                 negative_sentiment: float, neutral_sentiment: float, compound_sentiment: float):
-        '''Initialise an article-topic object.'''
-        self.__article = article
-        self.__topic = topic
-        self.__positive_sentiment = positive_sentiment
-        self.__negative_sentiment = negative_sentiment
-        self.__neutral_sentiment = neutral_sentiment
-        self.__compound_sentiment = compound_sentiment
+    def get_insert_values(self) -> tuple:
+        '''Get the article-topic values for inserting into database.'''
+        return (
+            self.__article,
+            self.__topic,
+            self.__positive_sentiment,
+            self.__negative_sentiment,
+            self.__neutral_sentiment,
+            self.__compound_sentiment,
+        )
