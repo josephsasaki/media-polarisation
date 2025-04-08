@@ -5,21 +5,21 @@ DROP TABLE IF EXISTS news_outlet;
 
 
 CREATE TABLE topic (
-    topic_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    topic_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     topic_name VARCHAR(20) NOT NULL,
     PRIMARY KEY (topic_id)
 );
 
 CREATE TABLE news_outlet (
-    news_outlet_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    news_outlet_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_name VARCHAR(15) NOT NULL,
     PRIMARY KEY (news_outlet_id)
 );
 
 
 CREATE TABLE article (
-    article_id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
-    news_outlet_id INT NOT NULL,
+    article_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    news_outlet_id SMALLINT NOT NULL,
     article_headline VARCHAR(100) NOT NULL, 
     article_url VARCHAR(200) NOT NULL,
     article_published_date TIMESTAMP NOT NULL,
@@ -30,9 +30,9 @@ CREATE TABLE article (
 );
 
 CREATE TABLE article_topic (
-    article_topic_id BIGINT NOT NULL,
-    article_id BIGINT NOT NULL,
-    topic_id INT NOT NULL,
+    article_topic_id SMALLINT NOT NULL,
+    article_id SMALLINT NOT NULL,
+    topic_id SMALLINT NOT NULL,
     article_topic_positive_sentiment FLOAT NOT NULL, 
     article_topic_negative_sentiment FLOAT NOT NULL,
     article_topic_neural_sentiment FLOAT NOT NULL,
