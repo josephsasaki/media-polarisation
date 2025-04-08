@@ -1,10 +1,10 @@
 '''This file tests the DatabaseManger class from the extract.py file'''
-import pytest
 from unittest.mock import patch, MagicMock
+import pytest
 from extract import DatabaseManager
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def mock_env_vars(monkeypatch):
     '''Mock environment variables for database connection.'''
     monkeypatch.setenv("DB_NAME", "test_db")
@@ -15,7 +15,7 @@ def mock_env_vars(monkeypatch):
 
 
 @patch("extract.psycopg2.connect")
-def test_create_connection(mock_connect, mock_env_vars):
+def test_create_connection(mock_connect):
     '''Test that DatabaseManager creates a connection using the correct environment variables.'''
     mock_conn = MagicMock()
     mock_connect.return_value = mock_conn
@@ -35,8 +35,9 @@ def test_create_connection(mock_connect, mock_env_vars):
 
 @patch("extract.pd.read_sql")
 @patch("extract.psycopg2.connect")
-def test_fetch_joined_dataframe(mock_connect, mock_read_sql, mock_env_vars):
-    '''Test that fetch_joined_dataframe executes the SQL query and returns the expected dataframe.'''
+def test_fetch_joined_dataframe(mock_connect, mock_read_sql):
+    '''Test that fetch_joined_dataframe executes the SQL query
+    and returns the expected dataframe.'''
     mock_conn = MagicMock()
     mock_connect.return_value = mock_conn
     mock_read_sql.return_value = "fake_df"
@@ -49,7 +50,7 @@ def test_fetch_joined_dataframe(mock_connect, mock_read_sql, mock_env_vars):
 
 
 @patch("extract.psycopg2.connect")
-def test_close_connection(mock_connect, mock_env_vars):
+def test_close_connection(mock_connect):
     '''Test that the database connection is closed properly.'''
     mock_conn = MagicMock()
     mock_connect.return_value = mock_conn
