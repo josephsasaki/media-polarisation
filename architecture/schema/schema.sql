@@ -30,7 +30,7 @@ CREATE TABLE article (
 );
 
 CREATE TABLE article_topic (
-    article_topic_id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    article_topic_id BIGINT NOT NULL,
     article_id BIGINT NOT NULL,
     topic_id INT NOT NULL,
     article_topic_positive_sentiment FLOAT NOT NULL, 
