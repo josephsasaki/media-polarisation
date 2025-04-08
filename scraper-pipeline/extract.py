@@ -12,9 +12,9 @@ class RSSFeedExtractor:
     '''The RSSFeed class extracts all articles on the inputted rss url,
       it also scrapes each individual article's body of content'''
 
-    def __init__(self, feed_url: str):
-        self.feed_url = feed_url
-        self.articles = self.parse()
+    def __init__(self, rss_feeds: list[str]):
+        self.rss_feeds = rss_feeds
+        self.extract = self.extract_feeds()
 
     def link_extractor(self, link):
         '''Extracts the raw article body from the inputted link'''
@@ -29,35 +29,15 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def article_body(self, response, link) -> str:
+    def article_body(self, response) -> str:
         """Scapes the article body of the given link"""
+        return response
 
-        if response.status_code == 200:
-
-            html_content = response.text
-            soup = BeautifulSoup(html_content, 'html.parser')
-            text_body = ''
-            if 'guardian' in link:
-                paragraphs = soup.find_all('p', class_="dcr-16w5gq9")
-                text_body = ''.join(p.get_text() for p in paragraphs)
-                if not text_body.strip():
-                    return None
-            else:
-                divs = [div for div in soup.find_all('div') if div.get('class') == [
-                    'text-description']]
-                for div in divs:
-                    paragraphs = div.find_all('p')
-                text_body += ''.join(p.get_text() for p in paragraphs)
-            return text_body
-        print(
-            f"Failed to retrieve the page. Status code: {response.status_code}")
-        return None
-
-    def parse(self):
+    def parse(self, feed_url):
         """Parses the given rss feed"""
         combined_article = []
-        print(self.feed_url)
-        feed = feedparser.parse(self.feed_url)
+        print(feed_url)
+        feed = feedparser.parse(feed_url)
 
         if not feed.entries:
             print("No articles found.")
@@ -67,23 +47,60 @@ class RSSFeedExtractor:
         for entry in feed.entries:
             link = entry.get('link', '')
             response = self.link_extractor(link)
-            body = self.article_body(response, link)
+            body = self.article_body(response)
             if body:
                 combined_article.append((entry, body))
         return combined_article
 
-
-class NewsOutlet:
-    '''The NewsOutlet class contains rss feed links of interest and extracts them
-      using the RSSFeedExtractor class'''
-
-    def __init__(self, rss_feeds: list[str]):
-        self.rss_feeds = rss_feeds
-        self.feeds = self.feed_extract()
-
-    def feed_extract(self):
+    def extract_feeds(self):
         '''Extracts the lists of rss feeds'''
-        return [RSSFeedExtractor(feed) for feed in self.rss_feeds]
+        combined_feeds = []
+        for feed in self.rss_feeds:
+            combined_feeds.append(self.parse(feed))
+        return combined_feeds
+
+
+class GuardianRSSFeedExtractor(RSSFeedExtractor):
+    '''The GuardianRSSFeedExtractor class extracts all articles from the inputted Guardian rss url,
+      it also scrapes each individual article's body of content'''
+
+    def article_body(self, response) -> str:
+        """Scapes the article body of the given link"""
+        if response.status_code == 200:
+            html_content = response.text
+            soup = BeautifulSoup(html_content, 'html.parser')
+            text_body = ''
+
+            paragraphs = soup.find_all('p', class_="dcr-16w5gq9")
+            text_body = ''.join(p.get_text() for p in paragraphs)
+            if not text_body.strip():
+                return None
+            return text_body
+        print(
+            f"Failed to retrieve the page. Status code: {response.status_code}")
+        return None
+
+
+class ExpressRSSFeedExtractor(RSSFeedExtractor):
+    '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
+      Daily Express rss url, it also scrapes each individual article's body of content'''
+
+    def article_body(self, response) -> str:
+        """Scapes the article body of the given link"""
+
+        if response.status_code == 200:
+            html_content = response.text
+            soup = BeautifulSoup(html_content, 'html.parser')
+            text_body = ''
+            divs = [div for div in soup.find_all('div') if div.get('class') == [
+                    'text-description']]
+            for div in divs:
+                paragraphs = div.find_all('p')
+                text_body += ''.join(p.get_text() for p in paragraphs)
+            return text_body
+        print(
+            f"Failed to retrieve the page. Status code: {response.status_code}")
+        return None
 
 
 if __name__ == "__main__":
@@ -94,5 +111,5 @@ if __name__ == "__main__":
                "https://www.express.co.uk/posts/rss/198/us",
                "https://www.express.co.uk/posts/rss/78/world"]
 
-    print(NewsOutlet(express))
-    print(NewsOutlet(guardian))
+    print(GuardianRSSFeedExtractor(guardian).extract)
+    print(ExpressRSSFeedExtractor(express).extract)
