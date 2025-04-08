@@ -1,86 +1,99 @@
+'''
+The extract section of the first data pipeline. The source of the data is the Guardians and 
+The Daily Express' respective RSS Feeds. The parsed data for each article is stored in a tuple 
+alongside the articles main body of text, the tuples are stored in a python list
+'''
+
 import feedparser
-import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 
 
-class NewsArticle:
-    def __init__(self, entry: dict):
-        self.title = entry.get('title', '')
-        self.id = entry.get('id', '')
-        self.summary = entry.get('summary_detail', {}).get('value', '')
-        self.link = entry.get('link', '')
-        self.published = entry.get('published', '')
-        self.updated = entry.get('updated', '')
-        self.author = entry.get('author', '')
-        self.tags = [tag['term'] for tag in entry.get('tags', [])]
-        self.content = self.article_body()
+class RSSFeedExtractor:
+    '''The RSSFeed class extracts all articles on the inputted rss url,
+      it also scrapes each individual article's body of content'''
 
-    def to_dict(self) -> dict:
-        """Returns a dictionary to form the the columns in the dataframe"""
-        return {
-            'title': self.title,
-            'id': self.id,
-            'summary': self.summary,
-            'link': self.link,
-            'published': self.published,
-            'author': self.author,
-            'tags': self.tags,
-            'updated': self.updated,
-            'content': self.content
-        }
+    def __init__(self, feed_url: str):
+        self.feed_url = feed_url
+        self.articles = self.parse()
 
-    def article_body(self) -> str:
-        """Scapes the articles body of content"""
-        response = requests.get(self.link)
+    def link_extractor(self, link):
+        '''Extracts the raw article body from the inputted link'''
+        try:
+            response = requests.get(link, timeout=10)
+            response.raise_for_status()  # Ensure successful status code
+            return response
+        except requests.Timeout:
+            print(f"Request to {link} timed out.")
+            return None
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
+            return None
+
+    def article_body(self, response, link) -> str:
+        """Scapes the article body of the given link"""
 
         if response.status_code == 200:
+
             html_content = response.text
             soup = BeautifulSoup(html_content, 'html.parser')
             text_body = ''
-            if 'guardian' in self.link:
+            if 'guardian' in link:
                 paragraphs = soup.find_all('p', class_="dcr-16w5gq9")
                 text_body = ''.join(p.get_text() for p in paragraphs)
                 if not text_body.strip():
                     return None
             else:
-                divs = [
-                    div for div in soup.find_all('div')
-                    if div.get('class') == ['text-description']
-                ]
+                divs = [div for div in soup.find_all('div') if div.get('class') == [
+                    'text-description']]
                 for div in divs:
                     paragraphs = div.find_all('p')
-                    text_body += ''.join(p.get_text() for p in paragraphs)
+                text_body += ''.join(p.get_text() for p in paragraphs)
             return text_body
-        else:
-            print(
-                f"Failed to retrieve the page. Status code: {response.status_code}")
-
-
-class RSSFeed:
-    def __init__(self, feed_url: str):
-        self.feed_url = feed_url
-        self.articles = self.parse()
+        print(
+            f"Failed to retrieve the page. Status code: {response.status_code}")
+        return None
 
     def parse(self):
+        """Parses the given rss feed"""
+        combined_article = []
+        print(self.feed_url)
         feed = feedparser.parse(self.feed_url)
+
         if not feed.entries:
             print("No articles found.")
-            return
-        # return NewsArticle(feed.entries[0])
-        return [NewsArticle(entry) for entry in feed.entries]
+            return None
 
-    def to_dataframe(self) -> pd.DataFrame:
-        return pd.DataFrame([article.to_dict() for article in self.articles])
+        print(len(feed.entries))
+        for entry in feed.entries:
+            link = entry.get('link', '')
+            response = self.link_extractor(link)
+            body = self.article_body(response, link)
+            if body:
+                combined_article.append((entry, body))
+        return combined_article
+
+
+class NewsOutlet:
+    '''The NewsOutlet class contains rss feed links of interest and extracts them
+      using the RSSFeedExtractor class'''
+
+    def __init__(self, rss_feeds: list[str]):
+        self.rss_feeds = rss_feeds
+        self.feeds = self.feed_extract()
+
+    def feed_extract(self):
+        '''Extracts the lists of rss feeds'''
+        return [RSSFeedExtractor(feed) for feed in self.rss_feeds]
 
 
 if __name__ == "__main__":
-    guardian_feed_url = "https://www.theguardian.com/politics/rss"
-    express_feed_url = "https://www.express.co.uk/posts/rss/139/politics"
-    guardian = RSSFeed(guardian_feed_url)
-    express = RSSFeed(express_feed_url)
+    guardian = ["https://www.theguardian.com/politics/rss",
+                "https://www.theguardian.com/us-news/us-politics/rss",
+                "https://www.theguardian.com/world/rss"]
+    express = ["https://www.express.co.uk/posts/rss/139/politics",
+               "https://www.express.co.uk/posts/rss/198/us",
+               "https://www.express.co.uk/posts/rss/78/world"]
 
-    guardian_df = guardian.to_dataframe()
-    express_df = express.to_dataframe()
-    express_df.to_csv("express.csv", index=False)
-    guardian_df.to_csv("guardian.csv", index=False)
+    print(NewsOutlet(express))
+    print(NewsOutlet(guardian))
