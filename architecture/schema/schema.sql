@@ -6,13 +6,13 @@ DROP TABLE IF EXISTS news_outlet;
 
 CREATE TABLE topic (
     topic_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
-    topic_name VARCHAR NOT NULL,
+    topic_name VARCHAR(20) NOT NULL,
     PRIMARY KEY (topic_id)
 );
 
 CREATE TABLE news_outlet (
     news_outlet_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
-    news_outlet_name VARCHAR NOT NULL,
+    news_outlet_name VARCHAR(15) NOT NULL,
     PRIMARY KEY (news_outlet_id)
 );
 
@@ -20,8 +20,8 @@ CREATE TABLE news_outlet (
 CREATE TABLE article (
     article_id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_id INT NOT NULL,
-    article_headline VARCHAR NOT NULL, 
-    article_url VARCHAR NOT NULL,
+    article_headline VARCHAR(100) NOT NULL, 
+    article_url VARCHAR(200) NOT NULL,
     article_published_date TIMESTAMP NOT NULL,
     article_subjectivity FLOAT NOT NULL,
     article_polarity FLOAT NOT NULL,
