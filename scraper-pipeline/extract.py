@@ -14,7 +14,6 @@ class RSSFeedExtractor:
 
     def __init__(self, rss_feeds: list[str]):
         self.rss_feeds = rss_feeds
-        self.extract = self.extract_feeds()
 
     def body_extractor(self, link):
         '''Extracts the raw article body from the inputted link'''
@@ -33,7 +32,7 @@ class RSSFeedExtractor:
         """Formats the inputted raw article body response"""
         return response
 
-    def rss_parser(self, feed_url):
+    def _rss_parser(self, feed_url):
         """Parses the given rss feed"""
         combined_article = []
         feed = feedparser.parse(feed_url)
@@ -109,5 +108,13 @@ if __name__ == "__main__":
                "https://www.express.co.uk/posts/rss/198/us",
                "https://www.express.co.uk/posts/rss/78/world"]
 
-    print(GuardianRSSFeedExtractor(guardian).extract)
-    print(ExpressRSSFeedExtractor(express).extract)
+    # print(GuardianRSSFeedExtractor(guardian).extract)
+    x = ExpressRSSFeedExtractor(express).extract_feeds()
+    print(len(x))
+    print(type(x))
+
+    print(len(x[0]))
+    print(type(x[0]))
+
+    print(len(x[0][0]))
+    print(type(x[0][0]))
