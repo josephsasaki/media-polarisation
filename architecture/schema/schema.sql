@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS news_outlet;
 
 CREATE TABLE topic (
     topic_id INT NOT NULL GENERATED ALWAYS AS IDENTITY,
-    topic_name VARCHAR NOT NULL,
+    topic_name VARCHAR(20) NOT NULL,
     PRIMARY KEY (topic_id)
 );
 
