@@ -36,14 +36,12 @@ class RSSFeedExtractor:
     def rss_parser(self, feed_url):
         """Parses the given rss feed"""
         combined_article = []
-        print(feed_url)
         feed = feedparser.parse(feed_url)
 
         if not feed.entries:
             print("No articles found.")
             return None
 
-        print(len(feed.entries))
         for entry in feed.entries:
             link = entry.get('link', '')
             response = self.body_extractor(link)
