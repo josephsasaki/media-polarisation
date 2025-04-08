@@ -1,6 +1,7 @@
+''' transform class that takes in a dataframe and turns it into a dated csv'''
 import os
-import pandas as pd
 from datetime import datetime
+import pandas as pd
 
 
 class DataTransformer:
@@ -11,7 +12,8 @@ class DataTransformer:
         directory defaulting to the current directory)'''
         self.output_dir = output_dir
 
-    def save_dataframe_to_csv(self, df: pd.DataFrame, filename_prefix: str = "archived_data") -> str:
+    def save_dataframe_to_csv(self, df: pd.DataFrame,
+                              filename_prefix: str = "archived_data") -> str:
         '''Saves a dataframe to a CSV file locally with a timestamped filename'''
         datestamp = datetime.now().strftime("%Y%m%d")
         filename = f"{filename_prefix}_{datestamp}.csv"
@@ -23,5 +25,5 @@ class DataTransformer:
 
 if __name__ == "__main__":
     db_transformer = DataTransformer()
-    df = "insert df from extract"
-    file_path = db_transformer.save_dataframe_to_csv(df)
+    MOCK_DF = "blah"
+    output_file_path = db_transformer.save_dataframe_to_csv(MOCK_DF)
