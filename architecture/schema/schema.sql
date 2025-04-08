@@ -21,7 +21,7 @@ CREATE TABLE article (
     article_id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_id INT NOT NULL,
     article_headline VARCHAR NOT NULL, 
-    article_url VARCHAR NOT NULL,
+    article_url VARCHAR(200) NOT NULL,
     article_published_date TIMESTAMP NOT NULL,
     article_subjectivity FLOAT NOT NULL,
     article_polarity FLOAT NOT NULL,
