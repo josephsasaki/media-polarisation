@@ -28,7 +28,7 @@ class DatabaseManager:
     def __init__(self) -> None:
         '''Initializes the DatabaseManager by connecting to the RDS database.'''
         load_dotenv()
-        self.db_connection = self._create_connection()
+        self.__db_connection = self._create_connection()
 
     def _create_connection(self) -> connection:
         '''Gets a connection to the RDS database'''
@@ -47,18 +47,18 @@ class DatabaseManager:
         )
 
     def fetch_joined_dataframe(self) -> pd.DataFrame:
-        '''fetches data from the RDS database and reads it into a dataframe'''
+        '''Fetches data from the RDS database and reads it into a dataframe'''
 
         three_months_ago = datetime.now() - timedelta(days=90)
 
         return pd.read_sql(self.FETCH_ARTICLE_DATA_QUERY,
-                           self.db_connection,
+                           self.__db_connection,
                            params=[three_months_ago])
 
     def close_connection(self) -> None:
         '''Closes the database connection.'''
-        if self.db_connection:
-            self.db_connection.close()
+        if self.__db_connection:
+            self.__db_connection.close()
 
 
 if __name__ == "__main__":
