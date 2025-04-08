@@ -12,11 +12,6 @@ provider "aws" {
   region = var.region
 }
 
-# VPC data
-data "aws_vpc" "c16_vpc" {
-  id = var.vpc_id
-}
-
 # Create scraper ECR
 
 resource "aws_ecr_repository" "scraper-ecr" {
