@@ -32,7 +32,10 @@ data "aws_iam_policy_document" "permission-policy-doc" {
     effect="Allow"
 
       actions = ["lambda:InvokeFunction"]
-      resources = [data.aws_lambda_function.scraper_lambda.arn]
+      resources = [
+        data.aws_lambda_function.scraper_lambda.arn,
+        data.aws_lambda_function.archive_lambda.arn
+      ]
     }
 }
 
