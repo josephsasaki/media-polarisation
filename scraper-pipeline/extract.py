@@ -84,10 +84,11 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
         print(
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
-    
+
     def get_news_outlet(self) -> str:
         """Returns the name of the outlet being extracted from"""
         return "Guardian"
+
 
 class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
@@ -109,7 +110,7 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
         print(
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
-    
+
     def get_news_outlet(self) -> str:
         """Returns the name of the outlet being extracted from"""
         return "Express"
