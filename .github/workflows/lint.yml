@@ -25,10 +25,11 @@ jobs:
           pip install -r dashboard/requirements.txt
           pip install -r daily-report/requirements.txt
 
-      - name: Run pylint only in selected folders
+      - name: Run pylint on archival-pipeline
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           FILES=$(git ls-files 'archival-pipeline/*.py' 'scraper-pipeline/*.py')
+          echo "$FILES"
           if [ -n "$FILES" ]; then
             echo "Found Python files, running pylint..."
             pylint $FILES --fail-under=9.5
