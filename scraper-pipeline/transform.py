@@ -8,6 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
+import nltk
 from models import Article, TopicAnalysis
 from extract import GuardianRSSFeedExtractor
 
@@ -68,6 +69,7 @@ class TextAnalyser:
     def extract_topics(self) -> None:
         '''For each article, extract the relevant topics and assign to the article's topics list.'''
         for article in self.__articles:
+            print("article_loop")
             response = self.__client.responses.create(
                 model=self.GPT_MODEL,
                 input=self.GPT_PROMPT.format(article_body=article.get_body())
@@ -94,18 +96,35 @@ class TextAnalyser:
         '''For each article, iterate through it's topics and perform the NLP analysis on the 
         sentiment of each topic within the article.'''
         for article in self.__articles:
+            body = article.get_body()
+            sentences = nltk.sent_tokenize(body)
             for topic in article.get_topic_analyses():
+                key_terms = topic.get_key_terms()
 
-                # To do perform sentiment analysis
-                # article.get_body()
-                # topic.get_key_terms()
+                related_sentences = [
+                    sentence for sentence in sentences
+                    if any(term.lower() in sentence.lower() for term in key_terms)
+                ]
 
-                topic.set_sentiments(
-                    positive=...,
-                    neutral=...,
-                    negative=...,
-                    compound=...,
-                )
+                if related_sentences:
+                    context_text = " ".join(related_sentences)
+                    sentiment_scores = self.__sentiment_analyzer.polarity_scores(
+                        context_text)
+
+                    topic.set_sentiments(
+                        positive=sentiment_scores['pos'],
+                        neutral=sentiment_scores['neu'],
+                        negative=sentiment_scores['neg'],
+                        compound=sentiment_scores['compound'],
+                    )
+                else:
+                    # It may be better to leave this blank so they default to None
+                    topic.set_sentiments(
+                        positive=0.0,
+                        neutral=1.0,
+                        negative=0.0,
+                        compound=0.0,
+                    )
 
     def perform_article_body_analysis(self) -> None:
         '''Performs the NLP sentiment analysis on the article body'''
@@ -128,17 +147,25 @@ class TextAnalyser:
 
 if __name__ == "__main__":
     start = time.time()
-    extracted = GuardianRSSFeedExtractor(["https://www.theguardian.com/politics/rss",
-                                          "https://www.theguardian.com/us-news/us-politics/rss",
-                                          "https://www.theguardian.com/world/rss"]).extract_feeds()
+    extracted = GuardianRSSFeedExtractor(
+        ["https://www.theguardian.com/politics/rss",]).extract_feeds()
+    print("step1")
     guardian_articles = ArticleFactory(extracted).generate_articles()
+    print("step2")
     TextAnalyser(guardian_articles).extract_topics()
+    print("step3")
     TextAnalyser(guardian_articles).perform_article_body_analysis()
+    print("step4")
+    TextAnalyser(guardian_articles).perform_topic_analysis()
     for item in guardian_articles:
         print(item.get_article_heading())
         print(f"subjectivity : {item.get_subjectivity()}")
         print(f"polarity: {item.get_polarity()}")
         print(item.get_sentiments())
+        for topic_analyses in item.get_topic_analyses():
+            print(f"topic: {topic_analyses.get_topic_name()}")
+            print(topic_analyses.get_sentiments())
+
     end = time.time()
     elapsed = end - start
     print(f"Elapsed time: {elapsed:.2f} seconds")
