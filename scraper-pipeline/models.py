@@ -55,6 +55,10 @@ class Article:
         self.__topic_analyses = None
         self.__subjectivity = None
         self.__polarity = None
+        self.__positive_sentiment = None
+        self.__neutral_sentiment = None
+        self.__negative_sentiment = None
+        self.__compound_sentiment = None
 
     def get_body(self):
         '''Getter for the article text body.'''
@@ -68,6 +72,41 @@ class Article:
         '''Set the list of topics analyses objects related to the article.'''
         self.__topic_analyses = topics_analyses
 
+    def set_subjectivity(self, subjectivity: float) -> None:
+        '''Sets the subjectivity of the article'''
+        self.__subjectivity = subjectivity
+
+    def get_subjectivity(self) -> float:
+        '''Getter for the subjectivity'''
+        return self.__subjectivity
+
+    def set_polarity(self, polarity: float) -> None:
+        '''Sets the subjectivity of the article'''
+        self.__polarity = polarity
+
+    def get_polarity(self) -> float:
+        '''Getter for the subjectivity'''
+        return self.__polarity
+
+    def get_article_heading(self) -> str:
+        return self.__headline
+
+    def get_sentiments(self) -> tuple[float]:
+        '''Getter for the sentiment values.'''
+        return (
+            self.__positive_sentiment,
+            self.__neutral_sentiment,
+            self.__negative_sentiment,
+            self.__compound_sentiment,
+        )
+
+    def set_sentiments(self, positive: float, neutral: float, negative: float, compound: float):
+        '''Set the sentiment values of a topic.'''
+        self.__positive_sentiment = positive
+        self.__neutral_sentiment = neutral
+        self.__negative_sentiment = negative
+        self.__compound_sentiment = compound
+
     def get_insert_values(self) -> tuple:
         '''Get the article values required for inserting into database.'''
         return (
@@ -76,5 +115,8 @@ class Article:
             self.__url,
             self.__published_date,
             self.__subjectivity,
-            self.__polarity
+            self.__positive_sentiment,
+            self.__neutral_sentiment,
+            self.__negative_sentiment,
+            self.__compound_sentiment,
         )

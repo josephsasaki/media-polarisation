@@ -6,6 +6,8 @@ from datetime import datetime
 import time
 from openai import OpenAI
 from dotenv import load_dotenv
+from textblob import TextBlob
+from nltk.sentiment import SentimentIntensityAnalyzer
 from models import Article, TopicAnalysis
 from extract import GuardianRSSFeedExtractor
 
@@ -61,6 +63,7 @@ class TextAnalyser:
         '''Instantiate the TextAnalyser object with the list of articles to analyse.'''
         self.__articles = articles
         self.__client = OpenAI()
+        self.__sentiment_analyzer = SentimentIntensityAnalyzer()
 
     def extract_topics(self) -> None:
         '''For each article, extract the relevant topics and assign to the article's topics list.'''
@@ -106,6 +109,21 @@ class TextAnalyser:
 
     def perform_article_body_analysis(self) -> None:
         '''Performs the NLP sentiment analysis on the article body'''
+        for article in self.__articles:
+            body = article.get_body()
+            blob = TextBlob(body)
+            subjectivity = blob.sentiment.subjectivity
+            polarity = blob.sentiment.polarity
+
+            sentiment_scores = self.__sentiment_analyzer.polarity_scores(
+                body)
+            article.set_polarity(polarity)
+            article.set_subjectivity(subjectivity)
+            article.set_sentiments(
+                sentiment_scores['pos'],
+                sentiment_scores['neu'],
+                sentiment_scores['neg'],
+                sentiment_scores['compound'])
 
 
 if __name__ == "__main__":
@@ -115,6 +133,12 @@ if __name__ == "__main__":
                                           "https://www.theguardian.com/world/rss"]).extract_feeds()
     guardian_articles = ArticleFactory(extracted).generate_articles()
     TextAnalyser(guardian_articles).extract_topics()
+    TextAnalyser(guardian_articles).perform_article_body_analysis()
+    for item in guardian_articles:
+        print(item.get_article_heading())
+        print(f"subjectivity : {item.get_subjectivity()}")
+        print(f"polarity: {item.get_polarity()}")
+        print(item.get_sentiments())
     end = time.time()
     elapsed = end - start
     print(f"Elapsed time: {elapsed:.2f} seconds")
