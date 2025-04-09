@@ -88,7 +88,7 @@ resource "aws_scheduler_schedule" "archive_lambda_schedule" {
     mode = "OFF"
   }
 
-  schedule_expression = "cron(15 * * * ? *)"
+  schedule_expression = "cron(0 9 * * ? *)"
 
   target {
     arn      = data.aws_lambda_function.archive_lambda.arn
