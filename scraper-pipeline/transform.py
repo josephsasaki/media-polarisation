@@ -1,16 +1,17 @@
 '''
     Script for converting the raw, RSS feed article data into cleaned objects.
 '''
-
 import json
 from datetime import datetime
+import time
 from openai import OpenAI
+from dotenv import load_dotenv
 from models import Article, TopicAnalysis
 from extract import GuardianRSSFeedExtractor
-from dotenv import load_dotenv
-import time
+
 
 load_dotenv()
+# pylint: disable=too-few-public-methods
 
 
 class ArticleFactory:
@@ -92,7 +93,7 @@ class TextAnalyser:
         for article in self.__articles:
             for topic in article.get_topic_analyses():
 
-                # TODO: perform sentiment analysis
+                # To do perform sentiment analysis
                 # article.get_body()
                 # topic.get_key_terms()
 
@@ -104,8 +105,7 @@ class TextAnalyser:
                 )
 
     def perform_article_body_analysis(self) -> None:
-        ''''''
-        pass
+        '''Performs the NLP sentiment analysis on the article body'''
 
 
 if __name__ == "__main__":
@@ -113,8 +113,8 @@ if __name__ == "__main__":
     extracted = GuardianRSSFeedExtractor(["https://www.theguardian.com/politics/rss",
                                           "https://www.theguardian.com/us-news/us-politics/rss",
                                           "https://www.theguardian.com/world/rss"]).extract_feeds()
-    articles = ArticleFactory(extracted).generate_articles()
-    TextAnalyser(articles).extract_topics()
+    guardian_articles = ArticleFactory(extracted).generate_articles()
+    TextAnalyser(guardian_articles).extract_topics()
     end = time.time()
     elapsed = end - start
     print(f"Elapsed time: {elapsed:.2f} seconds")
