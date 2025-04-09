@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS topic;
 DROP TABLE IF EXISTS article_topic;
 DROP TABLE IF EXISTS article;
 DROP TABLE IF EXISTS news_outlet;
+DROP TABLE IF EXISTS topic;
 
 
 CREATE TABLE topic (
@@ -48,4 +48,4 @@ INSERT INTO news_outlet
 (news_outlet_name)
 VALUES
 ('The Guardian'),
-('Daily Express');
+('Express');
