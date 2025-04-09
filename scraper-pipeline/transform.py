@@ -84,6 +84,10 @@ class TextAnalyser:
                 topic_analyses.append(topic_analysis)
             article.set_topics_analyses(topic_analyses)
 
+    # def check_validity_of_topics():
+    # checking if the key_terms for each topic actually show up in the text, and they are relevant
+    # NLP library for this
+
     def perform_topic_analysis(self) -> None:
         '''For each article, iterate through it's topics and perform the NLP analysis on the 
         sentiment of each topic within the article.'''
@@ -91,6 +95,8 @@ class TextAnalyser:
             for topic in article.get_topic_analyses():
 
                 # TODO: perform sentiment analysis
+                # article.get_body()
+                # topic.get_key_terms()
 
                 topic.set_sentiments(
                     positive=...,
@@ -98,3 +104,7 @@ class TextAnalyser:
                     negative=...,
                     compound=...,
                 )
+
+    def perform_article_body_analysis(self) -> None:
+        ''''''
+        pass
