@@ -1,6 +1,6 @@
 '''
-The extract section of the first data pipeline. The source of the data is the Guardians and
-The Daily Express' respective RSS Feeds. The parsed data for each article is stored in a tuple
+The extract section of the first data pipeline. The source of the data is the Guardians and 
+The Daily Express' respective RSS Feeds. The parsed data for each article is stored in a tuple 
 alongside the articles main body of text, the tuples are stored in a python list
 '''
 import feedparser
@@ -27,9 +27,13 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def body_formatter(self, response: requests.Response) -> requests.Response:
+    def body_formatter(self, response: requests.Response) -> str:
         """Formats the inputted raw article body response"""
-        return response
+        return f"{response}"
+
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "news_outlet"
 
     def _rss_parser(self, feed_url: requests.Response) -> list[tuple[dict, str]]:
         """Parses the given rss feed"""
@@ -48,6 +52,7 @@ class RSSFeedExtractor:
             required_entry['title'] = entry.get('title', '')
             required_entry['link'] = link
             required_entry['published'] = entry.get('published', '')
+            required_entry['news_outlet'] = self.get_news_outlet()
             if body:
                 combined_article.append((required_entry, body))
         return combined_article
@@ -80,6 +85,10 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
 
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "Guardian"
+
 
 class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
@@ -101,6 +110,10 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
         print(
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
+
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "Express"
 
 
 if __name__ == "__main__":
