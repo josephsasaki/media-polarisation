@@ -68,7 +68,7 @@ def test_guardian_body_formatter_success():
     mock_response.text = html
 
     extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result == "Paragraph 1.Paragraph 2."
 
 
@@ -80,7 +80,7 @@ def test_guardian_body_formatter_empty_paragraphs():
     mock_response.text = html
 
     extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result is None
 
 
@@ -91,7 +91,7 @@ def test_guardian_body_formatter_failed_status(capsys):
     mock_response.text = ""
 
     extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result is None
 
     captured = capsys.readouterr()
@@ -115,7 +115,7 @@ def test_express_body_formatter_success():
     mock_response.text = html
 
     extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result == "Paragraph A.Paragraph B."
 
 
@@ -127,7 +127,7 @@ def test_express_body_formatter_no_matching_divs():
     mock_response.text = html
 
     extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result == ""
 
 
@@ -138,11 +138,17 @@ def test_express_body_formatter_failed_status(capsys):
     mock_response.text = ""
 
     extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
-    result = extractor.body_formatter(mock_response)
+    result = extractor._body_formatter(mock_response)
     assert result is None
 
     captured = capsys.readouterr()
     assert "Failed to retrieve the page. Status code: 500" in captured.out
+
+
+def test_body_formatter() -> str:
+    """Tests the test_body_formatter"""
+    assert RSSFeedExtractor(
+        'test/feed')._body_formatter("response") == "response"
 
 
 def test_rss_parser_with_valid_entries():
@@ -156,7 +162,7 @@ def test_rss_parser_with_valid_entries():
 
     with patch("extract.feedparser.parse", return_value=mock_feed), \
             patch.object(RSSFeedExtractor, "_body_extractor", return_value="mock response"), \
-            patch.object(RSSFeedExtractor, "body_formatter", return_value="Extracted content"):
+            patch.object(RSSFeedExtractor, "_body_formatter", return_value="Extracted content"):
 
         extractor = RSSFeedExtractor(["http://mock-feed.com"])
         result = extractor._rss_parser("http://mock-feed.com")
@@ -195,7 +201,7 @@ def test_rss_parser_skips_entry_without_body():
 
     with patch("extract.feedparser.parse", return_value=mock_feed), \
             patch.object(RSSFeedExtractor, "_body_extractor", return_value="mock response"), \
-            patch.object(RSSFeedExtractor, "body_formatter", return_value=None):
+            patch.object(RSSFeedExtractor, "_body_formatter", return_value=None):
 
         extractor = RSSFeedExtractor(["http://mock-feed.com"])
         result = extractor._rss_parser("http://mock-feed.com")
@@ -216,3 +222,14 @@ def test_extract_feeds_combines_results():
         combined = extractor.extract_feeds()
 
         assert combined == mock_rss_data_1 + mock_rss_data_2
+
+
+def test_extract_guardian_get_news_outlet():
+    '''Finds the news outlet for the Guardian extractor'''
+    assert GuardianRSSFeedExtractor(
+        'test/feed')._get_news_outlet() == "Guardian"
+
+
+def test_extract_express_get_news_outlet():
+    '''Finds the news outlet for the Express extractor'''
+    assert ExpressRSSFeedExtractor('test/feed')._get_news_outlet() == "Express"
