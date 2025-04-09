@@ -8,7 +8,7 @@ from openai import OpenAI
 from models import Article, TopicAnalysis
 from extract import GuardianRSSFeedExtractor
 from dotenv import load_dotenv
-import os
+import time
 
 load_dotenv()
 
@@ -45,9 +45,9 @@ class TextAnalyser:
     GPT_MODEL = 'gpt-4o-mini'
     GPT_PROMPT = '''
         Extract the top 5 overarching topics from the following article. Please provide these
-        topics in as few words as possible e.g. immigration, Donald Trump, US tariffs. I should 
-        expect the outputs to be, in general, 1 word long.  
-       
+        topics in as few words as possible e.g. immigration, Donald Trump, US tariffs. I should
+        expect the outputs to be, in general, 1 word long.
+
         Please provide a JSON list, where each element is a dictionary with two keys: topic_name
         and key_terms. The key_terms key should correspond to a list of words found in the article which
         directly link to the topic. Do not include ```json
@@ -77,9 +77,10 @@ class TextAnalyser:
                     topic_name=topic.get('topic_name'),
                     key_terms=topic.get('key_terms')
                 )
-                print(topic_analysis.get_topic_name())
+                # print(topic_analysis.get_topic_name())
                 topic_analyses.append(topic_analysis)
             article.set_topics_analyses(topic_analyses)
+            # print("-------------new article-------------")
 
     # def check_validity_of_topics():
     # checking if the key_terms for each topic actually show up in the text, and they are relevant
@@ -108,7 +109,12 @@ class TextAnalyser:
 
 
 if __name__ == "__main__":
-    extracted = GuardianRSSFeedExtractor([
-        "https://www.theguardian.com/politics/rss"]).extract_feeds()
+    start = time.time()
+    extracted = GuardianRSSFeedExtractor(["https://www.theguardian.com/politics/rss",
+                                          "https://www.theguardian.com/us-news/us-politics/rss",
+                                          "https://www.theguardian.com/world/rss"]).extract_feeds()
     articles = ArticleFactory(extracted).generate_articles()
     TextAnalyser(articles).extract_topics()
+    end = time.time()
+    elapsed = end - start
+    print(f"Elapsed time: {elapsed:.2f} seconds")
