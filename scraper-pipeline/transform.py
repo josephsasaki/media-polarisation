@@ -1,11 +1,17 @@
 '''
     Script for converting the raw, RSS feed article data into cleaned objects.
 '''
-
 import json
 from datetime import datetime
+import time
 from openai import OpenAI
+from dotenv import load_dotenv
 from models import Article, TopicAnalysis
+from extract import GuardianRSSFeedExtractor
+
+
+load_dotenv()
+# pylint: disable=too-few-public-methods
 
 
 class ArticleFactory:
@@ -26,8 +32,9 @@ class ArticleFactory:
                 headline=meta_data.get('title'),
                 url=meta_data.get('link'),
                 published_date=datetime.strptime(meta_data.get(
-                    'published'), '%a, %d %b %Y %H:%M:%S %z'),
+                    'published'), '%a, %d %b %Y %H:%M:%S %Z'),
                 body=article_text,
+
             )
             articles.append(article)
         return articles
@@ -39,24 +46,12 @@ class TextAnalyser:
     GPT_MODEL = 'gpt-4o-mini'
     GPT_PROMPT = '''
         Extract the top 5 overarching topics from the following article. Please provide these
-        topics in as few words as possible e.g. immigration, Donald Trump, US tariffs. I should 
-        expect the outputs to be, in general, 1 word long.  
-       
+        topics in as few words as possible e.g. immigration, Donald Trump, US tariffs. I should
+        expect the outputs to be, in general, 1 word long.
+
         Please provide a JSON list, where each element is a dictionary with two keys: topic_name
         and key_terms. The key_terms key should correspond to a list of words found in the article which
-        directly link to the topic. 
-        
-        An example output would be as follows:
-        [
-            {
-                "topic_name": "Immigration",
-                "key_terms": ["immigrants", "immigration", "deportation"]
-            },
-            {
-                "topic_name": "Donald Trump",
-                "key_terms": ["Donald Trump", "Trump", "US President"]
-            }
-        ]
+        directly link to the topic. Do not include ```json
 
         Here is the article content:
         {article_body}
@@ -72,17 +67,21 @@ class TextAnalyser:
         for article in self.__articles:
             response = self.__client.responses.create(
                 model=self.GPT_MODEL,
-                input=self.GPT_PROMPT.format(article_body=article.get_body()),
+                input=self.GPT_PROMPT.format(article_body=article.get_body())
             )
+
             topics_data = json.loads(response.output_text)
+
             topic_analyses = []
             for topic in topics_data:
                 topic_analysis = TopicAnalysis(
                     topic_name=topic.get('topic_name'),
                     key_terms=topic.get('key_terms')
                 )
+                # print(topic_analysis.get_topic_name())
                 topic_analyses.append(topic_analysis)
             article.set_topics_analyses(topic_analyses)
+            # print("-------------new article-------------")
 
     # def check_validity_of_topics():
     # checking if the key_terms for each topic actually show up in the text, and they are relevant
@@ -94,7 +93,7 @@ class TextAnalyser:
         for article in self.__articles:
             for topic in article.get_topic_analyses():
 
-                # TODO: perform sentiment analysis
+                # To do perform sentiment analysis
                 # article.get_body()
                 # topic.get_key_terms()
 
@@ -106,5 +105,16 @@ class TextAnalyser:
                 )
 
     def perform_article_body_analysis(self) -> None:
-        ''''''
-        pass
+        '''Performs the NLP sentiment analysis on the article body'''
+
+
+if __name__ == "__main__":
+    start = time.time()
+    extracted = GuardianRSSFeedExtractor(["https://www.theguardian.com/politics/rss",
+                                          "https://www.theguardian.com/us-news/us-politics/rss",
+                                          "https://www.theguardian.com/world/rss"]).extract_feeds()
+    guardian_articles = ArticleFactory(extracted).generate_articles()
+    TextAnalyser(guardian_articles).extract_topics()
+    end = time.time()
+    elapsed = end - start
+    print(f"Elapsed time: {elapsed:.2f} seconds")
