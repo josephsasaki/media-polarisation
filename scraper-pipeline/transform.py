@@ -6,6 +6,11 @@ import json
 from datetime import datetime
 from openai import OpenAI
 from models import Article, TopicAnalysis
+from extract import GuardianRSSFeedExtractor
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class ArticleFactory:
@@ -26,8 +31,9 @@ class ArticleFactory:
                 headline=meta_data.get('title'),
                 url=meta_data.get('link'),
                 published_date=datetime.strptime(meta_data.get(
-                    'published'), '%a, %d %b %Y %H:%M:%S %z'),
+                    'published'), '%a, %d %b %Y %H:%M:%S %Z'),
                 body=article_text,
+
             )
             articles.append(article)
         return articles
@@ -44,19 +50,7 @@ class TextAnalyser:
        
         Please provide a JSON list, where each element is a dictionary with two keys: topic_name
         and key_terms. The key_terms key should correspond to a list of words found in the article which
-        directly link to the topic. 
-        
-        An example output would be as follows:
-        [
-            {
-                "topic_name": "Immigration",
-                "key_terms": ["immigrants", "immigration", "deportation"]
-            },
-            {
-                "topic_name": "Donald Trump",
-                "key_terms": ["Donald Trump", "Trump", "US President"]
-            }
-        ]
+        directly link to the topic. Do not include ```json
 
         Here is the article content:
         {article_body}
@@ -72,15 +66,18 @@ class TextAnalyser:
         for article in self.__articles:
             response = self.__client.responses.create(
                 model=self.GPT_MODEL,
-                input=self.GPT_PROMPT.format(article_body=article.get_body()),
+                input=self.GPT_PROMPT.format(article_body=article.get_body())
             )
+
             topics_data = json.loads(response.output_text)
+
             topic_analyses = []
             for topic in topics_data:
                 topic_analysis = TopicAnalysis(
                     topic_name=topic.get('topic_name'),
                     key_terms=topic.get('key_terms')
                 )
+                print(topic_analysis.get_topic_name())
                 topic_analyses.append(topic_analysis)
             article.set_topics_analyses(topic_analyses)
 
@@ -108,3 +105,10 @@ class TextAnalyser:
     def perform_article_body_analysis(self) -> None:
         ''''''
         pass
+
+
+if __name__ == "__main__":
+    extracted = GuardianRSSFeedExtractor([
+        "https://www.theguardian.com/politics/rss"]).extract_feeds()
+    articles = ArticleFactory(extracted).generate_articles()
+    TextAnalyser(articles).extract_topics()
