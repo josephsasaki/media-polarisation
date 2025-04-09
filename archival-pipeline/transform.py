@@ -1,16 +1,20 @@
-''' transform class that takes in a dataframe and turns it into a dated csv'''
+''' Transform class that takes in a dataframe and turns it into a dated CSV'''
 import os
 from datetime import datetime
 import pandas as pd
 
 
-class DataTransformer:
+class DataFrameToCSVTransformer:
     '''Handles transformation and local storage of data.'''
 
-    def __init__(self, output_dir: str = "."):
+    def __init__(self, output_dir: str = None) -> None:
         '''Initializes the transformer clas and sets up the output 
         directory defaulting to the current directory)'''
-        self.output_dir = output_dir
+        if output_dir is None:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            self.output_dir = script_dir
+        else:
+            self.output_dir = os.path.abspath(output_dir)
 
     def save_dataframe_to_csv(self, df: pd.DataFrame,
                               filename_prefix: str = "archived_data") -> str:
@@ -24,6 +28,6 @@ class DataTransformer:
 
 
 if __name__ == "__main__":
-    db_transformer = DataTransformer()
-    MOCK_DF = "blah"
+    db_transformer = DataFrameToCSVTransformer()
+    MOCK_DF = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
     output_file_path = db_transformer.save_dataframe_to_csv(MOCK_DF)
