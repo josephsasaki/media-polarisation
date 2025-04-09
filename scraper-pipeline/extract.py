@@ -1,8 +1,9 @@
 '''
-The extract section of the first data pipeline. The source of the data is the Guardians and
-The Daily Express' respective RSS Feeds. The parsed data for each article is stored in a tuple
-alongside the articles main body of text, the tuples are stored in a python list
+    The extract section of the first data pipeline. The source of the data is the Guardians and
+    The Daily Express' respective RSS Feeds. The parsed data for each article is stored in a tuple
+    alongside the articles main body of text, the tuples are stored in a python list
 '''
+
 import feedparser
 from bs4 import BeautifulSoup
 import requests
