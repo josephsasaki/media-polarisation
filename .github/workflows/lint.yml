@@ -25,7 +25,7 @@ jobs:
           pip install -r dashboard/requirements.txt
           pip install -r daily-report/requirements.txt
 
-      - name: Run pylint on archival-pipeline
+      - name: Run pylint
         run: |
           pylint scraper-pipeline/*.py --fail-under=9.5
           pylint archival-pipeline/*.py --fail-under=9.5
