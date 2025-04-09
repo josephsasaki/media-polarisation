@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 import pandas as pd
 
+# pylint: disable=too-few-public-methods
+
 
 class DataFrameToCSVTransformer:
     '''Handles transformation and local storage of data.'''
