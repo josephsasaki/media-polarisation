@@ -30,15 +30,15 @@ class RSSFeedExtractor:
             return None
 
     def _body_formatter(self, response: requests.Response) -> str:
-        """Formats the inputted raw article body response"""
+        '''Formats the inputted raw article body response'''
         return f"{response}"
 
     def _get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+        '''Returns the name of the outlet being extracted from'''
         return "news_outlet"
 
     def _rss_parser(self, feed_url: requests.Response) -> list[tuple[dict, str]]:
-        """Parses the given rss feed"""
+        '''Parses the given rss feed'''
         combined_article = []
         feed = feedparser.parse(feed_url)
 
@@ -72,7 +72,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
       it also scrapes each individual article's body of content'''
 
     def _body_formatter(self, response: requests.Response) -> str:
-        """Scapes the article body of the given link"""
+        '''Scapes the article body of the given link'''
         if response.status_code == 200:
             html_content = response.text
             soup = BeautifulSoup(html_content, 'html.parser')
@@ -88,7 +88,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
         return None
 
     def _get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+        '''Returns the name of the outlet being extracted from'''
         return "Guardian"
 
 
@@ -97,7 +97,7 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
       Daily Express rss url, it also scrapes each individual article's body of content'''
 
     def _body_formatter(self, response: requests.Response) -> str:
-        """Scapes the article body of the given link"""
+        '''Scapes the article body of the given link'''
 
         if response.status_code == 200:
             html_content = response.text
@@ -114,5 +114,5 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
         return None
 
     def _get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+        '''Returns the name of the outlet being extracted from'''
         return "Express"
