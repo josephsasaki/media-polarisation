@@ -14,13 +14,11 @@ class RSSFeedExtractor:
 
     def __init__(self, rss_feeds: list[str]):
         self.rss_feeds = rss_feeds
-        self.extract = self.extract_feeds()
 
-    def body_extractor(self, link):
+    def _body_extractor(self, link: str) -> requests.Response:
         '''Extracts the raw article body from the inputted link'''
         try:
             response = requests.get(link, timeout=10)
-            response.raise_for_status()  # Ensure successful status code
             return response
         except requests.Timeout:
             print(f"Request to {link} timed out.")
@@ -29,11 +27,15 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def body_formatter(self, response) -> str:
+    def body_formatter(self, response: requests.Response) -> str:
         """Formats the inputted raw article body response"""
-        return response
+        return f"{response}"
 
-    def rss_parser(self, feed_url):
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "news_outlet"
+
+    def _rss_parser(self, feed_url: requests.Response) -> list[tuple[dict, str]]:
         """Parses the given rss feed"""
         combined_article = []
         feed = feedparser.parse(feed_url)
@@ -43,18 +45,23 @@ class RSSFeedExtractor:
             return None
 
         for entry in feed.entries:
+            required_entry = {}
             link = entry.get('link', '')
-            response = self.body_extractor(link)
+            response = self._body_extractor(link)
             body = self.body_formatter(response)
+            required_entry['title'] = entry.get('title', '')
+            required_entry['link'] = link
+            required_entry['published'] = entry.get('published', '')
+            required_entry['news_outlet'] = self.get_news_outlet()
             if body:
-                combined_article.append((entry, body))
+                combined_article.append((required_entry, body))
         return combined_article
 
-    def extract_feeds(self):
+    def extract_feeds(self) -> list[tuple[dict, str]]:
         '''Extracts the lists of rss feeds'''
         combined_feeds = []
         for feed in self.rss_feeds:
-            combined_feeds.append(self.rss_parser(feed))
+            combined_feeds.extend(self._rss_parser(feed))
         return combined_feeds
 
 
@@ -62,7 +69,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
     '''The GuardianRSSFeedExtractor class extracts all articles from the inputted Guardian rss url,
       it also scrapes each individual article's body of content'''
 
-    def body_formatter(self, response) -> str:
+    def body_formatter(self, response: requests.Response) -> str:
         """Scapes the article body of the given link"""
         if response.status_code == 200:
             html_content = response.text
@@ -78,12 +85,16 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
 
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "Guardian"
+
 
 class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
       Daily Express rss url, it also scrapes each individual article's body of content'''
 
-    def body_formatter(self, response) -> str:
+    def body_formatter(self, response: requests.Response) -> str:
         """Scapes the article body of the given link"""
 
         if response.status_code == 200:
@@ -100,6 +111,10 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
 
+    def get_news_outlet(self) -> str:
+        """Returns the name of the outlet being extracted from"""
+        return "Express"
+
 
 if __name__ == "__main__":
     guardian = ["https://www.theguardian.com/politics/rss",
@@ -109,5 +124,5 @@ if __name__ == "__main__":
                "https://www.express.co.uk/posts/rss/198/us",
                "https://www.express.co.uk/posts/rss/78/world"]
 
-    print(GuardianRSSFeedExtractor(guardian).extract)
-    print(ExpressRSSFeedExtractor(express).extract)
+    print(GuardianRSSFeedExtractor(guardian).extract_feeds())
+    print(ExpressRSSFeedExtractor(express).extract_feeds())
