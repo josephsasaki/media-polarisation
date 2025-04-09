@@ -27,12 +27,5 @@ jobs:
 
       - name: Run pylint on archival-pipeline
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
-          FILES=$(git ls-files 'archival-pipeline/*.py' 'scraper-pipeline/*.py')
-          echo "$FILES"
-          if [ -n "$FILES" ]; then
-            echo "Found Python files, running pylint..."
-            pylint $FILES --fail-under=9.5
-          else
-            echo "No Python files to lint. Skipping."
-          fi
+          pylint scraper-pipeline/*.py --fail-under=9.5
+          pylint archival-pipeline/*.py --fail-under=9.5
