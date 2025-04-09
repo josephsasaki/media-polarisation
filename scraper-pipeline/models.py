@@ -70,11 +70,11 @@ class Article:
 
     def get_insert_values(self) -> tuple:
         '''Get the article values required for inserting into database.'''
-        return (
+        return [
             self.__news_outlet,
             self.__headline,
             self.__url,
             self.__published_date,
             self.__subjectivity,
             self.__polarity
-        )
+        ]
