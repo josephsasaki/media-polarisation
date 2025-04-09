@@ -110,7 +110,6 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
     
-    
     def get_news_outlet(self) -> str:
         """Returns the name of the outlet being extracted from"""
         return "Express"
