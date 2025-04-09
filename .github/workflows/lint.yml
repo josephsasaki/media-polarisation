@@ -27,6 +27,7 @@ jobs:
 
       - name: Run pylint only in selected folders
         run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/scraper-pipeline:$(pwd)/archival-pipeline
           FILES=$(git ls-files 'archival-pipeline/*.py' 'scraper-pipeline/*.py')
           if [ -n "$FILES" ]; then
             echo "Found Python files, running pylint..."
