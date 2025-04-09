@@ -148,7 +148,7 @@ def test_express_body_formatter_failed_status(capsys):
 def test_body_formatter() -> str:
     """Tests the test_body_formatter"""
     assert RSSFeedExtractor(
-        'test/feed')._body_formatter("response") == "response"
+        ['test/feed'])._body_formatter("response") == "response"
 
 
 def test_rss_parser_with_valid_entries():
@@ -227,9 +227,10 @@ def test_extract_feeds_combines_results():
 def test_extract_guardian_get_news_outlet():
     '''Finds the news outlet for the Guardian extractor'''
     assert GuardianRSSFeedExtractor(
-        'test/feed')._get_news_outlet() == "Guardian"
+        ['test/feed'])._get_news_outlet() == "Guardian"
 
 
 def test_extract_express_get_news_outlet():
     '''Finds the news outlet for the Express extractor'''
-    assert ExpressRSSFeedExtractor('test/feed')._get_news_outlet() == "Express"
+    assert ExpressRSSFeedExtractor(
+        ['test/feed'])._get_news_outlet() == "Express"
