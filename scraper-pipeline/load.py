@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import psycopg2.extras
+from psycopg2.extras import execute_values
 from psycopg2.extensions import connection
 import psycopg2
 import os
@@ -66,14 +67,20 @@ class DatabaseManager:
 
     def _insert_article(self):
         '''Inserts articles into article table'''
+        article_insert_query = '''INSERT INTO article (news_outlet_id, article_headline, article_url, article_published_date,
+          article_subjectivity, article_polarity) 
+          VALUES (%s, %s, %s, %s, %s, %s);'''
+
         cur = self._create_cursor()
         article_values = []
         for article in self.articles:
             article_values.append(tuple(self._get_formatted_article_values(
                 article)))
-        insert_query = '''INSERT INTO article (news_outlet_id, article_headline, article_url, article_published_date,
-          article_subjectivity, article_polarity) VALUES (%s, %s, %s, %s, %s, %s)'''
-        cur.executemany(insert_query, article_values)
+        print(article_values)
+
+        cur.executemany(article_insert_query, article_values)
+        # inserted_ids = [row[0] for row in cur.fetchall()]
+        print(inserted_ids)
         self.__db_connection.commit()
         cur.close()
 

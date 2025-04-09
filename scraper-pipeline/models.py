@@ -53,8 +53,8 @@ class Article:
         self.__published_date = published_date
         self.__body = body
         self.__topic_analyses = None
-        self.__subjectivity = None
-        self.__polarity = None
+        self.__subjectivity = 2.0
+        self.__polarity = 1.0
 
     def get_body(self):
         '''Getter for the article text body.'''
