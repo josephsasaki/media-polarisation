@@ -1,3 +1,4 @@
+# pylint: skip-file
 ''''
     Script for uploading mock article data to the RDS for checking the archival pipeline works.
 '''
