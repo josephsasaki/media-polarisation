@@ -215,4 +215,4 @@ def test_extract_feeds_combines_results():
                                                                     mock_rss_data_2]):
         combined = extractor.extract_feeds()
 
-    assert combined == mock_rss_data_1 + mock_rss_data_2
+        assert combined == mock_rss_data_1 + mock_rss_data_2
