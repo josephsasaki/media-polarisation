@@ -126,7 +126,7 @@ resource "aws_iam_role" "schedule-role-step-function" {
 # Permissions policy
 resource "aws_iam_policy" "schedule-role-permissions-policy-step-function" {
   name = var.step_function_schedule_permission_policy_name
-  policy = data.aws_iam_policy_document.permission-policy-doc.json
+  policy = data.aws_iam_policy_document.permission-policy-doc-step-function.json
 }
 
 # Attach permission policy
@@ -143,7 +143,7 @@ resource "aws_scheduler_schedule" "step-function-email-schedule" {
     mode = "OFF"
   }
   schedule_expression_timezone = "Europe/London"
-  schedule_expression = "cron(0/5 * * * ? *)"
+  schedule_expression = "cron(0 9 * * ? *)"
 
   target {
     arn      = data.aws_sfn_state_machine.step-function-email.arn
