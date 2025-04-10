@@ -1,0 +1,49 @@
+article_id,article_headline,article_url,article_published_date,article_subjectivity,article_polarity,news_outlet_name,topic_name,article_topic_positive_sentiment,article_topic_negative_sentiment,article_topic_neutral_sentiment,article_topic_compound_sentiment
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Keir Starmer,0.653,0.553,0.254,0.049
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Xi Jinping,0.078,0.085,0.525,-0.523
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Vladimir Putin,0.889,0.873,0.715,-0.334
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Donald Trump,0.109,0.694,0.427,0.454
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Elon Musk,0.821,0.325,0.225,0.025
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Climate Change,0.041,0.571,0.724,-0.791
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Israel,0.826,0.496,0.594,-0.581
+11,Article Headline: News 0 on 07/01/2025,https://news_outlet.com/2025/01/07/0,2025-01-07 12:00:00,0.169,0.859,The Guardian,Stock Market,0.851,0.904,0.631,-0.335
+12,Article Headline: News 1 on 07/01/2025,https://news_outlet.com/2025/01/07/1,2025-01-07 12:00:00,0.108,0.052,Express,Housing,0.228,0.998,0.1,-0.598
+12,Article Headline: News 1 on 07/01/2025,https://news_outlet.com/2025/01/07/1,2025-01-07 12:00:00,0.108,0.052,Express,OpenAI,0.339,0.715,0.763,-0.686
+12,Article Headline: News 1 on 07/01/2025,https://news_outlet.com/2025/01/07/1,2025-01-07 12:00:00,0.108,0.052,Express,Apple,0.74,0.21,0.951,0.0
+13,Article Headline: News 2 on 07/01/2025,https://news_outlet.com/2025/01/07/2,2025-01-07 12:00:00,0.627,0.512,Express,China,0.429,0.424,0.824,-0.886
+13,Article Headline: News 2 on 07/01/2025,https://news_outlet.com/2025/01/07/2,2025-01-07 12:00:00,0.627,0.512,Express,Vladimir Putin,0.23,0.544,0.514,0.173
+13,Article Headline: News 2 on 07/01/2025,https://news_outlet.com/2025/01/07/2,2025-01-07 12:00:00,0.627,0.512,Express,Climate Change,0.505,0.387,0.979,0.885
+13,Article Headline: News 2 on 07/01/2025,https://news_outlet.com/2025/01/07/2,2025-01-07 12:00:00,0.627,0.512,Express,Hamas,0.597,0.029,0.329,0.104
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,US,0.238,0.225,0.215,0.503
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,Keir Starmer,0.855,0.296,0.937,0.964
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,Russia,0.048,0.671,0.859,0.767
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,Stock Market,0.593,0.02,0.319,0.512
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,Tesla,0.406,0.486,0.375,0.478
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,Racism,0.613,0.859,0.504,-0.79
+14,Article Headline: News 3 on 07/01/2025,https://news_outlet.com/2025/01/07/3,2025-01-07 12:00:00,0.106,0.917,Express,UK,0.4,0.652,0.677,0.56
+15,Article Headline: News 4 on 07/01/2025,https://news_outlet.com/2025/01/07/4,2025-01-07 12:00:00,0.334,0.979,The Guardian,Google,0.734,0.045,0.089,0.891
+15,Article Headline: News 4 on 07/01/2025,https://news_outlet.com/2025/01/07/4,2025-01-07 12:00:00,0.334,0.979,The Guardian,Microsoft,0.931,0.936,0.898,0.995
+15,Article Headline: News 4 on 07/01/2025,https://news_outlet.com/2025/01/07/4,2025-01-07 12:00:00,0.334,0.979,The Guardian,Donald Trump,0.344,0.884,0.617,0.685
+15,Article Headline: News 4 on 07/01/2025,https://news_outlet.com/2025/01/07/4,2025-01-07 12:00:00,0.334,0.979,The Guardian,Racism,0.512,0.624,0.784,0.919
+16,Article Headline: News 0 on 08/01/2025,https://news_outlet.com/2025/01/08/0,2025-01-08 12:00:00,0.548,0.699,The Guardian,Google,0.663,0.772,0.797,0.447
+17,Article Headline: News 1 on 08/01/2025,https://news_outlet.com/2025/01/08/1,2025-01-08 12:00:00,0.8,0.82,Express,Hamas,0.316,0.821,0.854,-0.436
+17,Article Headline: News 1 on 08/01/2025,https://news_outlet.com/2025/01/08/1,2025-01-08 12:00:00,0.8,0.82,Express,Climate Change,0.529,0.134,0.465,0.808
+17,Article Headline: News 1 on 08/01/2025,https://news_outlet.com/2025/01/08/1,2025-01-08 12:00:00,0.8,0.82,Express,Amazon,0.574,0.073,0.017,-0.531
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,EU,0.132,0.126,0.015,0.482
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Migration,0.088,0.676,0.329,-0.711
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Climate Crisis,0.53,0.388,0.369,0.146
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Tax,0.216,0.181,0.933,0.617
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Farage,0.433,0.08,0.611,-0.544
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Trade War,0.563,0.033,0.039,0.366
+18,Article Headline: News 2 on 08/01/2025,https://news_outlet.com/2025/01/08/2,2025-01-08 12:00:00,0.525,0.208,Express,Racism,0.23,0.424,0.441,-0.723
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Climate Crisis,0.184,0.624,0.525,-0.779
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Microsoft,0.279,0.48,0.776,-0.774
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,UK,0.145,0.602,0.216,-0.927
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Farage,0.99,0.122,0.313,0.518
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Inflation,0.204,0.872,0.252,0.721
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,The Royal Family,0.851,0.905,0.092,0.584
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Apple,0.705,0.322,0.776,-0.671
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Tesla,0.433,0.756,0.022,-0.393
+19,Article Headline: News 3 on 08/01/2025,https://news_outlet.com/2025/01/08/3,2025-01-08 12:00:00,0.356,0.579,Express,Tax,0.631,0.1,0.364,0.24
+20,Article Headline: News 4 on 08/01/2025,https://news_outlet.com/2025/01/08/4,2025-01-08 12:00:00,0.196,0.059,Express,Farage,0.746,0.133,0.331,-0.127
+20,Article Headline: News 4 on 08/01/2025,https://news_outlet.com/2025/01/08/4,2025-01-08 12:00:00,0.196,0.059,Express,Russia,0.5,0.194,0.966,-0.459
