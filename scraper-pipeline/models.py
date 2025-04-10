@@ -68,6 +68,10 @@ class Article:
         '''Getter for the topic analyses.'''
         return self.__topic_analyses
 
+    def get_url(self) -> str:
+        '''Getter for the article url'''
+        return self.__url
+
     def set_topics_analyses(self, topics_analyses: list[TopicAnalysis]):
         '''Set the list of topics analyses objects related to the article.'''
         self.__topic_analyses = topics_analyses
@@ -109,7 +113,7 @@ class Article:
 
     def get_insert_values(self) -> tuple:
         '''Get the article values required for inserting into database.'''
-        return (
+        return [
             self.__news_outlet,
             self.__headline,
             self.__url,
@@ -119,4 +123,4 @@ class Article:
             self.__neutral_sentiment,
             self.__negative_sentiment,
             self.__compound_sentiment,
-        )
+        ]
