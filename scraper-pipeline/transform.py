@@ -10,7 +10,7 @@ from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 from models import Article, TopicAnalysis
-from extract import GuardianRSSFeedExtractor
+from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
 
 
 load_dotenv()
@@ -30,14 +30,20 @@ class ArticleFactory:
         for article_data in self.__raw_data:
             meta_data: dict = article_data[0]
             article_text: str = article_data[1]
+            published_date = None
+            date_str = meta_data.get('published')
+            for date_type in ('%a, %d %b %Y %H:%M:%S %z', '%a, %d %b %Y %H:%M:%S %Z'):
+                try:
+                    published_date = datetime.strptime(date_str, date_type)
+                    break
+                except (ValueError, TypeError):
+                    continue
             article = Article(
                 news_outlet=meta_data.get('news_outlet'),
                 headline=meta_data.get('title'),
                 url=meta_data.get('link'),
-                published_date=datetime.strptime(meta_data.get(
-                    'published'), '%a, %d %b %Y %H:%M:%S %Z'),
+                published_date=published_date,
                 body=article_text,
-
             )
             articles.append(article)
         return articles
@@ -117,14 +123,6 @@ class TextAnalyser:
                         negative=sentiment_scores['neg'],
                         compound=sentiment_scores['compound'],
                     )
-                else:
-                    # It may be better to leave this blank so they default to None
-                    topic.set_sentiments(
-                        positive=0.0,
-                        neutral=1.0,
-                        negative=0.0,
-                        compound=0.0,
-                    )
 
     def perform_article_body_analysis(self) -> None:
         '''Performs the NLP sentiment analysis on the article body'''
@@ -149,6 +147,9 @@ if __name__ == "__main__":
     start = time.time()
     extracted = GuardianRSSFeedExtractor(
         ["https://www.theguardian.com/politics/rss",]).extract_feeds()
+    # extracted = ExpressRSSFeedExtractor(
+    #     ["https://www.express.co.uk/posts/rss/78/world",]).extract_feeds()
+
     print("step1")
     guardian_articles = ArticleFactory(extracted).generate_articles()
     print("step2")

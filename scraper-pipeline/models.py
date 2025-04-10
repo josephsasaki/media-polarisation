@@ -101,7 +101,7 @@ class Article:
         )
 
     def set_sentiments(self, positive: float, neutral: float, negative: float, compound: float):
-        '''Set the sentiment values of a topic.'''
+        '''Set the sentiment values of an article.'''
         self.__positive_sentiment = positive
         self.__neutral_sentiment = neutral
         self.__negative_sentiment = negative
