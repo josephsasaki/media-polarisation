@@ -16,6 +16,7 @@ variable "step_function_permission_policy_name" {
     default = "c16-media-polarisation-step-function-permission-policies"
 }
 
+
 variable "state_machine_name" {
     description = "Name of state machine"
     type = string

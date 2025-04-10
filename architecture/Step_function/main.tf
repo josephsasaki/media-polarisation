@@ -42,11 +42,11 @@ data "aws_iam_policy_document" "step_function_permission-policy" {
       ]
 
       resources = [
-        data.aws_lambda_function.email_lambda.qualified_arn,
-        
+        "*"
       ]
     }
 }
+
 # Create role with trust policy
 resource "aws_iam_role" "step-function-role" {
   name               = var.step_function_role_name
