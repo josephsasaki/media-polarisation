@@ -52,5 +52,5 @@ INSERT INTO news_outlet
 VALUES
     ('The Guardian'),
     ('Express');
-
+    
 \copy topic(topic_name) FROM 'topics.csv' DELIMITER ',' CSV HEADER;
