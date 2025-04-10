@@ -12,6 +12,12 @@ terraform {
 provider "aws" {
   region = var.region
 }
+
+# Archive lambda data
+data "aws_lambda_function" "email_lambda" {
+  function_name = var.lambda_email_name
+}
+
 ## Policies and roles
 
 # Step function trust policy
@@ -35,7 +41,7 @@ data "aws_iam_policy_document" "step_function_permission-policy" {
         "ses:SendEmail"
       ]
       ## REMEMBER TO DO THIS!!!
-      resources = [aws_sfn_state_machine.state_machine_email.arn]
+      resources = [data.aws_lambda_function.email_lambda.arn]
     }
 }
 # Create role with trust policy

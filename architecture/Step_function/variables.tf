@@ -21,3 +21,10 @@ variable "state_machine_name" {
     type = string
     default = "c16-media-polarisation-step-function-email"
 }
+
+# tfvars input
+
+variable "lambda_email_name" {
+    description = "Name of lambda responsible for outputing email content"
+    type = string
+}
