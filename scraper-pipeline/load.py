@@ -92,8 +92,6 @@ class DatabaseManager:
 
         article_values = []
         for article in self.articles:
-            print(self._get_formatted_article_values(
-                article))
             article_values.append(tuple(self._get_formatted_article_values(
                 article)))
 
