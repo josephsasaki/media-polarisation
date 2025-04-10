@@ -59,50 +59,27 @@ class Article:
         self.__neutral_sentiment = None
         self.__negative_sentiment = None
         self.__compound_sentiment = None
+        self.__article_id = None
 
     def get_body(self):
         '''Getter for the article text body.'''
         return self.__body
 
-    def get_topic_analyses(self) -> list[TopicAnalysis]:
-        '''Getter for the topic analyses.'''
-        return self.__topic_analyses
-
-    def get_url(self) -> str:
-        '''Getter for the article url'''
-        return self.__url
-
     def set_topics_analyses(self, topics_analyses: list[TopicAnalysis]):
         '''Set the list of topics analyses objects related to the article.'''
         self.__topic_analyses = topics_analyses
 
+    def get_topic_analyses(self) -> list[TopicAnalysis]:
+        '''Getter for the topic analyses.'''
+        return self.__topic_analyses
+
     def set_subjectivity(self, subjectivity: float) -> None:
-        '''Sets the subjectivity of the article'''
+        '''Sets the subjectivity of the article.'''
         self.__subjectivity = subjectivity
 
-    def get_subjectivity(self) -> float:
-        '''Getter for the subjectivity'''
-        return self.__subjectivity
-
     def set_polarity(self, polarity: float) -> None:
-        '''Sets the subjectivity of the article'''
+        '''Sets the subjectivity of the article.'''
         self.__polarity = polarity
-
-    def get_polarity(self) -> float:
-        '''Getter for the subjectivity'''
-        return self.__polarity
-
-    def get_article_heading(self) -> str:
-        return self.__headline
-
-    def get_sentiments(self) -> tuple[float]:
-        '''Getter for the sentiment values.'''
-        return (
-            self.__positive_sentiment,
-            self.__neutral_sentiment,
-            self.__negative_sentiment,
-            self.__compound_sentiment,
-        )
 
     def set_sentiments(self, positive: float, neutral: float, negative: float, compound: float):
         '''Set the sentiment values of an article.'''
@@ -111,10 +88,14 @@ class Article:
         self.__negative_sentiment = negative
         self.__compound_sentiment = compound
 
-    def get_insert_values(self) -> tuple:
+    def set_id(self, database_id: int) -> None:
+        '''Set the article's database primary id.'''
+        self.__article_id = database_id
+
+    def get_insert_values(self, news_outlet_id_map: dict) -> tuple:
         '''Get the article values required for inserting into database.'''
         return [
-            self.__news_outlet,
+            news_outlet_id_map.get(self.__news_outlet),
             self.__headline,
             self.__url,
             self.__published_date,
@@ -125,3 +106,14 @@ class Article:
             self.__negative_sentiment,
             self.__compound_sentiment,
         ]
+
+    def get_topic_analyses_insert_values(self, topic_id_map: dict) -> list[tuple]:
+        '''Get the topic analyses values required for inserting into the database.'''
+        insert_values = []
+        for topic_analysis in self.__topic_analyses:
+            insert_values.append((
+                self.__article_id,
+                topic_id_map[topic_analysis.get_topic_name()],
+                *topic_analysis.get_sentiments(),
+            ))
+        return insert_values
