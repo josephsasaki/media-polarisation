@@ -11,10 +11,10 @@ class TopicAnalysis:
     def __init__(self, topic_name: str, key_terms: list[str]):
         self.__topic_name = topic_name
         self.__key_terms = key_terms
-        self.__positive_sentiment = 1
-        self.__neutral_sentiment = 1
-        self.__negative_sentiment = 1
-        self.__compound_sentiment = 1
+        self.__positive_sentiment = None
+        self.__neutral_sentiment = None
+        self.__negative_sentiment = None
+        self.__compound_sentiment = None
 
     def set_sentiments(self, positive: float, neutral: float, negative: float, compound: float):
         '''Set the sentiment values of a topic.'''
@@ -53,8 +53,8 @@ class Article:
         self.__published_date = published_date
         self.__body = body
         self.__topic_analyses = None
-        self.__subjectivity = 0.7
-        self.__polarity = 0.6
+        self.__subjectivity = None
+        self.__polarity = None
 
     def get_body(self):
         '''Getter for the article text body.'''
