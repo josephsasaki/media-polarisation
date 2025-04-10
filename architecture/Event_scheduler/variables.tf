@@ -28,6 +28,18 @@ variable "lambda_schedule_permission_policy_name" {
     default = "c16-media-polarisation-lambda-schedule-permission-policy"
 }
 
+variable "step_function_schedule" {
+    description = "Name of role for step function"
+    type = string
+    default = "c16-media-polarisation-step-function-scheduler-role"
+}
+
+variable "step_function_schedule_permission_policy_name" {
+    description = "Name of permission policy for step function"
+    type = string
+    default = "c16-media-polarisation-step-function-scheduler-permission"
+}
+
 
 # tf vars variables
 variable "lambda_scraper_name" {
@@ -37,5 +49,10 @@ variable "lambda_scraper_name" {
 
 variable "lambda_archive_name" {
     description = "Name of lambda in archive pipeline"
+    type = string
+}
+
+variable "step_function_name" {
+    description = "Name of step function that is used to send emails"
     type = string
 }
