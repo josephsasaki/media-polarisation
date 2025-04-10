@@ -62,9 +62,20 @@ class TextAnalyser:
         and key_terms. The key_terms key should correspond to a list of words found in the article which
         directly link to the topic. Do not include ```json
 
+        The 5 overarching topics must also be contained within this list{TOPICS}
+
+        you can have less than 5 if there aren't 5 topics within the article that are also within the list
+
+
         Here is the article content:
         {article_body}
     '''
+    VALID_TOPICS = [
+        "Xi Jinping", "Keir Starmer", "Donald Trump", "Vladimir Putin", "Elon Musk",
+        "Farage", "The Royal Family", "US", "UK", "Ukraine", "Israel", "China", "EU", "Russia",
+        "Tesla", "Facebook", "Google", "Amazon", "Apple", "Microsoft", "OpenAI",
+        "Inflation", "Migration", "Tax", "Tariffs", "Trade War", "Racism", "Politics", "NHS",
+        "Hamas", "Stock Market", "Climate Change", "Climate Crisis", "Economy", "Housing"]
 
     def __init__(self, articles: list[Article]):
         '''Instantiate the TextAnalyser object with the list of articles to analyse.'''
@@ -76,12 +87,14 @@ class TextAnalyser:
         '''For each article, extract the relevant topics and assign to the article's topics list.'''
         for article in self.__articles:
             print("article_loop")
-            response = self.__client.responses.create(
+            response = self.__client.chat.completions.create(
                 model=self.GPT_MODEL,
-                input=self.GPT_PROMPT.format(article_body=article.get_body())
-            )
+                messages=[{"role": "user", "content": self.GPT_PROMPT.format(
+                    article_body=article.get_body(), TOPICS=self.VALID_TOPICS)
+                }])
+            message_content = response.choices[0].message.content
 
-            topics_data = json.loads(response.output_text)
+            topics_data = self.validate_topics(json.loads(message_content))
 
             topic_analyses = []
             for topic in topics_data:
@@ -99,7 +112,7 @@ class TextAnalyser:
     # NLP library for this
 
     def perform_topic_analysis(self) -> None:
-        '''For each article, iterate through it's topics and perform the NLP analysis on the 
+        '''For each article, iterate through it's topics and perform the NLP analysis on the
         sentiment of each topic within the article.'''
         for article in self.__articles:
             body = article.get_body()
@@ -141,6 +154,13 @@ class TextAnalyser:
                 sentiment_scores['neu'],
                 sentiment_scores['neg'],
                 sentiment_scores['compound'])
+
+    def _validate_topics(self, topics_data: list) -> list:
+        '''Check if the topics are part of the predefined list and remove any invalid topics.'''
+        return [
+            topic for topic in topics_data
+            if topic.get('topic_name') in self.VALID_TOPICS
+        ]
 
 
 if __name__ == "__main__":
