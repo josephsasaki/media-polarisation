@@ -49,3 +49,8 @@ INSERT INTO news_outlet
 VALUES
 ('The Guardian'),
 ('Express');
+
+-- Seeding the topic table.
+
+\set csv_path '`pwd`/topics.csv'
+\copy topic(topic_name) FROM :'csv_path' DELIMITER ',' CSV HEADER;
