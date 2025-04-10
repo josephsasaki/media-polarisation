@@ -41,7 +41,7 @@ CREATE TABLE article_topic (
     article_topic_neutral_sentiment FLOAT NOT NULL,
     article_topic_compound_sentiment FLOAT NOT NULL,
     PRIMARY KEY (article_id, topic_id),
-    FOREIGN KEY (article_id) REFERENCES article(article_id),
+    FOREIGN KEY (article_id) REFERENCES article(article_id) ON DELETE CASCADE,
     FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
