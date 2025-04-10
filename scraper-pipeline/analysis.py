@@ -1,10 +1,15 @@
+'''
+    Script which defines the TextAnalyser class, used for completing sentiment analysis on
+    articles.
+'''
 
-from models import Article, TopicAnalysis
+import json
 from openai import OpenAI
 from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
-import json
+
+from models import Article, TopicAnalysis
 
 
 class TextAnalyser:

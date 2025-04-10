@@ -23,13 +23,11 @@ class RSSFeedExtractor(ABC):
     def _get_news_outlet(self) -> str:
         '''Returns the name of the outlet being extracted from. This must be 
         overridden by child classes for each news outlet.'''
-        pass
 
     @abstractmethod
-    def _body_formatter(self, response: requests.Response) -> str:
+    def _body_formatter(self, html_content: str) -> str:
         '''Formats the inputted raw article body response. The handling of this method
         depends on the individual news outlet, so this method should be overridden.'''
-        pass
 
     def _body_extractor(self, url: str) -> requests.Response:
         '''Extracts the raw article body from the inputted url.'''
@@ -40,10 +38,9 @@ class RSSFeedExtractor(ABC):
                 if not text_body.strip():
                     return None
                 return text_body
-            else:
-                print(
-                    f"Failed to retrieve the page. Status code: {response.status_code}")
-                return None
+            print(
+                f"Failed to retrieve the page. Status code: {response.status_code}")
+            return None
         except requests.Timeout:
             print(f"Request to {url} timed out.")
             return None
