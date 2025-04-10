@@ -1,5 +1,5 @@
 '''
-    Transform class that takes in a dataframe and turns it into a dated CSV
+    Transform class that takes in a dataframe and turns it into a csv file.
 '''
 
 import os

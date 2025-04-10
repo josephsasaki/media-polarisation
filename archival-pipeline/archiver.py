@@ -1,8 +1,8 @@
 '''
-    Archiver script.
+    The following script contains the high-level pipeline for the entire archival pipeline.
 '''
 
-from datetime import date
+from datetime import date, timedelta
 from dotenv import load_dotenv
 from database_manager import DatabaseManager
 from transformer import DataFrameToCSVTransformer
@@ -14,10 +14,10 @@ class Archiver:
     '''Class representing the high-level process of archiving data from the RDS into the 
     S3 bucket.'''
 
-    def __init__(self, cut_off_date: date):
+    def __init__(self, months_ago: date):
         '''Instantiate the archiver with the cut-off date. Any dates before this one 
         should be archived.'''
-        self.__cut_off_date = cut_off_date
+        self.__cut_off_date = date.today() - timedelta(days=months_ago*30)
         self.__db_manager = DatabaseManager()
         self.__transformer = DataFrameToCSVTransformer()
         self.__loader = S3Manager()
@@ -34,5 +34,5 @@ class Archiver:
 
 if __name__ == "__main__":
     load_dotenv(override=True)
-    archiver = Archiver(cut_off_date=date(2025, 1, 7))
+    archiver = Archiver(months_ago=3)
     archiver.run_pipeline()

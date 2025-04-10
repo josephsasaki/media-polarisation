@@ -1,5 +1,5 @@
 '''
-    This script defines a class that interacts with the S3 bucket on AWS.
+    This script defines the S3Manager class, which interacts with the S3 bucket on AWS.
 '''
 
 import os
