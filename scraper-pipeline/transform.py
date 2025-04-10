@@ -1,10 +1,9 @@
 '''
     Script for converting the raw, RSS feed article data into cleaned objects.
 '''
-from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
-from models import Article
+
 from datetime import datetime
-import time
+from models import Article
 
 
 class ArticleFactory:

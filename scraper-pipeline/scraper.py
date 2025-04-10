@@ -1,4 +1,7 @@
-
+'''
+    Script containing the high-level class NewsScraper for running the entire 
+    data pipeline. 
+'''
 
 from dotenv import load_dotenv
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
