@@ -94,8 +94,7 @@ class TextAnalyser:
                 }])
             message_content = response.choices[0].message.content
 
-            topics_data = json.loads(message_content)
-            topics_data = self.validate_topics(topics_data)
+            topics_data = self.validate_topics(json.loads(message_content))
 
             topic_analyses = []
             for topic in topics_data:
