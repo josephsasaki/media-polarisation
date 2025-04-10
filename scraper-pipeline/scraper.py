@@ -33,7 +33,7 @@ class NewsScraper:
             all_articles.extend(feed)
         # TRANSFORM
         article_factory = ArticleFactory(
-            raw_data=all_articles[0:2],
+            raw_data=all_articles,
             existing_urls=self.__db_manager.get_article_urls()
         )
         articles = article_factory.generate_articles()

@@ -42,15 +42,18 @@ class ArticleFactory:
         articles = []
         for article_data in self.__raw_data:
             try:
+                url = self._check_is_new_url(article_data['url'])
                 article = Article(
                     news_outlet=article_data['news_outlet'],
                     headline=article_data['headline'],
-                    url=self._check_is_new_url(article_data['url']),
+                    url=url,
                     published_date=self._clean_date(
                         article_data['published_date']),
                     body=article_data['body'],
                 )
                 articles.append(article)
+                # Add url in case of duplicate within batch
+                self.__existing_urls.append(url)
             except ValueError:
                 continue
         return articles
