@@ -89,7 +89,7 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
 
     def _get_news_outlet(self) -> str:
         '''Returns the name of the outlet being extracted from'''
-        return "Guardian"
+        return "The Guardian"
 
 
 class ExpressRSSFeedExtractor(RSSFeedExtractor):
@@ -115,4 +115,4 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
 
     def _get_news_outlet(self) -> str:
         '''Returns the name of the outlet being extracted from'''
-        return "Express"
+        return " Daily Express"
