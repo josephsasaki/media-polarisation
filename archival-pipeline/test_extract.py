@@ -3,7 +3,7 @@
 from datetime import date
 from unittest.mock import patch, MagicMock
 import pytest
-from extract import DatabaseManager
+from database_manager import DatabaseManager
 
 
 @pytest.fixture(autouse=True)
