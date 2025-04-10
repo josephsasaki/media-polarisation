@@ -2,13 +2,14 @@
 Script for loading article information and analysis into the rds postgres database.
 '''
 import os
+import time
 from dotenv import load_dotenv
 import psycopg2.extras
 from psycopg2.extras import execute_values
 from psycopg2.extensions import connection
 import psycopg2
 from models import Article
-from extract import GuardianRSSFeedExtractor
+from extract import ExpressRSSFeedExtractor
 from transform import ArticleFactory, TextAnalyser
 
 
@@ -91,8 +92,6 @@ class DatabaseManager:
 
         article_values = []
         for article in self.articles:
-            print(self._get_formatted_article_values(
-                article))
             article_values.append(tuple(self._get_formatted_article_values(
                 article)))
 
@@ -111,7 +110,7 @@ class DatabaseManager:
 
         article_topic_insert_query = '''INSERT INTO article_topic
         (article_id, topic_id, article_topic_positive_sentiment,
-          article_topic_negative_sentiment, article_topic_neural_sentiment,
+          article_topic_negative_sentiment, article_topic_neutral_sentiment,
             article_topic_compound_sentiment) VALUES (%s, %s, %s, %s, %s, %s);'''
         cur = self._create_cursor()
 
@@ -142,9 +141,9 @@ class DatabaseManager:
 
 
 if __name__ == "__main__":
-    extracted = GuardianRSSFeedExtractor(
-        ["https://www.theguardian.com/politics/rss",]).extract_feeds()
-
+    start = time.time()
+    extracted = ExpressRSSFeedExtractor(
+        ["https://www.express.co.uk/posts/rss/139/politics",]).extract_feeds()
     print("step1")
     guardian_articles = ArticleFactory(extracted).generate_articles()
     print("step2")
@@ -154,3 +153,6 @@ if __name__ == "__main__":
     print("step4")
     TextAnalyser(guardian_articles).perform_topic_analysis()
     DatabaseManager(guardian_articles).insert_into_database()
+    end = time.time()
+    elapsed = end - start
+    print(f"Elapsed time: {elapsed:.2f} seconds")
