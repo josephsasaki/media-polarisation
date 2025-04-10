@@ -1,6 +1,8 @@
 '''
     Script for converting the raw, RSS feed article data into cleaned objects.
 '''
+from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
+from models import Article, TopicAnalysis
 import json
 from datetime import datetime
 import time
@@ -9,8 +11,8 @@ from dotenv import load_dotenv
 from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
-from models import Article, TopicAnalysis
-from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
+nltk.download('punkt_tab')
+nltk.download('vader_lexicon')
 
 
 load_dotenv()

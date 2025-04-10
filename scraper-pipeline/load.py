@@ -83,14 +83,19 @@ class DatabaseManager:
         '''Inserts articles into article table'''
         article_insert_query = '''INSERT INTO article
           (news_outlet_id, article_headline, article_url, article_published_date,
-          article_subjectivity, article_polarity) 
+          article_subjectivity, article_polarity, article_positive_sentiment,
+            article_neutral_sentiment, article_negative_sentiment,
+             article_compound_sentiment) 
           VALUES %s RETURNING article_id, article_url;'''
         cur = self._create_cursor()
 
         article_values = []
         for article in self.articles:
+            print(self._get_formatted_article_values(
+                article))
             article_values.append(tuple(self._get_formatted_article_values(
                 article)))
+
         execute_values(cur, article_insert_query, article_values)
         retrieved_article_ids = cur.fetchall()
 
