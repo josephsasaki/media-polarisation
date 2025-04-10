@@ -137,8 +137,15 @@ class DatabaseManager:
 
 
 if __name__ == "__main__":
-    articles_list = [Article("The Guardian", "Test Headline", "www.test.co.uk",
-                             "Wed, 09 Apr 2025 15:07:33", "Breaking news: this is a test"),
-                     Article("The Guardian", "Test 2 Headline", "www.test2.co.uk",
-                             "Wed, 09 Apr 2025 18:07:33", "Breaking news: this is a test2")]
-    DatabaseManager(articles_list).insert_into_database()
+    extracted = GuardianRSSFeedExtractor(
+        ["https://www.theguardian.com/politics/rss",]).extract_feeds()
+
+    print("step1")
+    guardian_articles = ArticleFactory(extracted).generate_articles()
+    print("step2")
+    TextAnalyser(guardian_articles).extract_topics()
+    print("step3")
+    TextAnalyser(guardian_articles).perform_article_body_analysis()
+    print("step4")
+    TextAnalyser(guardian_articles).perform_topic_analysis()
+    DatabaseManager(guardian_articles).insert_into_database()
