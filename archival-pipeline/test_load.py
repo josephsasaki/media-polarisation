@@ -6,7 +6,7 @@ import os
 from datetime import date
 from unittest.mock import patch, MagicMock, mock_open
 import pytest
-from load import S3Manager
+from s3_manager import S3Manager
 
 
 @pytest.fixture(autouse=True)

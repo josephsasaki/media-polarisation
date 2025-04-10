@@ -4,9 +4,9 @@
 
 from datetime import date
 from dotenv import load_dotenv
-from extract import DatabaseManager
-from transform import DataFrameToCSVTransformer
-from load import S3Manager
+from database_manager import DatabaseManager
+from transformer import DataFrameToCSVTransformer
+from s3_manager import S3Manager
 
 
 class Archiver:

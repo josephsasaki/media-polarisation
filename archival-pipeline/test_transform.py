@@ -6,7 +6,7 @@ import os
 from unittest.mock import patch
 import pandas as pd
 import pytest
-from transform import DataFrameToCSVTransformer
+from transformer import DataFrameToCSVTransformer
 
 
 def test_default_output_path_is_absolute():
