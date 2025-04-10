@@ -115,7 +115,6 @@ class DatabaseManager:
         for article in articles:
             insert_values.extend(
                 article.get_topic_analyses_insert_values(self.__topic_id_map))
-        print(insert_values)
         with self._create_cursor() as cur:
             cur.executemany(self.ARTICLE_TOPIC_INSERT_QUERY,
                             insert_values)
