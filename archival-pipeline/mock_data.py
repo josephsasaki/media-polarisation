@@ -24,10 +24,8 @@ def generate_mock_topics(number_of_topics):
     topic_id = 1
     for i in range(1, number_of_topics + 1):
         topics.append((
-            # topic_id
-            topic_id,
             # topic_name
-            f"Topic {i}"
+            f"Topic {i}",
         ))
         topic_id += 1
     return topics
@@ -40,8 +38,6 @@ def generate_mock_articles(articles_per_day: int, start_date: datetime, end_date
     for date in daterange(start_date, end_date):
         for i in range(articles_per_day):
             articles.append((
-                # article_id
-                article_id,
                 # news_outlet_id
                 random.randint(1, 2),
                 # article_headline
@@ -66,8 +62,6 @@ def generate_mock_article_topics(articles, topics):
     for article in articles:
         for i in range(random.randint(1, 10)):
             article_topics.append((
-                # article_topic_id
-                article_topic_id,
                 # article_id
                 article[0],
                 # topic_id
@@ -111,28 +105,26 @@ if __name__ == "__main__":
     # INSERT INTO THE DATABASE
     cur.executemany('''
         INSERT INTO topic
-            (topic_id, topic_name)
-        OVERRIDING SYSTEM VALUE
+            (topic_name)
         VALUES
-            (%s, %s)
+            (%s)
     ''', topics)
     cur.executemany('''
         INSERT INTO article
-            (article_id, news_outlet_id, article_headline, article_url, 
+            (news_outlet_id, article_headline, article_url, 
                     article_published_date, article_subjectivity, article_polarity)
-        OVERRIDING SYSTEM VALUE
         VALUES
-            (%s, %s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s, %s)
     ''', articles)
-    cur.executemany('''
-        INSERT INTO article_topic
-            (article_topic_id, article_id, topic_id, article_topic_positive_sentiment, 
-                    article_topic_negative_sentiment, article_topic_neural_sentiment, 
-                    article_topic_compound_sentiment)
-        OVERRIDING SYSTEM VALUE
-        VALUES
-            (%s, %s, %s, %s, %s, %s, %s)
-    ''', article_topics)
+    # cur.executemany('''
+    #     INSERT INTO article_topic
+    #         (article_topic_id, article_id, topic_id, article_topic_positive_sentiment,
+    #                 article_topic_negative_sentiment, article_topic_neural_sentiment,
+    #                 article_topic_compound_sentiment)
+    #     OVERRIDING SYSTEM VALUE
+    #     VALUES
+    #         (%s, %s, %s, %s, %s, %s, %s)
+    # ''', article_topics)
     conn.commit()
     conn.close()
     print("SUCCESS")
