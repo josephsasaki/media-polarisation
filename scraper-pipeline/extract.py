@@ -7,6 +7,8 @@ import feedparser
 from bs4 import BeautifulSoup
 import requests
 
+# pylint: disable=too-few-public-methods
+
 
 class RSSFeedExtractor:
     '''The RSSFeed class extracts all articles on the inputted rss url,
@@ -27,16 +29,16 @@ class RSSFeedExtractor:
             print(f"Request failed: {e}")
             return None
 
-    def body_formatter(self, response: requests.Response) -> str:
-        """Formats the inputted raw article body response"""
+    def _body_formatter(self, response: requests.Response) -> str:
+        '''Formats the inputted raw article body response'''
         return f"{response}"
 
-    def get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+    def _get_news_outlet(self) -> str:
+        '''Returns the name of the outlet being extracted from'''
         return "news_outlet"
 
     def _rss_parser(self, feed_url: requests.Response) -> list[tuple[dict, str]]:
-        """Parses the given rss feed"""
+        '''Parses the given rss feed'''
         combined_article = []
         feed = feedparser.parse(feed_url)
 
@@ -48,11 +50,11 @@ class RSSFeedExtractor:
             required_entry = {}
             link = entry.get('link', '')
             response = self._body_extractor(link)
-            body = self.body_formatter(response)
+            body = self._body_formatter(response)
             required_entry['title'] = entry.get('title', '')
             required_entry['link'] = link
             required_entry['published'] = entry.get('published', '')
-            required_entry['news_outlet'] = self.get_news_outlet()
+            required_entry['news_outlet'] = self._get_news_outlet()
             if body:
                 combined_article.append((required_entry, body))
         return combined_article
@@ -69,8 +71,8 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
     '''The GuardianRSSFeedExtractor class extracts all articles from the inputted Guardian rss url,
       it also scrapes each individual article's body of content'''
 
-    def body_formatter(self, response: requests.Response) -> str:
-        """Scapes the article body of the given link"""
+    def _body_formatter(self, response: requests.Response) -> str:
+        '''Scapes the article body of the given link'''
         if response.status_code == 200:
             html_content = response.text
             soup = BeautifulSoup(html_content, 'html.parser')
@@ -85,8 +87,8 @@ class GuardianRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
 
-    def get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+    def _get_news_outlet(self) -> str:
+        '''Returns the name of the outlet being extracted from'''
         return "Guardian"
 
 
@@ -94,8 +96,8 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
     '''The ExpressRSSFeedExtractor class extracts all articles from the inputted
       Daily Express rss url, it also scrapes each individual article's body of content'''
 
-    def body_formatter(self, response: requests.Response) -> str:
-        """Scapes the article body of the given link"""
+    def _body_formatter(self, response: requests.Response) -> str:
+        '''Scapes the article body of the given link'''
 
         if response.status_code == 200:
             html_content = response.text
@@ -111,18 +113,6 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
             f"Failed to retrieve the page. Status code: {response.status_code}")
         return None
 
-    def get_news_outlet(self) -> str:
-        """Returns the name of the outlet being extracted from"""
+    def _get_news_outlet(self) -> str:
+        '''Returns the name of the outlet being extracted from'''
         return "Express"
-
-
-if __name__ == "__main__":
-    guardian = ["https://www.theguardian.com/politics/rss",
-                "https://www.theguardian.com/us-news/us-politics/rss",
-                "https://www.theguardian.com/world/rss"]
-    express = ["https://www.express.co.uk/posts/rss/139/politics",
-               "https://www.express.co.uk/posts/rss/198/us",
-               "https://www.express.co.uk/posts/rss/78/world"]
-
-    print(GuardianRSSFeedExtractor(guardian).extract_feeds())
-    print(ExpressRSSFeedExtractor(express).extract_feeds())
