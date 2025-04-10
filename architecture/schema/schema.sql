@@ -16,7 +16,6 @@ CREATE TABLE news_outlet (
     PRIMARY KEY (news_outlet_id)
 );
 
-
 CREATE TABLE article (
     article_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_id SMALLINT NOT NULL,
