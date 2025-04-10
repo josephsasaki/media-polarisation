@@ -119,6 +119,7 @@ class Article:
             self.__url,
             self.__published_date,
             self.__subjectivity,
+            self.__polarity,
             self.__positive_sentiment,
             self.__neutral_sentiment,
             self.__negative_sentiment,

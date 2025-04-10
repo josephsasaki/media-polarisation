@@ -8,6 +8,8 @@ from psycopg2.extras import execute_values
 from psycopg2.extensions import connection
 import psycopg2
 from models import Article
+from extract import GuardianRSSFeedExtractor
+from transform import ArticleFactory, TextAnalyser
 
 
 class DatabaseManager:
@@ -81,14 +83,19 @@ class DatabaseManager:
         '''Inserts articles into article table'''
         article_insert_query = '''INSERT INTO article
           (news_outlet_id, article_headline, article_url, article_published_date,
-          article_subjectivity, article_polarity) 
+          article_subjectivity, article_polarity, article_positive_sentiment,
+            article_neutral_sentiment, article_negative_sentiment,
+             article_compound_sentiment) 
           VALUES %s RETURNING article_id, article_url;'''
         cur = self._create_cursor()
 
         article_values = []
         for article in self.articles:
+            print(self._get_formatted_article_values(
+                article))
             article_values.append(tuple(self._get_formatted_article_values(
                 article)))
+
         execute_values(cur, article_insert_query, article_values)
         retrieved_article_ids = cur.fetchall()
 
@@ -135,8 +142,15 @@ class DatabaseManager:
 
 
 if __name__ == "__main__":
-    articles_list = [Article("The Guardian", "Test Headline", "www.test.co.uk",
-                             "Wed, 09 Apr 2025 15:07:33", "Breaking news: this is a test"),
-                     Article("The Guardian", "Test 2 Headline", "www.test2.co.uk",
-                             "Wed, 09 Apr 2025 18:07:33", "Breaking news: this is a test2")]
-    DatabaseManager(articles_list).insert_into_database()
+    extracted = GuardianRSSFeedExtractor(
+        ["https://www.theguardian.com/politics/rss",]).extract_feeds()
+
+    print("step1")
+    guardian_articles = ArticleFactory(extracted).generate_articles()
+    print("step2")
+    TextAnalyser(guardian_articles).extract_topics()
+    print("step3")
+    TextAnalyser(guardian_articles).perform_article_body_analysis()
+    print("step4")
+    TextAnalyser(guardian_articles).perform_topic_analysis()
+    DatabaseManager(guardian_articles).insert_into_database()
