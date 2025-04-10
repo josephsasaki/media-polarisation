@@ -29,22 +29,28 @@ CREATE TABLE article (
 );
 
 CREATE TABLE article_topic (
-    article_topic_id SMALLINT NOT NULL,
+    article_topic_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     article_id SMALLINT NOT NULL,
     topic_id SMALLINT NOT NULL,
     article_topic_positive_sentiment FLOAT NOT NULL, 
     article_topic_negative_sentiment FLOAT NOT NULL,
-    article_topic_neural_sentiment FLOAT NOT NULL,
+    article_topic_neutral_sentiment FLOAT NOT NULL,
     article_topic_compound_sentiment FLOAT NOT NULL,
     PRIMARY KEY (article_topic_id),
     FOREIGN KEY (article_id) REFERENCES article(article_id),
     FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
--- Seeding the news_outlet table.
+-- Seeding the news_outlet table
 
 INSERT INTO news_outlet
 (news_outlet_name)
 VALUES
 ('The Guardian'),
 ('Express');
+
+
+-- Seeding the topic table.
+
+\copy topic(topic_name) FROM 'topics.csv' DELIMITER ',' CSV HEADER;
+
