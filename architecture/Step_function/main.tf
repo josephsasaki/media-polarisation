@@ -40,8 +40,11 @@ data "aws_iam_policy_document" "step_function_permission-policy" {
         "lambda:InvokeFunction",
         "ses:SendEmail"
       ]
-      ## REMEMBER TO DO THIS!!!
-      resources = [data.aws_lambda_function.email_lambda.arn]
+
+      resources = [
+        data.aws_lambda_function.email_lambda.qualified_arn,
+        
+      ]
     }
 }
 # Create role with trust policy
