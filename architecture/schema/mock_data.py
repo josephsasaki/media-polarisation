@@ -18,54 +18,39 @@ def daterange(start_date: date, end_date: date):
         yield start_date + timedelta(n)
 
 
-def generate_mock_topics(number_of_topics):
-    '''Generate the mock topics.'''
-    topics = []
-    topic_id = 1
-    for i in range(1, number_of_topics + 1):
-        topics.append((
-            # topic_name
-            f"Topic {i}",
-        ))
-        topic_id += 1
-    return topics
-
-
 def generate_mock_articles(articles_per_day: int, start_date: datetime, end_date: datetime):
     '''Generate the values representing an article.'''
     articles = []
-    article_id = 1
     for date in daterange(start_date, end_date):
         for i in range(articles_per_day):
             articles.append((
-                # news_outlet_id
                 random.randint(1, 2),
-                # article_headline
                 f"Article Headline: News {i} on {date.strftime('%d/%m/%Y')}",
-                # article_url
                 f"https://news_outlet.com/{date.strftime('%Y/%m/%d')}/{i}",
-                # article_published_date
                 datetime.combine(date, time(hour=12, minute=0)),
-                # article_subjectivity
                 round(random.uniform(0, 1)*1000)/1000,
-                # article_polarity
                 round(random.uniform(0, 1)*1000)/1000,
+                round(random.uniform(0, 1)*1000)/1000,
+                round(random.uniform(0, 1)*1000)/1000,
+                round(random.uniform(0, 1)*1000)/1000,
+                round(random.uniform(-1, 1)*1000)/1000,
             ))
-            article_id += 1
     return articles
 
 
-def generate_mock_article_topics(articles, topics):
+def generate_mock_article_topics(articles: list[tuple], max_topic_id: int):
     '''Generate the article topics.'''
+    topic_ids = list(range(1, max_topic_id+1))
     article_topics = []
-    article_topic_id = 0
     for article in articles:
-        for i in range(random.randint(1, 10)):
+        random.shuffle(topic_ids)
+        article_topic_ids = topic_ids[:random.randint(1, 10)]
+        for article_topic_id in article_topic_ids:
             article_topics.append((
                 # article_id
                 article[0],
                 # topic_id
-                random.choice(topics)[0],
+                article_topic_id,
                 # article_topic_positive_sentiment
                 round(random.uniform(0, 1)*1000)/1000,
                 # article_topic_negative_sentiment
