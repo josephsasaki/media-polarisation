@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timedelta, date, time
 import psycopg2
 from psycopg2.extensions import connection
+from psycopg2.extras import execute_values
 import random
 from dotenv import dotenv_values
 
@@ -38,17 +39,17 @@ def generate_mock_articles(articles_per_day: int, start_date: datetime, end_date
     return articles
 
 
-def generate_mock_article_topics(articles: list[tuple], max_topic_id: int):
+def generate_mock_article_topics(article_ids: list[tuple], max_topic_id: int):
     '''Generate the article topics.'''
     topic_ids = list(range(1, max_topic_id+1))
     article_topics = []
-    for article in articles:
+    for article_id in article_ids:
         random.shuffle(topic_ids)
         article_topic_ids = topic_ids[:random.randint(1, 10)]
         for article_topic_id in article_topic_ids:
             article_topics.append((
                 # article_id
-                article[0],
+                article_id,
                 # topic_id
                 article_topic_id,
                 # article_topic_positive_sentiment
@@ -65,6 +66,7 @@ def generate_mock_article_topics(articles: list[tuple], max_topic_id: int):
 
 
 if __name__ == "__main__":
+
     # CONNECT TO DATABASE
     config = dotenv_values(".env")
     conn = psycopg2.connect(
@@ -75,41 +77,45 @@ if __name__ == "__main__":
         port=config["DB_PORT"]
     )
     cur = conn.cursor()
-    # GENERATE ENTRIES
+
+    # CLEAR THE TABLES
+    cur.execute("DELETE FROM article_topic")
+    cur.execute("DELETE FROM article")
+
+    # GENERATE ARTICLES
     articles = generate_mock_articles(
         articles_per_day=5,
         start_date=date(year=2025, month=1, day=5),
         end_date=date(year=2025, month=1, day=9),
     )
-    topics = generate_mock_topics(20)
-    article_topics = generate_mock_article_topics(articles, topics)
-    # CLEAR THE TABLES
-    cur.execute("DELETE FROM article_topic")
-    cur.execute("DELETE FROM topic")
-    cur.execute("DELETE FROM article")
-    # INSERT INTO THE DATABASE
-    cur.executemany('''
-        INSERT INTO topic
-            (topic_name)
-        VALUES
-            (%s)
-    ''', topics)
-    cur.executemany('''
+
+    # INSERT THE ARTICLES
+    query = '''
         INSERT INTO article
             (news_outlet_id, article_headline, article_url, 
-                    article_published_date, article_subjectivity, article_polarity)
+            article_published_date, article_subjectivity, article_polarity, 
+            article_positive_sentiment, article_neutral_sentiment, 
+            article_negative_sentiment, article_compound_sentiment)
+        VALUES %s
+        RETURNING article_id
+    '''
+    execute_values(cur, query, articles)
+    article_ids = [row[0] for row in cur.fetchall()]
+
+    # GENERATE THE ARTICLE TOPICS
+    article_topics = generate_mock_article_topics(article_ids, max_topic_id=35)
+
+    # INSERT THE ARTICLE TOPICS
+    cur.executemany('''
+        INSERT INTO article_topic
+            (article_id, topic_id, article_topic_positive_sentiment,
+                    article_topic_negative_sentiment, article_topic_neutral_sentiment,
+                    article_topic_compound_sentiment)
+        OVERRIDING SYSTEM VALUE
         VALUES
             (%s, %s, %s, %s, %s, %s)
-    ''', articles)
-    # cur.executemany('''
-    #     INSERT INTO article_topic
-    #         (article_topic_id, article_id, topic_id, article_topic_positive_sentiment,
-    #                 article_topic_negative_sentiment, article_topic_neural_sentiment,
-    #                 article_topic_compound_sentiment)
-    #     OVERRIDING SYSTEM VALUE
-    #     VALUES
-    #         (%s, %s, %s, %s, %s, %s, %s)
-    # ''', article_topics)
+    ''', article_topics)
+
     conn.commit()
     conn.close()
     print("SUCCESS")
