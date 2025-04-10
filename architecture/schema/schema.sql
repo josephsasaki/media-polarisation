@@ -50,5 +50,9 @@ VALUES
 ('The Guardian'),
 ('Express');
 
--- Seeding into topic table
-\copy topic(topic_name) FROM 'topics.csv' DELIMITER ',' CSV HEADER;
+
+-- Seeding the topic table.
+
+\set csv_path '`pwd`/topics.csv'
+\copy topic(topic_name) FROM :'csv_path' DELIMITER ',' CSV HEADER;
+
