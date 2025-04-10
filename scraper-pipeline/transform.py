@@ -155,7 +155,7 @@ class TextAnalyser:
                 sentiment_scores['neg'],
                 sentiment_scores['compound'])
 
-    def validate_topics(self, topics_data: list) -> list:
+    def _validate_topics(self, topics_data: list) -> list:
         '''Check if the topics are part of the predefined list and remove any invalid topics.'''
         return [
             topic for topic in topics_data
