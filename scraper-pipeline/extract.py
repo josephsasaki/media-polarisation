@@ -115,4 +115,4 @@ class ExpressRSSFeedExtractor(RSSFeedExtractor):
 
     def _get_news_outlet(self) -> str:
         '''Returns the name of the outlet being extracted from'''
-        return " Daily Express"
+        return "Daily Express"
