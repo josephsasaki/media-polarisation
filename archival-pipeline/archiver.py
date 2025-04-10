@@ -31,6 +31,6 @@ class Archiver:
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_dotenv(override=True)
     archiver = Archiver(cut_off_date=date(2025, 1, 7))
     archiver.run_pipeline()
