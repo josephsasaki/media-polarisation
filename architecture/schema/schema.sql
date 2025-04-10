@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS article;
 DROP TABLE IF EXISTS news_outlet;
 DROP TABLE IF EXISTS topic;
 
+-- TABLE DEFINITIONS
 
 CREATE TABLE topic (
     topic_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -16,7 +17,6 @@ CREATE TABLE news_outlet (
     PRIMARY KEY (news_outlet_id)
 );
 
-
 CREATE TABLE article (
     article_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_id SMALLINT NOT NULL,
@@ -25,30 +25,32 @@ CREATE TABLE article (
     article_published_date TIMESTAMP NOT NULL,
     article_subjectivity FLOAT NOT NULL,
     article_polarity FLOAT NOT NULL,
+    article_positive_sentiment FLOAT NOT NULL, 
+    article_neutral_sentiment FLOAT NOT NULL, 
+    article_negative_sentiment FLOAT NOT NULL, 
+    article_compound_sentiment FLOAT NOT NULL, 
     PRIMARY KEY (article_id),
     FOREIGN KEY (news_outlet_id) REFERENCES  news_outlet(news_outlet_id)
 );
 
 CREATE TABLE article_topic (
-    article_topic_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     article_id SMALLINT NOT NULL,
     topic_id SMALLINT NOT NULL,
     article_topic_positive_sentiment FLOAT NOT NULL, 
     article_topic_negative_sentiment FLOAT NOT NULL,
     article_topic_neutral_sentiment FLOAT NOT NULL,
     article_topic_compound_sentiment FLOAT NOT NULL,
-    PRIMARY KEY (article_topic_id),
+    PRIMARY KEY (article_id, topic_id),
     FOREIGN KEY (article_id) REFERENCES article(article_id),
     FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
--- Seeding the news_outlet table
+-- SEEDING
 
 INSERT INTO news_outlet
-(news_outlet_name)
+    (news_outlet_name)
 VALUES
-('The Guardian'),
-('Express');
+    ('The Guardian'),
+    ('Express');
 
--- Seeding into topic table
 \copy topic(topic_name) FROM 'topics.csv' DELIMITER ',' CSV HEADER;
