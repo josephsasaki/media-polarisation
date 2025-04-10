@@ -1,0 +1,69 @@
+article_headline,article_url,article_published_date,article_subjectivity,article_polarity,news_outlet_name,topic_name,article_topic_positive_sentiment,article_topic_negative_sentiment,article_topic_neural_sentiment,article_topic_compound_sentiment
+Article Headline: News 0 on 05/01/2025,https://news_outlet.com/2025/01/05/0,2025-01-05 12:00:00,0.779,0.142,The Guardian,Topic 8,0.767,0.794,0.862,0.297
+Article Headline: News 0 on 05/01/2025,https://news_outlet.com/2025/01/05/0,2025-01-05 12:00:00,0.779,0.142,The Guardian,Topic 8,0.042,0.497,0.846,-0.403
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 20,0.801,0.752,0.052,0.33
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 7,0.04,0.417,0.6,0.762
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 10,0.175,0.992,0.526,-0.643
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 20,0.283,0.689,0.863,-0.071
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 10,0.044,0.02,0.371,-0.344
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 16,0.326,0.468,0.723,0.601
+Article Headline: News 1 on 05/01/2025,https://news_outlet.com/2025/01/05/1,2025-01-05 12:00:00,0.803,0.994,The Guardian,Topic 12,0.627,0.204,0.92,-0.643
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 19,0.861,0.74,0.245,0.604
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 6,0.703,0.696,0.776,-0.525
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 20,0.868,0.016,0.86,0.334
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 16,0.831,0.125,0.742,0.782
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 5,0.927,0.262,0.863,-0.566
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 17,0.94,0.963,0.769,-0.695
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 2,0.481,0.483,0.438,0.525
+Article Headline: News 2 on 05/01/2025,https://news_outlet.com/2025/01/05/2,2025-01-05 12:00:00,0.997,0.558,The Guardian,Topic 2,0.336,0.698,0.549,-0.317
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 10,0.595,0.282,0.686,-0.417
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 11,0.753,0.823,0.691,0.395
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 12,0.067,0.959,0.247,0.169
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 16,0.792,0.613,0.731,0.782
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 19,0.886,0.543,0.442,-0.907
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 12,0.665,0.785,0.253,-0.479
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 14,0.035,0.764,0.569,-0.952
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 6,0.449,0.831,0.558,-0.809
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 2,0.967,0.446,0.28,0.807
+Article Headline: News 3 on 05/01/2025,https://news_outlet.com/2025/01/05/3,2025-01-05 12:00:00,0.366,0.262,Express,Topic 8,0.413,0.622,0.629,0.07
+Article Headline: News 4 on 05/01/2025,https://news_outlet.com/2025/01/05/4,2025-01-05 12:00:00,0.848,0.48,Express,Topic 15,0.916,0.604,0.42,-0.794
+Article Headline: News 4 on 05/01/2025,https://news_outlet.com/2025/01/05/4,2025-01-05 12:00:00,0.848,0.48,Express,Topic 20,0.744,0.864,0.617,0.575
+Article Headline: News 4 on 05/01/2025,https://news_outlet.com/2025/01/05/4,2025-01-05 12:00:00,0.848,0.48,Express,Topic 12,0.123,0.309,0.67,-0.922
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 14,0.919,0.331,0.3,-0.494
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 12,0.866,0.387,0.211,-0.601
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 2,0.417,0.042,0.995,0.243
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 15,0.901,0.311,0.487,0.387
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 2,0.706,0.751,0.846,0.838
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 9,0.11,0.477,0.505,-0.686
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 15,0.386,0.685,0.97,0.838
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 20,0.389,0.721,0.087,-0.474
+Article Headline: News 0 on 06/01/2025,https://news_outlet.com/2025/01/06/0,2025-01-06 12:00:00,0.033,0.472,The Guardian,Topic 4,0.881,0.592,0.572,-0.071
+Article Headline: News 1 on 06/01/2025,https://news_outlet.com/2025/01/06/1,2025-01-06 12:00:00,0.794,0.444,Express,Topic 4,0.793,0.061,0.019,-0.319
+Article Headline: News 1 on 06/01/2025,https://news_outlet.com/2025/01/06/1,2025-01-06 12:00:00,0.794,0.444,Express,Topic 20,0.129,0.31,0.218,0.487
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 4,0.463,0.012,0.451,0.373
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 12,0.942,0.146,0.091,0.412
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 2,0.184,0.852,0.027,-0.648
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 2,0.594,0.362,0.892,-0.859
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 15,0.04,0.041,0.201,-0.882
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 5,0.556,0.344,0.838,-0.545
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 5,0.518,0.288,0.074,-0.676
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 7,0.758,0.036,0.217,-0.994
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 11,0.551,0.762,0.914,0.679
+Article Headline: News 2 on 06/01/2025,https://news_outlet.com/2025/01/06/2,2025-01-06 12:00:00,0.056,0.132,Express,Topic 10,0.606,0.762,0.932,-0.862
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 8,0.522,0.925,0.283,-0.251
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 8,0.468,0.921,0.34,0.085
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 7,0.08,0.607,0.903,0.062
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 2,0.084,0.403,0.906,0.216
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 11,0.501,0.142,0.72,-0.484
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 8,0.404,0.544,0.875,0.562
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 11,0.207,0.618,0.46,-0.587
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 1,0.476,0.216,0.675,0.88
+Article Headline: News 3 on 06/01/2025,https://news_outlet.com/2025/01/06/3,2025-01-06 12:00:00,0.297,0.773,Express,Topic 12,0.069,0.136,0.227,0.268
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 7,0.968,0.87,0.617,0.647
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 13,0.165,0.011,0.666,-0.174
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 13,0.956,0.379,0.26,-0.774
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 5,0.323,0.599,0.667,0.593
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 14,0.317,0.012,0.357,0.864
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 20,0.776,0.883,0.408,-0.146
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 1,0.251,0.7,0.123,0.449
+Article Headline: News 4 on 06/01/2025,https://news_outlet.com/2025/01/06/4,2025-01-06 12:00:00,0.536,0.88,Express,Topic 3,0.926,0.664,0.238,0.857
