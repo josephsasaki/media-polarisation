@@ -28,6 +28,8 @@ class Archiver:
             self.__cut_off_date)
         self.__transformer.save_dataframe_to_csv(data_to_archive)
         self.__loader.upload_csv_to_bucket(self.__cut_off_date)
+        self.__db_manager.remove_archived_rows()
+        self.__db_manager.close_connection()
 
 
 if __name__ == "__main__":

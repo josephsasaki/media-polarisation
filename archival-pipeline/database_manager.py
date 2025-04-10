@@ -5,7 +5,7 @@
 import os
 from datetime import date
 import psycopg2
-from psycopg2.extensions import connection
+from psycopg2.extensions import connection, AsIs
 import pandas as pd
 
 
@@ -33,7 +33,7 @@ class DatabaseManager:
         WHERE a.article_published_date < %s
     """
     DELETE_ARTICLES_QUERY = """
-        
+        DELETE FROM article WHERE article.article_id in %s CASCADE;
     """
 
     def __init__(self) -> None:
@@ -64,7 +64,10 @@ class DatabaseManager:
         if self.__data_to_archive is None:
             raise ValueError(
                 "No data to archive. Ensure fetch_data_to_archive has called previously.")
-        article_ids = list(self.__data_to_archive['article_id'].unique())
+        article_ids = tuple(int(n)
+                            for n in self.__data_to_archive['article_id'].unique())
+        with self.__db_connection.cursor() as cursor:
+            cursor.execute(self.DELETE_ARTICLES_QUERY, (article_ids,))
 
     def close_connection(self) -> None:
         '''Closes the database connection.'''
