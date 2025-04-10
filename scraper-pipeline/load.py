@@ -8,6 +8,8 @@ from psycopg2.extras import execute_values
 from psycopg2.extensions import connection
 import psycopg2
 from models import Article
+from extract import GuardianRSSFeedExtractor
+from transform import ArticleFactory, TextAnalyser
 
 
 class DatabaseManager:
