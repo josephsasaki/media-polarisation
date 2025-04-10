@@ -21,14 +21,14 @@ class S3Manager:
         '''Initialise an S3 client with boto3.'''
         client = boto3.client(
             "s3",
-            aws_access_key_id=os.environ['ACCESS_KEY_ID'],
-            aws_secret_access_key=os.environ['SECRET_ACCESS_KEY_ID'],
+            aws_access_key_id=os.environ['ACCESS_KEY'],
+            aws_secret_access_key=os.environ['SECRET_ACCESS_KEY'],
             region_name=os.environ['BUCKET_REGION'])
         return client
 
     def _get_bucket_name(self) -> str:
         '''Get the bucket name from environment variables.'''
-        return os.environ['S3_BUCKET']
+        return os.environ['BUCKET_NAME']
 
     def _create_bucket_key(self, cut_off_date: date) -> str:
         '''Returns the key of the object (csv) to be stored on S3. The archived data
