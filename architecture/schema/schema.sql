@@ -20,8 +20,8 @@ CREATE TABLE news_outlet (
 CREATE TABLE article (
     article_id SMALLINT NOT NULL GENERATED ALWAYS AS IDENTITY,
     news_outlet_id SMALLINT NOT NULL,
-    article_headline VARCHAR(100) NOT NULL, 
-    article_url VARCHAR(200) NOT NULL,
+    article_headline VARCHAR(255) NOT NULL, 
+    article_url VARCHAR(400) NOT NULL,
     article_published_date TIMESTAMP NOT NULL,
     article_subjectivity FLOAT NOT NULL,
     article_polarity FLOAT NOT NULL,
@@ -51,6 +51,6 @@ INSERT INTO news_outlet
     (news_outlet_name)
 VALUES
     ('The Guardian'),
-    ('Express');
+    ('Daily Express');
     
 \copy topic(topic_name) FROM 'topics.csv' DELIMITER ',' CSV HEADER;
