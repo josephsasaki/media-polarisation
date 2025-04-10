@@ -11,15 +11,10 @@ from dotenv import load_dotenv
 from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
-nltk.download('punkt_tab')
-nltk.download('vader_lexicon')
-
-
-load_dotenv()
-# pylint: disable=too-few-public-methods
 
 
 class ArticleFactory:
+    # pylint: disable=too-few-public-methods
     '''Class for transforming the raw RSS feed articles into objects.'''
 
     def __init__(self, raw_data: list[tuple[dict, str]]):
@@ -81,9 +76,11 @@ class TextAnalyser:
 
     def __init__(self, articles: list[Article]):
         '''Instantiate the TextAnalyser object with the list of articles to analyse.'''
+        nltk.download('punkt_tab')
+        nltk.download('vader_lexicon')
         self.__articles = articles
         self.__client = OpenAI()
-        self.__sentiment_analyzer = SentimentIntensityAnalyzer()
+        self.__sentiment_analyser = SentimentIntensityAnalyzer()
 
     def extract_topics(self) -> None:
         '''For each article, extract the relevant topics and assign to the article's topics list.'''
@@ -104,14 +101,8 @@ class TextAnalyser:
                     topic_name=topic.get('topic_name'),
                     key_terms=topic.get('key_terms')
                 )
-                # print(topic_analysis.get_topic_name())
                 topic_analyses.append(topic_analysis)
             article.set_topics_analyses(topic_analyses)
-            # print("-------------new article-------------")
-
-    # def check_validity_of_topics():
-    # checking if the key_terms for each topic actually show up in the text, and they are relevant
-    # NLP library for this
 
     def perform_topic_analysis(self) -> None:
         '''For each article, iterate through it's topics and perform the NLP analysis on the
@@ -129,7 +120,7 @@ class TextAnalyser:
 
                 if related_sentences:
                     context_text = " ".join(related_sentences)
-                    sentiment_scores = self.__sentiment_analyzer.polarity_scores(
+                    sentiment_scores = self.__sentiment_analyser.polarity_scores(
                         context_text)
 
                     topic.set_sentiments(
@@ -147,7 +138,7 @@ class TextAnalyser:
             subjectivity = blob.sentiment.subjectivity
             polarity = blob.sentiment.polarity
 
-            sentiment_scores = self.__sentiment_analyzer.polarity_scores(
+            sentiment_scores = self.__sentiment_analyser.polarity_scores(
                 body)
             article.set_polarity(polarity)
             article.set_subjectivity(subjectivity)
