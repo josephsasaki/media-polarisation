@@ -1,5 +1,5 @@
 '''
-    Test script for the transform part of the pipeline.
+    This file tests the DataFrameToCSVTransformer class.
 '''
 
 import os

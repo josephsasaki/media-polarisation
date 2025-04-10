@@ -1,11 +1,13 @@
 '''
-    This is an extract script for the archive pipeline. it connects the RDS database 
-    and converts the data into a pandas dataframe.
+    The following script defines the DatabaseManager, a class concerned with connecting 
+    to the database. This class has two main functions, querying data to be archived, and
+    then later removing those rows from the database once archiving was successful.
 '''
+
 import os
 from datetime import date
 import psycopg2
-from psycopg2.extensions import connection, AsIs
+from psycopg2.extensions import connection
 import pandas as pd
 
 
@@ -33,7 +35,7 @@ class DatabaseManager:
         WHERE a.article_published_date < %s
     """
     DELETE_ARTICLES_QUERY = """
-        DELETE FROM article WHERE article.article_id in %s CASCADE;
+        DELETE FROM article WHERE article.article_id in %s;
     """
 
     def __init__(self) -> None:
@@ -68,6 +70,7 @@ class DatabaseManager:
                             for n in self.__data_to_archive['article_id'].unique())
         with self.__db_connection.cursor() as cursor:
             cursor.execute(self.DELETE_ARTICLES_QUERY, (article_ids,))
+        self.__db_connection.commit()
 
     def close_connection(self) -> None:
         '''Closes the database connection.'''

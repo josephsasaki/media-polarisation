@@ -1,5 +1,5 @@
 '''
-    Test script for the load part of the pipeline.
+    This file tests the S3Manager class.
 '''
 
 import os
@@ -12,13 +12,13 @@ from s3_manager import S3Manager
 @pytest.fixture(autouse=True)
 def mock_env(monkeypatch):
     '''Mock required AWS environment variables.'''
-    monkeypatch.setenv("ACCESS_KEY_ID", "fake-access-key")
-    monkeypatch.setenv("SECRET_ACCESS_KEY_ID", "fake-secret")
+    monkeypatch.setenv("ACCESS_KEY", "fake-access-key")
+    monkeypatch.setenv("SECRET_ACCESS_KEY", "fake-secret")
     monkeypatch.setenv("BUCKET_REGION", "eu-west-2")
-    monkeypatch.setenv("S3_BUCKET", "my-fake-bucket")
+    monkeypatch.setenv("BUCKET_NAME", "my-fake-bucket")
 
 
-@patch("load.boto3.client")
+@patch("s3_manager.boto3.client")
 def test_s3_client_initialization(mock_boto_client):
     '''Ensure boto3 client is initialized with correct arguments.'''
     mock_client = MagicMock()
@@ -45,7 +45,7 @@ def test_bucket_key_generation():
     assert result_key == expected_key
 
 
-@patch("load.boto3.client")
+@patch("s3_manager.boto3.client")
 @patch("builtins.open", new_callable=mock_open, read_data=b"fake,data\n1,2")
 def test_upload_csv_to_bucket(mock_file_open, mock_boto_client):
     '''Test that the CSV file is uploaded correctly to S3.'''
@@ -67,7 +67,7 @@ def test_upload_csv_to_bucket(mock_file_open, mock_boto_client):
     )
 
 
-@patch("load.boto3.client")
+@patch("s3_manager.boto3.client")
 def test_output_path_is_absolute(_):
     '''Test that the output path is resolved to an absolute path.'''
     s3 = S3Manager("tmp/test.csv")
