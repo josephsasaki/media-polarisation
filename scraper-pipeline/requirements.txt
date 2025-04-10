@@ -2,3 +2,5 @@ feedparser
 bs4
 requests
 openai
+textblob
+nltk
