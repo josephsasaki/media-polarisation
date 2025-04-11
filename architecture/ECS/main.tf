@@ -23,6 +23,30 @@ data "aws_ecr_image" "dashboard_image" {
   image_tag       = "latest"
 }
 
+# # Create trust policy
+# data "aws_iam_policy_document" "trust-policy" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
+#     effect = "Allow"
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ecs-tasks.amazonaws.com"]
+#     }
+#   }
+# }
+# # Attach trust policy to created role
+# resource "aws_iam_role" "task-role" {
+#   name               = var.task_role_name
+#   assume_role_policy = data.aws_iam_policy_document.trust-policy.json
+# }
+# # Create permission policy doc
+# resource "aws_iam_role_policy_attachment" "permission_policy_attachment" {
+#   role = aws_iam_role.task-role.name
+#   policy_arn = var.permission_policy_arn
+# }
+
+
+
 # Create Task Definition
 resource "aws_ecs_task_definition" "dashboard-task-definition" {
   family = var.task_definition_name
@@ -30,7 +54,7 @@ resource "aws_ecs_task_definition" "dashboard-task-definition" {
   network_mode = "awsvpc"
   cpu                      = 1024
   memory                   = 2048
-  execution_role_arn = var.container_execution_role_arn
+  execution_role_arn = var.task_execution_role_arn
   container_definitions = jsonencode([
     {
       name      = var.container_definition_name

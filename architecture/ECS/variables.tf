@@ -10,10 +10,16 @@ variable "task_definition_name" {
     default = "c16-media-polarisation-dashboard-task-definition"
 }
 
-variable "container_execution_role_arn" {
-    description = "ARN for container execution role"
+variable "task_execution_role_arn" {
+    description = "Permission policy ARN for container execution role"
     type = string
-    default = "arn:aws:iam::129033205317:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
+    default = "arn:aws:iam::129033205317:role/ecsTaskExecutionRole"
+}
+
+variable "task_role_name" {
+    description = "Task role for running dashboard."
+    type = string
+    default = "c16-media-polarisation-dashboard-task-role"
 }
 
 variable "container_definition_name" {
