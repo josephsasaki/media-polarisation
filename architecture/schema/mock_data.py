@@ -85,8 +85,8 @@ if __name__ == "__main__":
     # GENERATE ARTICLES
     articles = generate_mock_articles(
         articles_per_day=5,
-        start_date=date(year=2025, month=1, day=5),
-        end_date=date(year=2025, month=1, day=9),
+        start_date=date(year=2024, month=11, day=5),
+        end_date=date(year=2025, month=1, day=30),
     )
 
     # INSERT THE ARTICLES
