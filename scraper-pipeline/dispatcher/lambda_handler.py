@@ -11,27 +11,27 @@ LAMBDA_CLIENT = boto3.client(
     aws_secret_access_key=os.environ['SECRET_ACCESS_KEY'],
     region_name=os.environ['LAMBDA_REGION']
 )
-PAYLOADS = [
-    {
-        "guardian": [
-            "https://www.theguardian.com/politics/rss",
-            "https://www.theguardian.com/us-news/us-politics/rss",
-            "https://www.theguardian.com/world/rss"
-        ],
-        "express": []
-    },
-    {
-        "guardian": [],
-        "express": [
-            "https://www.express.co.uk/posts/rss/139/politics",
-            "https://www.express.co.uk/posts/rss/198/us",
-            "https://www.express.co.uk/posts/rss/78/world"
-        ]
-    }
-]
 
 
 def lambda_handler(event=None, context=None):
+    PAYLOADS = [
+        {
+            "guardian": [
+                "https://www.theguardian.com/politics/rss",
+                "https://www.theguardian.com/us-news/us-politics/rss",
+                "https://www.theguardian.com/world/rss"
+            ],
+            "express": []
+        },
+        {
+            "guardian": [],
+            "express": [
+                "https://www.express.co.uk/posts/rss/139/politics",
+                "https://www.express.co.uk/posts/rss/198/us",
+                "https://www.express.co.uk/posts/rss/78/world"
+            ]
+        }
+    ]
     for payload in PAYLOADS:
         print(payload)
         LAMBDA_CLIENT.invoke(

@@ -3,6 +3,7 @@
     data pipeline. 
 '''
 
+import traceback
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
 from transform import ArticleFactory
 from analysis import TextAnalyser
@@ -52,8 +53,8 @@ class NewsScraper:
             # LOAD
             print("Loading...")
             self.__db_manager.insert_into_database(articles)
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            traceback.format_exc()
         finally:
             self.__db_manager.close_connection()
             print("Finished.")
