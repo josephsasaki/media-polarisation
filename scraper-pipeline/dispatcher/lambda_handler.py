@@ -33,6 +33,7 @@ PAYLOADS = [
 
 def lambda_handler(event=None, context=None):
     for payload in PAYLOADS:
+        print(payload)
         LAMBDA_CLIENT.invoke(
             FunctionName=os.environ['WORKER_FUNCTION_NAME'],
             InvocationType="Event",  # async

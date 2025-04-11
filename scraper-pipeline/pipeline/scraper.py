@@ -31,20 +31,29 @@ class NewsScraper:
     def run(self):
         '''Run entire news scraper pipeline.'''
         # EXTRACT
-        all_articles = []
-        for extractor in self.__rss_feed_extractors:
-            feed = extractor.extract_feeds()
-            all_articles.extend(feed)
-        # TRANSFORM
-        article_factory = ArticleFactory(
-            raw_data=all_articles,
-            existing_urls=self.__db_manager.get_article_urls()
-        )
-        articles = article_factory.generate_articles()
-        # ANALYSIS
-        self.__text_analyser.extract_topics(articles)
-        self.__text_analyser.perform_topic_analyses(articles)
-        self.__text_analyser.perform_body_analyses(articles)
-        # LOAD
-        self.__db_manager.insert_into_database(articles)
-        self.__db_manager.close_connection()
+        try:
+            print("Extracting...")
+            all_articles = []
+            for extractor in self.__rss_feed_extractors:
+                feed = extractor.extract_feeds()
+                all_articles.extend(feed)
+            # TRANSFORM
+            print("Transforming...")
+            article_factory = ArticleFactory(
+                raw_data=all_articles,
+                existing_urls=self.__db_manager.get_article_urls()
+            )
+            articles = article_factory.generate_articles()
+            # ANALYSIS
+            print("Analysing...")
+            self.__text_analyser.extract_topics(articles)
+            self.__text_analyser.perform_topic_analyses(articles)
+            self.__text_analyser.perform_body_analyses(articles)
+            # LOAD
+            print("Loading...")
+            self.__db_manager.insert_into_database(articles)
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            self.__db_manager.close_connection()
+            print("Finished.")
