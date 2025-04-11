@@ -67,3 +67,28 @@ variable "vpc_id" {
     description = "VPC ID for RDS and SG"
     type = string
 }
+
+variable "DB_HOST" {
+    description = "Database Host"
+    type = string
+}
+
+variable "DB_PORT" {
+    description = "Database Port"
+    type = string
+}
+
+variable "DB_NAME" {
+    description = "Database Name"
+    type = string
+}
+
+variable "DB_USERNAME" {
+    description = "Database Username"
+    type = string
+}
+
+variable "DB_PASSWORD" {
+    description = "Database Password"
+    type = string
+}
