@@ -3,7 +3,6 @@
     data pipeline. 
 '''
 
-from dotenv import load_dotenv
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
 from transform import ArticleFactory
 from analysis import TextAnalyser
@@ -13,18 +12,16 @@ from load import DatabaseManager
 class NewsScraper:
     '''Class containing high-level methods for news scraper pipeline.'''
 
-    def __init__(self):
+    def __init__(self,
+                 guardian_rss_feed_urls: list[str] = None,
+                 express_rss_feed_urls: list[str] = None):
+        if guardian_rss_feed_urls is None:
+            guardian_rss_feed_urls = []
+        if express_rss_feed_urls is None:
+            express_rss_feed_urls = []
         self.__rss_feed_extractors = [
-            GuardianRSSFeedExtractor([
-                "https://www.theguardian.com/politics/rss",
-                "https://www.theguardian.com/us-news/us-politics/rss",
-                "https://www.theguardian.com/world/rss"
-            ]),
-            ExpressRSSFeedExtractor([
-                "https://www.express.co.uk/posts/rss/139/politics",
-                "https://www.express.co.uk/posts/rss/198/us",
-                "https://www.express.co.uk/posts/rss/78/world"
-            ]),
+            GuardianRSSFeedExtractor(guardian_rss_feed_urls),
+            ExpressRSSFeedExtractor(express_rss_feed_urls),
         ]
         self.__db_manager = DatabaseManager()
         self.__text_analyser = TextAnalyser(
@@ -51,8 +48,3 @@ class NewsScraper:
         # LOAD
         self.__db_manager.insert_into_database(articles)
         self.__db_manager.close_connection()
-
-
-if __name__ == "__main__":
-    load_dotenv(override=True)
-    NewsScraper().run()
