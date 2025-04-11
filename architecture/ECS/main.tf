@@ -23,30 +23,6 @@ data "aws_ecr_image" "dashboard_image" {
   image_tag       = "latest"
 }
 
-# # Create trust policy
-# data "aws_iam_policy_document" "trust-policy" {
-#   statement {
-#     actions = ["sts:AssumeRole"]
-#     effect = "Allow"
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ecs-tasks.amazonaws.com"]
-#     }
-#   }
-# }
-# # Attach trust policy to created role
-# resource "aws_iam_role" "task-role" {
-#   name               = var.task_role_name
-#   assume_role_policy = data.aws_iam_policy_document.trust-policy.json
-# }
-# # Create permission policy doc
-# resource "aws_iam_role_policy_attachment" "permission_policy_attachment" {
-#   role = aws_iam_role.task-role.name
-#   policy_arn = var.permission_policy_arn
-# }
-
-
-
 # Create Task Definition
 resource "aws_ecs_task_definition" "dashboard-task-definition" {
   family = var.task_definition_name
@@ -107,8 +83,10 @@ resource "aws_ecs_service" "dashboard_service" {
   cluster         = var.ecs_cluster_name
   task_definition = aws_ecs_task_definition.dashboard-task-definition.arn
   desired_count   = 1
+  launch_type = "FARGATE"
   network_configuration {
     subnets = [var.subnet_id_1, var.subnet_id_2]
     security_groups = [aws_security_group.dashboard_sg.id]
+    assign_public_ip = true
   }
 }
