@@ -10,7 +10,7 @@ class DataFrameToCSVTransformer:
     # pylint: disable=too-few-public-methods
     '''Handles transformation and local storage of data.'''
 
-    def __init__(self, output_path: str = 'tmp/data.csv') -> None:
+    def __init__(self, output_path: str = '/tmp/data.csv') -> None:
         '''Initializes the transformer class with'''
         self.__output_path = os.path.abspath(output_path)
 
