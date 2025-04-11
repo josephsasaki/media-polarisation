@@ -68,6 +68,8 @@ class DatabaseManager:
                 "No data to archive. Ensure fetch_data_to_archive has called previously.")
         article_ids = tuple(int(n)
                             for n in self.__data_to_archive['article_id'].unique())
+        if len(article_ids) == 0:
+            return None
         with self.__db_connection.cursor() as cursor:
             cursor.execute(self.DELETE_ARTICLES_QUERY, (article_ids,))
         self.__db_connection.commit()
