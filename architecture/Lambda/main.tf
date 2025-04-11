@@ -134,7 +134,11 @@ resource "aws_lambda_function" "archive_lambda" {
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       BUCKET_REGION = var.region,
+       BUCKET_NAME = var.BUCKET_NAME
     }
   }
 }
@@ -147,11 +151,10 @@ resource "aws_lambda_function" "scraper_dispatcher_lambda" {
 
   environment {
     variables = {
-       DB_HOST = var.DB_HOST,
-       DB_PORT = var.DB_PORT,
-       DB_NAME = var.DB_NAME,
-       DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       LAMBDA_REGION = var.region
+       WORKER_FUNCTION_NAME = var.WORKER_FUNCTION_NAME
     }
   }
 }

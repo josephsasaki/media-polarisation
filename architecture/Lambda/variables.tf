@@ -88,3 +88,20 @@ variable "DB_PASSWORD" {
     description = "Database Password"
     type = string
 }
+variable "ACCESS_KEY" {
+    description = "ACCESS KEY for IAM"
+    type = string
+}
+variable "SECRET_ACCESS_KEY" {
+    description = "SECRET ACCESS KEY for IAM"
+    type = string
+}
+variable "WORKER_FUNCTION_NAME" {
+    description = "Worker function for scraper pipeline name."
+    type = string
+}
+
+variable "BUCKET_NAME" {
+    description = "Name of step function that is used to send emails"
+    type = string
+}
