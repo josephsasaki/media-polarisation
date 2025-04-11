@@ -1,7 +1,7 @@
 
 import os
-import boto3
 import json
+import boto3
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -38,7 +38,3 @@ def lambda_handler(event=None, context=None):
             InvocationType="Event",  # async
             Payload=json.dumps(payload)
         )
-
-
-if __name__ == "__main__":
-    lambda_handler()
