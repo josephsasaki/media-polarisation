@@ -23,6 +23,12 @@ variable "scraper_lambda_name" {
     default = "c16-media-polarisation-scraper-lambda"
 }
 
+variable "scraper_dispatcher_lambda_name" {
+    description = "Name for scraper lambda"
+    type = string
+    default = "c16-media-polarisation-scraper-dispatcher-lambda"
+}
+
 variable "email_lambda_name" {
     description = "Name for email lambda"
     type = string
@@ -48,6 +54,11 @@ variable "email_ecr_name" {
 }
 
 variable "archive_ecr_name" {
+    description = "ECR name containing archive image"
+    type = string
+}
+
+variable "scraper_dispatcher_ecr_name" {
     description = "ECR name containing archive image"
     type = string
 }
