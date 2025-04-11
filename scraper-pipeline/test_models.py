@@ -1,9 +1,13 @@
-import pytest
+'''
+    Test the models.
+'''
+
 from datetime import datetime
 from models import TopicAnalysis, Article
 
 
 def test_topic_analysis_initialization():
+    '''Test topic analysis instantiation, as well as the getters.'''
     ta = TopicAnalysis("Climate Change", ["emissions", "carbon", "warming"])
     assert ta.get_topic_name() == "Climate Change"
     assert ta.get_key_terms() == ["emissions", "carbon", "warming"]
@@ -11,12 +15,14 @@ def test_topic_analysis_initialization():
 
 
 def test_topic_analysis_set_sentiments():
+    '''Test the set_sentiment method.'''
     ta = TopicAnalysis("Economy", ["inflation", "GDP"])
     ta.set_sentiments(0.3, 0.5, 0.2, 0.1)
     assert ta.get_sentiments() == (0.3, 0.5, 0.2, 0.1)
 
 
 def test_article_initialization_and_getters():
+    '''Test article instantiation and the getter methods.'''
     pub_date = datetime(2024, 1, 1)
     article = Article(
         news_outlet="Guardian",
@@ -30,6 +36,7 @@ def test_article_initialization_and_getters():
 
 
 def test_article_setters_and_getters():
+    '''Test article getters and setters.'''
     article = Article("Express", "Headline", "http://url",
                       datetime.now(), "Body")
     topics = [
@@ -53,6 +60,7 @@ def test_article_setters_and_getters():
 
 
 def test_article_topic_analysis_insert_values():
+    '''Test the topic analysis insert values method.'''
     article = Article("Guardian", "Headline",
                       "http://url", datetime.now(), "Body")
     article.set_id(99)

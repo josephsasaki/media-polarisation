@@ -1,12 +1,19 @@
-import pytest
-from unittest.mock import MagicMock, patch, call
-from models import Article, TopicAnalysis
+'''
+    Script for testing the DatabaseManager
+'''
+
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+import pytest
+from models import Article, TopicAnalysis
 from load import DatabaseManager
+
+# pylint: disable=redefined-outer-name, protected-access
 
 
 @pytest.fixture
 def mock_connection():
+    '''Mock connection.'''
     with patch("load.psycopg2.connect") as mock_connect:
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
@@ -22,6 +29,7 @@ def mock_connection():
     "DB_PORT": "5432",
 })
 def db_manager(mock_connection):
+    '''Mock database manager.'''
     mock_cursor = MagicMock()
     mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
     # Mock query return values
@@ -33,10 +41,21 @@ def db_manager(mock_connection):
 
 
 def test_get_valid_topics(db_manager):
+    """
+    Test that `get_valid_topics` returns a sorted list of valid topic names
+    based on the mocked database response.
+    """
     assert sorted(db_manager.get_valid_topics()) == ["Economy", "Politics"]
 
 
 def test_insert_articles_assigns_ids(db_manager, mock_connection):
+    """
+    Test that `_insert_articles` correctly assigns an article ID after inserting into the database.
+
+    Mocks the database response to return a specific article ID and checks:
+    - That the news outlet is correctly mapped to its ID.
+    - That the private __article_id attribute is set based on the returned ID.
+    """
     mock_cursor = mock_connection.cursor.return_value.__enter__.return_value
 
     article = Article(
@@ -58,6 +77,14 @@ def test_insert_articles_assigns_ids(db_manager, mock_connection):
 
 
 def test_insert_into_database_combines_inserts(db_manager, mock_connection):
+    """
+    Test that `insert_into_database` successfully performs a full insert of article and topic data.
+
+    Validates that:
+    - The article is assigned an ID from the database.
+    - The article includes a topic analysis with sentiments.
+    - The function coordinates all insert operations correctly.
+    """
     mock_cursor = mock_connection.cursor.return_value.__enter__.return_value
 
     topic = TopicAnalysis("Economy", ["inflation"])
