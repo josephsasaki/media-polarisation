@@ -43,8 +43,17 @@ resource "aws_ecs_task_definition" "dashboard-task-definition" {
           hostPort      = 8501
         }
       ]
+      environment = [
+        { name = "DB_HOST", value = var.DB_HOST },
+        { name = "DB_PORT", value = var.DB_PORT },
+        { name = "DB_NAME", value = var.DB_NAME },
+        { name = "DB_USERNAME", value = var.DB_USERNAME },
+        { name = "DB_PASSWORD", value = var.DB_PASSWORD }
+      ]
     }
   ])
+
+  
 }
 
 # Create security group
@@ -59,12 +68,12 @@ resource "aws_security_group" "dashboard_sg" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
   ## Check if we need!!!
-  ingress {
-    from_port        = 5432
-    to_port          = 5432
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   from_port        = 5432
+  #   to_port          = 5432
+  #   protocol         = "tcp"
+  #   cidr_blocks      = ["0.0.0.0/0"]
+  # }
   
   egress {
     from_port        = 0
