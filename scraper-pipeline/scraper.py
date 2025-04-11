@@ -17,9 +17,13 @@ class NewsScraper:
         self.__rss_feed_extractors = [
             GuardianRSSFeedExtractor([
                 "https://www.theguardian.com/politics/rss",
+                "https://www.theguardian.com/us-news/us-politics/rss",
+                "https://www.theguardian.com/world/rss"
             ]),
             ExpressRSSFeedExtractor([
-                "https://www.express.co.uk/posts/rss/78/world",
+                "https://www.express.co.uk/posts/rss/139/politics",
+                "https://www.express.co.uk/posts/rss/198/us",
+                "https://www.express.co.uk/posts/rss/78/world"
             ]),
         ]
         self.__db_manager = DatabaseManager()
