@@ -88,19 +88,21 @@ if __name__ == "__main__":
         start_date=date(year=2024, month=11, day=5),
         end_date=date(year=2025, month=1, day=30),
     )
-
     # INSERT THE ARTICLES
-    query = '''
-        INSERT INTO article
-            (news_outlet_id, article_headline, article_url, 
-            article_published_date, article_subjectivity, article_polarity, 
-            article_positive_sentiment, article_neutral_sentiment, 
-            article_negative_sentiment, article_compound_sentiment)
-        VALUES %s
-        RETURNING article_id
-    '''
-    execute_values(cur, query, articles)
-    article_ids = [row[0] for row in cur.fetchall()]
+    article_ids = []
+    for article in articles:
+        query = '''
+            INSERT INTO article
+                (news_outlet_id, article_headline, article_url, 
+                article_published_date, article_subjectivity, article_polarity, 
+                article_positive_sentiment, article_neutral_sentiment, 
+                article_negative_sentiment, article_compound_sentiment)
+            VALUES 
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING article_id
+        '''
+        cur.execute(query, article)
+        article_ids.append(cur.fetchone()[0])
 
     # GENERATE THE ARTICLE TOPICS
     article_topics = generate_mock_article_topics(article_ids, max_topic_id=35)
@@ -117,5 +119,6 @@ if __name__ == "__main__":
     ''', article_topics)
 
     conn.commit()
+    cur.close()
     conn.close()
     print("SUCCESS")
