@@ -12,7 +12,7 @@ provider "aws" {
   region = var.region
 }
 
-# Create scraper ECR
+# Create scraper worker ECR
 
 resource "aws_ecr_repository" "scraper-ecr" {
   name                 = var.ecr_name_scraper
@@ -22,6 +22,18 @@ resource "aws_ecr_repository" "scraper-ecr" {
     scan_on_push = true
   }
 }
+
+# Create dispatcher scraper ECR
+
+resource "aws_ecr_repository" "dispatcher-scraper-ecr" {
+  name                 = var.ecr_name_scraper_dispatcher
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 
 # Create email ECR
 
