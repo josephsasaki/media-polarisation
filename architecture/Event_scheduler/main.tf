@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "permission-policy-doc" {
 
       actions = ["lambda:InvokeFunction"]
       resources = [
-        data.aws_lambda_function.scraper_lambda.arn,
+        data.aws_lambda_function.scraper_dispatcher_lambda.arn,
         data.aws_lambda_function.archive_lambda.arn
       ]
     }
@@ -58,12 +58,12 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 
 
 # Event scheduler scraper lambda
-data "aws_lambda_function" "scraper_lambda" {
-  function_name = var.lambda_scraper_name
+data "aws_lambda_function" "scraper_dispatcher_lambda" {
+  function_name = var.lambda_scraper_dispatcher_name
 }
 
 resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
-  name       = var.lambda_scraper_name
+  name       = var.lambda_scraper_dispatcher_name
   group_name = "default"
 
   flexible_time_window {
@@ -74,7 +74,7 @@ resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
   schedule_expression = "cron(15 * * * ? *)"
 
   target {
-    arn      = data.aws_lambda_function.scraper_lambda.arn
+    arn      = data.aws_lambda_function.scraper_dispatcher_lambda.arn
     role_arn = aws_iam_role.schedule_role.arn
   }
 }

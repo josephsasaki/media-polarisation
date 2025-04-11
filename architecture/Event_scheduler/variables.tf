@@ -42,8 +42,8 @@ variable "step_function_schedule_permission_policy_name" {
 
 
 # tf vars variables
-variable "lambda_scraper_name" {
-    description = "Name of lambda in scraper pipeline"
+variable "lambda_scraper_dispatcher_name" {
+    description = "Name of lambda for scraper dispatcher"
     type = string
 }
 

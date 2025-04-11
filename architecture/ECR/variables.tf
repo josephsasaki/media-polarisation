@@ -10,6 +10,12 @@ variable "ecr_name_scraper" {
     default = "c16-media-polarisation-scraper-ecr"
 }
 
+variable "ecr_name_scraper_dispatcher" {
+    description = "ECR name for main scraper which provisions workers"
+    type = string
+    default = "c16-media-polarisation-dispatcher-scraper-ecr"
+}
+
 variable "ecr_name_email" {
     description = "ECR name for email pipeline"
     type = string

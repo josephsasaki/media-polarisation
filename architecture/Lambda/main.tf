@@ -62,9 +62,15 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 
 
 ### ECR
-# Scraper pipeline ECR
+# Scraper worker pipeline ECR
 data "aws_ecr_image" "scraper_pipeline_image" {
   repository_name = var.scraper_ecr_name
+  image_tag = "latest"
+}
+
+# Scraper dispatcher pipeline ECR
+data "aws_ecr_image" "scraper_dispatcher_pipeline_image" {
+  repository_name = var.scraper_dispatcher_ecr_name
   image_tag = "latest"
 }
 
@@ -128,7 +134,27 @@ resource "aws_lambda_function" "archive_lambda" {
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       BUCKET_REGION = var.region,
+       BUCKET_NAME = var.BUCKET_NAME
+    }
+  }
+}
+
+resource "aws_lambda_function" "scraper_dispatcher_lambda" {
+  image_uri = data.aws_ecr_image.scraper_dispatcher_pipeline_image.image_uri
+  function_name = var.scraper_dispatcher_lambda_name
+  role          = aws_iam_role.lambda_role.arn
+  package_type = "Image"
+
+  environment {
+    variables = {
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       LAMBDA_REGION = var.region
+       WORKER_FUNCTION_NAME = var.WORKER_FUNCTION_NAME
     }
   }
 }
