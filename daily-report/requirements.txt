@@ -1,0 +1,5 @@
+plotly[express]
+psycopg2-binary
+python-dotenv
+pandas
+kaleido
