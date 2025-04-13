@@ -258,6 +258,7 @@ class ReportCreator:
         return base_image
 
     def generate_report_context(self):
+        # Needs refactoring
         # Get sentiment differences between outlets
         guard_score, express_score = self._get_difference_in_outlet()
 
@@ -293,7 +294,6 @@ class ReportCreator:
             "bar_chart": bar_chart,
             "combined_pie": combined_pie
         }
-
         return context
 
     def generate_jinja_env(self):
@@ -304,31 +304,6 @@ class ReportCreator:
         rendered_html = template.render(context)
         with open('output.html', 'w') as f:
             f.write(rendered_html)
-
-    def write_to_html(self):
-        """Writes analysis to html"""
-        # METRICS
-        guard_score, express_score = self._get_difference_in_outlet()
-
-        polarised_topics = self._get_difference_in_topic()
-        diff_topics = [topic.get('topic_name')
-                       for topic in polarised_topics[:3]]
-        agree_topics = [topic.get('topic_name')
-                        for topic in polarised_topics[-3:]]
-        express_freq_topics = self._get_frequent_topic('Daily Express')
-        guard_freq_topics = self._get_frequent_topic('The Guardian')
-
-        guard_topics = [topic.get('topic_name')
-                        for topic in guard_freq_topics[:3]]
-        express_topics = [topic.get('topic_name')
-                          for topic in express_freq_topics[:3]]
-
-        # GRAPHS
-        bar_chart = self.topics_sentiment_diff_bar_chart()
-        combined_pie = self.combined_pie_charts()
-
-        with open("report.html", "w") as file:
-            file.write(html_string)
 
     def close_connection(self):
         '''Closes the database connection'''
