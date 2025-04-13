@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News Polarisation Report</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        .sentiment-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>News Polarisation Analysis {{ YESTERDAYS_DATE }}</h1>
+        <div class="sentiment-container">
+            <h2>The Guardian's Overall Sentiment: <strong>{{ guard_score }}</strong></h2>
+            <h2>The Daily Express' Overall Sentiment: <strong>{{ express_score }}</strong></h2>
+        </div>
+        <br>
+        <h2>Most Polarised Topics Today</h2>
+        <p>
+            Yesterday's news coverage from two prominent UK outlets—the left-leaning
+            <em>Guardian</em> and the right-leaning <em>Daily Express</em>—has been analyzed
+            for potential bias. The analysis revealed significant disparities in perspective
+            on the following topics: 
+            <strong>{{ diff_topics[0] }}</strong>, 
+            <strong>{{ diff_topics[1] }}</strong>, 
+            <strong>{{ diff_topics[2] }}</strong>. 
+            Conversely, the following topics were found to have
+            the most agreement between the two sources: 
+            <strong>{{ agree_topics[0] }}</strong>, 
+            <strong>{{ agree_topics[1] }}</strong>, 
+            <strong>{{ agree_topics[2] }}</strong>.
+        </p>
+        <br>
+        <img src="data:image/png;base64,{{ bar_chart }}" alt="Polarisation Chart"/>
+        <br><br>
+        <h2>Topic Coverage</h2>
+        <p>
+            Both Newspaper Outlets covered a broad range of topics in their news coverage, with 
+            the <strong>{{ guard_topics[0] }}</strong>, 
+            <strong>{{ guard_topics[1] }}</strong>, 
+            <strong>{{ guard_topics[2] }}</strong> 
+            being covered most frequently for The Guardian and 
+            <strong>{{ express_topics[0] }}</strong>, 
+            <strong>{{ express_topics[1] }}</strong>, 
+            <strong>{{ express_topics[2] }}</strong> 
+            being covered most frequently for the Daily Express.
+        </p>
+        <br>
+        <img src="data:image/png;base64,{{ combined_pie }}" alt="Polarisation Chart" style="width: 100%;">
+        <br><br>
+    </div>
+</body>
+</html>

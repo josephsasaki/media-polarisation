@@ -11,6 +11,7 @@ from psycopg2.extensions import connection
 from base64 import b64encode
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 # once we have historic data AND a.article_published_date: : DATE = %s
@@ -256,6 +257,54 @@ class ReportCreator:
             base_image = b64encode(img_file.read()).decode('utf-8')
         return base_image
 
+    def generate_report_context(self):
+        # Get sentiment differences between outlets
+        guard_score, express_score = self._get_difference_in_outlet()
+
+        # Get most polarised and agreed-upon topics
+        polarised_topics = self._get_difference_in_topic()
+        diff_topics = [topic.get('topic_name')
+                       for topic in polarised_topics[:3]]
+        agree_topics = [topic.get('topic_name')
+                        for topic in polarised_topics[-3:]]
+
+        # Get most frequently covered topics for each outlet
+        express_freq_topics = self._get_frequent_topic('Daily Express')
+        guard_freq_topics = self._get_frequent_topic('The Guardian')
+
+        guard_topics = [topic.get('topic_name')
+                        for topic in guard_freq_topics[:3]]
+        express_topics = [topic.get('topic_name')
+                          for topic in express_freq_topics[:3]]
+
+        # Generate charts (base64-encoded images)
+        bar_chart = self.topics_sentiment_diff_bar_chart()
+        combined_pie = self.combined_pie_charts()
+
+        # Build the Jinja context dictionary
+        context = {
+            "YESTERDAYS_DATE": YESTERDAYS_DATE,
+            "guard_score": guard_score,
+            "express_score": express_score,
+            "diff_topics": diff_topics,
+            "agree_topics": agree_topics,
+            "guard_topics": guard_topics,
+            "express_topics": express_topics,
+            "bar_chart": bar_chart,
+            "combined_pie": combined_pie
+        }
+
+        return context
+
+    def generate_jinja_env(self):
+        '''Generates an jinja2 environment'''
+        jinja_env = Environment(loader=FileSystemLoader('template'))
+        template = jinja_env.get_template('report.html')
+        context = self.generate_report_context()
+        rendered_html = template.render(context)
+        with open('output.html', 'w') as f:
+            f.write(rendered_html)
+
     def write_to_html(self):
         """Writes analysis to html"""
         # METRICS
@@ -278,71 +327,6 @@ class ReportCreator:
         bar_chart = self.topics_sentiment_diff_bar_chart()
         combined_pie = self.combined_pie_charts()
 
-        html_string = f"""
-                            <html>
-                            <head>
-                                <style>
-                                    html, body {{
-                                        margin: 0;
-                                        padding: 0;
-                                        height: 100%;
-                                        width: 100%;
-                                        font-family: Arial, sans-serif;
-                                        text-align: center;
-                                        background-color: #f9f9f9;
-                                    }}
-                                    .container {{
-                                        width: 100%;
-                                        max-width: 1200px;
-                                        margin: auto;
-                                        padding: 20px;
-                                    }}
-                                    .sentiment-container{{display: flex;
-                                                    justify-content: space-between;
-                                                    margin-top: 20px;
-                                                }}
-                                    h1, h2 {{
-                                        color: #333;
-                                    }}
-
-                                </style>
-                            </head>
-                            <body>
-                                <div class="container">
-                                    <h1>News Polarisation Analysis {YESTERDAYS_DATE}</h1>
-                                    <div class="sentiment-container">
-                                        <h2>The Guardian's Overall Sentiment: <strong>{guard_score}</strong > </h2 >
-                                        <h2>The Daily Express' Overall Sentiment: <strong>{express_score}</strong></h2>
-                                    </div>
-                                    <br>
-                                    <h2>Most Polarised Topics Today</h2>
-                                    <p>Yesterday's news coverage from two prominent UK outlets—the left-leaning
-                                    <em>Guardian</em> and the right-leaning <em>Daily Express</em>—has been analyzed
-                                      for potential bias. The analysis revealed significant disparities in perspective
-                                        on the following topics: <strong>{diff_topics[0]}</strong>, <strong>{diff_topics[1]}</strong>,
-                                          and <strong>{diff_topics[2]}</strong>. Conversely, the following topics were found to have
-                                            the most agreement between the two sources: <strong>{agree_topics[0]}</strong>, <strong>{agree_topics[1]}</strong>, <strong>{agree_topics[2]}</strong>.</p>
-                                    <br>
-                                    <img src="data:image/png;base64,{bar_chart}" alt="Polarisation Chart"/>
-                                    <br>
-                                    <br>
-                                    <h2>Topic Coverage</h2>
-                                    <p>Both Newspaper Outlets covered a broad range of topics in their news coverage, with the <strong>{guard_topics[0]}</strong>,
-                                    <strong>{guard_topics[1]}</strong>, <strong>{guard_topics[2]}</strong>
-                                    being covered most frequently for The Guardian and <strong>{express_topics[0]}</strong>, <strong>{express_topics[1]}</strong>,
-                                    <strong>{express_topics[2]}</strong> being covered most frequently for the Daily Express</p>
-                                    <br>
-                                    <img src="data:image/png;base64,{combined_pie}" alt="Polarisation Chart" style="width: 100%;">
-                                    <br>
-                                    <br>
-
-
-
-                                </div>
-                            </body>
-                            </html>
-                            """
-
         with open("report.html", "w") as file:
             file.write(html_string)
 
@@ -354,7 +338,7 @@ class ReportCreator:
 if __name__ == "__main__":
     report = ReportCreator()
     try:
-        report.write_to_html()
+        report.generate_jinja_env()
 
     finally:
         report.close_connection()
