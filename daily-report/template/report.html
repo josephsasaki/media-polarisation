@@ -37,39 +37,68 @@
             <h2>The Daily Express' Overall Sentiment: <strong>{{ express_score }}</strong></h2>
         </div>
         <br>
-        <h2>Most Polarised Topics Today</h2>
+            <h2>Most Polarised Topics Today</h2>
         <p>
             Yesterday's news coverage from two prominent UK outlets—the left-leaning
             <em>Guardian</em> and the right-leaning <em>Daily Express</em>—has been analyzed
             for potential bias. The analysis revealed significant disparities in perspective
             on the following topics: 
-            <strong>{{ diff_topics[0] }}</strong>, 
-            <strong>{{ diff_topics[1] }}</strong>, 
-            <strong>{{ diff_topics[2] }}</strong>. 
+            {% for topic in diff_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}.
             Conversely, the following topics were found to have
             the most agreement between the two sources: 
-            <strong>{{ agree_topics[0] }}</strong>, 
-            <strong>{{ agree_topics[1] }}</strong>, 
-            <strong>{{ agree_topics[2] }}</strong>.
+            {% for topic in agree_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}.
         </p>
         <br>
+
         <img src="data:image/png;base64,{{ bar_chart }}" alt="Polarisation Chart"/>
         <br><br>
-        <h2>Topic Coverage</h2>
+                <h2>Topic Coverage</h2>
         <p>
             Both Newspaper Outlets covered a broad range of topics in their news coverage, with 
-            the <strong>{{ guard_topics[0] }}</strong>, 
-            <strong>{{ guard_topics[1] }}</strong>, 
-            <strong>{{ guard_topics[2] }}</strong> 
+            {% for topic in guard_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
             being covered most frequently for The Guardian and 
-            <strong>{{ express_topics[0] }}</strong>, 
-            <strong>{{ express_topics[1] }}</strong>, 
-            <strong>{{ express_topics[2] }}</strong> 
+            {% for topic in express_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
             being covered most frequently for the Daily Express.
         </p>
         <br>
         <img src="data:image/png;base64,{{ combined_pie }}" alt="Polarisation Chart" style="width: 100%;">
         <br><br>
-    </div>
+                <h2>The Guardian's Most Polarised Articles</h2>
+        <p> 
+            Articles with the highest negative sentiment:
+            {% for neg in guardian_neg_art %}
+                <strong>{{ neg }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+
+            <br>
+            Articles with the highest positive sentiment:  
+            {% for pos in guardian_pos_art %}
+                <strong>{{ pos }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+
+        <br><br>
+                <h2>Daily Express' Most Polarised Articles</h2>
+        <p> 
+            Articles with the highest negative sentiment:
+            {% for neg in express_neg_art %}
+                <strong>{{ neg }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+
+            <br>
+            Articles with the highest positive sentiment: 
+            {% for pos in express_pos_art %}
+                <strong>{{ pos }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <br>
 </body>
 </html>

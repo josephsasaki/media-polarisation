@@ -12,6 +12,7 @@ from base64 import b64encode
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from jinja2 import Environment, FileSystemLoader, Template
+from xhtml2pdf import pisa
 
 
 # once we have historic data AND a.article_published_date: : DATE = %s
@@ -75,7 +76,26 @@ OUTLET_SENTIMENT_QUERY = '''
                     WHERE a.article_published_date:: DATE = %s
                     GROUP BY no.news_outlet_name;'''
 
-YESTERDAYS_DATE = date.today()
+TOP_NEGATIVE_ARTICLES = '''
+                    SELECT a.article_headline, a.article_url,
+                    a.article_compound_sentiment AS sentiment
+                    FROM article as a
+                    JOIN news_outlet AS no ON no.news_outlet_id = a.news_outlet_id
+                    WHERE a.article_published_date:: DATE = %s AND no.news_outlet_name = %s
+                    ORDER BY sentiment ASC
+                    LIMIT 3;'''
+
+TOP_POSITIVE_ARTICLES = '''
+                    SELECT a.article_headline, a.article_url,
+                    a.article_compound_sentiment AS sentiment
+                    FROM article as a
+                    JOIN news_outlet AS no ON no.news_outlet_id = a.news_outlet_id
+                    WHERE a.article_published_date:: DATE = %s AND no.news_outlet_name = %s
+                    ORDER BY sentiment DESC
+                    LIMIT 3;'''
+
+
+YESTERDAYS_DATE = date.today() - timedelta(days=1)
 
 
 class ReportCreator:
@@ -96,7 +116,7 @@ class ReportCreator:
             port=os.environ["DB_PORT"],
         )
 
-# GET METHODS FROM DB
+# GET METHODS
     def _get_frequent_topic(self, outlet):
         '''Retrieves the average topic sentiments for each outlet'''
         with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -141,6 +161,29 @@ class ReportCreator:
                 express = increase
 
             return f"{yesterdays_scores_tool['The Guardian']} {guard}", f"{yesterdays_scores_tool['Daily Express']} {express}"
+
+    def guard_articles(self):
+        '''Finds the top polarising articles for the guardian'''
+        with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(TOP_NEGATIVE_ARTICLES,
+                        (YESTERDAYS_DATE, 'The Guardian'))
+            guardian_positives = cur.fetchall()
+            cur.execute(TOP_POSITIVE_ARTICLES,
+                        (YESTERDAYS_DATE, 'The Guardian'))
+            guardian_negatives = cur.fetchall()
+            return guardian_positives, guardian_negatives
+
+    def express_articles(self):
+        '''Finds the top polarising articles for daily express'''
+        with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(TOP_NEGATIVE_ARTICLES,
+                        (YESTERDAYS_DATE, 'Daily Express'))
+            express_positives = cur.fetchall()
+            cur.execute(TOP_POSITIVE_ARTICLES,
+                        (YESTERDAYS_DATE, 'Daily Express'))
+            express_negatives = cur.fetchall()
+            return express_positives, express_negatives
+
 
 # GRAPH METHODS
 
@@ -212,22 +255,19 @@ class ReportCreator:
     def combined_pie_charts(self) -> str:
         '''Returns a combined bar chart displaying pie charts for The Guardian and The Daily Express'''
         # Create a subplot layout (2 columns, 1 row)
-        # Define specs to indicate that the subplots should be pie charts
+
         specs = [[{'type': 'pie'}, {'type': 'pie'}]]
 
-        # Create subplots with the defined specs for pie charts
         fig = make_subplots(
             rows=1,
             cols=2,
             subplot_titles=("The Guardian", "Daily Express"),
-            specs=specs  # Specify that both subplots are for pie charts
+            specs=specs
         )
 
-        # Get both pie charts
         fig_guardian = self.guardian_topics_freq_pie_chart()
         fig_express = self.express_topics_freq_pie_chart()
 
-        # Add the pie chart data to the subplots
         for trace in fig_guardian.data:
             fig.add_trace(trace, row=1, col=1)
 
@@ -238,20 +278,20 @@ class ReportCreator:
         fig.update_layout(
             title_text="Topic Coverage per News Outlet",
             showlegend=True,
-            height=400,  # Increase the height of the entire figure
+            height=400,
             width=750,
             title_x=0.5,
             legend=dict(
-                orientation="h",  # Horizontal legend
-                yanchor="bottom",  # Align legend to the bottom
-                y=-0.6,  # Place the legend below the chart
-                xanchor="center",  # Center the legend horizontally
+                orientation="h",
+                yanchor="bottom",
+                y=-0.6,
+                xanchor="center",
                 x=0.5,
                 font=dict(
-                    size=6)  # Center the legend horizontally
+                    size=6)
             ),
         )
-        # Write image to file
+
         fig.write_image("combined_topics_freq.png")
         with open("combined_topics_freq.png", "rb") as img_file:
             base_image = b64encode(img_file.read()).decode('utf-8')
@@ -278,6 +318,10 @@ class ReportCreator:
         express_topics = [topic.get('topic_name')
                           for topic in express_freq_topics[:3]]
 
+        # Polarising articles
+        guardian_pos_art, guardian_neg_art = self.guard_articles()
+        express_pos_art, express_neg_art = self.express_articles()
+
         # Generate charts (base64-encoded images)
         bar_chart = self.topics_sentiment_diff_bar_chart()
         combined_pie = self.combined_pie_charts()
@@ -292,12 +336,18 @@ class ReportCreator:
             "guard_topics": guard_topics,
             "express_topics": express_topics,
             "bar_chart": bar_chart,
-            "combined_pie": combined_pie
+            "combined_pie": combined_pie,
+            "guardian_neg_art": guardian_neg_art,
+            "guardian_pos_art": guardian_pos_art,
+            "express_pos_art": express_pos_art,
+            "express_neg_art": express_neg_art
+
+
         }
         return context
 
     def generate_jinja_env(self):
-        '''Generates an jinja2 environment'''
+        '''Generates an jinja2 environment and exports it to a html file'''
         jinja_env = Environment(loader=FileSystemLoader('template'))
         template = jinja_env.get_template('report.html')
         context = self.generate_report_context()
