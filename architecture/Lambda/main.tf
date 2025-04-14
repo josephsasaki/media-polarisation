@@ -38,6 +38,7 @@ data "aws_iam_policy_document" "permission-policy-doc" {
         "logs:CreateLogStream",
         "logs:PutLogEvents",
         "ses:SendRawEmail",
+        "ses:SendEmail"
 
       ]
       resources = [ "arn:aws:logs:eu-west-2:129033205317:*" ]
@@ -121,7 +122,9 @@ resource "aws_lambda_function" "email_lambda" {
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY
+       ACCESS_KEY = var.ACCESS_KEY
     }
   }
 }
