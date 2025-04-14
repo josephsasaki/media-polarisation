@@ -1,3 +1,8 @@
+'''
+    The script for the dispatcher lambda. This lambda is invoked every hour by the EventBridge
+    scheduler, and in turn, this script invokes two other lambdas which run the pipeline on
+    select RSS feeds.
+'''
 
 import os
 import json
@@ -14,7 +19,9 @@ LAMBDA_CLIENT = boto3.client(
 
 
 def lambda_handler(event=None, context=None):
-    PAYLOADS = [
+    # pylint: disable=unused-argument
+    '''The event handler for the lambda.'''
+    payloads = [
         {
             "guardian": [
                 "https://www.theguardian.com/politics/rss",
@@ -32,8 +39,7 @@ def lambda_handler(event=None, context=None):
             ]
         }
     ]
-    for payload in PAYLOADS:
-        print(payload)
+    for payload in payloads:
         LAMBDA_CLIENT.invoke(
             FunctionName=os.environ['WORKER_FUNCTION_NAME'],
             InvocationType="Event",  # async
