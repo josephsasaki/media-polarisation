@@ -28,5 +28,7 @@ jobs:
 
       - name: Run pylint
         run: |
+          pylint scraper-pipeline/dispatcher/*.py --fail-under=9.5
+          pylint scraper-pipeline/pipeline/*.py --fail-under=9.5
           pylint scraper-pipeline/*.py --fail-under=9.5
           pylint archival-pipeline/*.py --fail-under=9.5
