@@ -93,14 +93,15 @@ resource "aws_lambda_function" "scraper_lambda" {
   function_name = var.scraper_lambda_name
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 900
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       OPENAI_API_KEY = var.OPENAI_API_KEY
     }
   }
 }
@@ -110,7 +111,7 @@ resource "aws_lambda_function" "email_lambda" {
   function_name = var.email_lambda_name
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 300
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
@@ -127,7 +128,7 @@ resource "aws_lambda_function" "archive_lambda" {
   function_name = var.archive_lambda_name
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 300
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
@@ -148,7 +149,7 @@ resource "aws_lambda_function" "scraper_dispatcher_lambda" {
   function_name = var.scraper_dispatcher_lambda_name
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 30
   environment {
     variables = {
        ACCESS_KEY = var.ACCESS_KEY,
