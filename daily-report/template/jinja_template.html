@@ -11,7 +11,7 @@
             width: 100%;
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f9f9f9;
+            background-color: white;
         }
         .container {
             width: 100%;
@@ -69,34 +69,43 @@
             being covered most frequently for the Daily Express.
         </p>
         <br>
-        <img src="data:image/png;base64,{{ combined_pie }}" alt="Polarisation Chart" style="width: 100%;">
+        <img src="data:image/png;base64,{{ combined_pie }}" alt="Polarisation Chart">
         <br><br>
                 <h2>The Guardian's Most Polarised Articles</h2>
         <p> 
-            Articles with the highest negative sentiment:
+            <strong>Articles with the highest negative sentiment:</strong><br><br>
             {% for neg in guardian_neg_art %}
-                <strong>{{ neg }}</strong>{% if not loop.last %}, {% endif %}
+               {{ loop.index }}. {{ neg.get('article_headline') }} Sentiment: {{ neg.get('sentiment') }}
+               Link: {{ neg.get('article_url') }}
+               <br><br>
             {% endfor %}
 
             <br>
-            Articles with the highest positive sentiment:  
+            <strong>Articles with the highest positive sentiment:</strong> <br><br>
             {% for pos in guardian_pos_art %}
-                <strong>{{ pos }}</strong>{% if not loop.last %}, {% endif %}
+               {{ loop.index }}. {{ pos.get('article_headline') }} Sentiment: {{ pos.get('sentiment') }}
+               Link: {{ pos.get('article_url') }}
+               <br><br>
             {% endfor %}
         </p>
 
         <br><br>
                 <h2>Daily Express' Most Polarised Articles</h2>
         <p> 
-            Articles with the highest negative sentiment:
+            <strong>Articles with the highest negative sentiment:</strong><br><br>
             {% for neg in express_neg_art %}
-                <strong>{{ neg }}</strong>{% if not loop.last %}, {% endif %}
+                {{ loop.index }}. {{ neg.get('article_headline') }} Sentiment: {{ neg.get('sentiment') }}
+                Link: {{ neg.get('article_url') }}
+                <br><br>
             {% endfor %}
 
             <br>
-            Articles with the highest positive sentiment: 
+            <strong>Articles with the highest positive sentiment:</strong>
+            <br><br>
             {% for pos in express_pos_art %}
-                <strong>{{ pos }}</strong>{% if not loop.last %}, {% endif %}
+                {{ loop.index }}. {{ pos.get('article_headline') }} Sentiment: {{ pos.get('sentiment') }}
+                Link: {{ pos.get('article_url') }}
+                <br><br>
             {% endfor %}
         </p>
         <br>
