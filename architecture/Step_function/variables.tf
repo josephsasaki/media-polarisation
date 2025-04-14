@@ -29,3 +29,30 @@ variable "lambda_email_name" {
     description = "Name of lambda responsible for outputing email content"
     type = string
 }
+
+## Receiver email address'
+variable "receiver_address_1" {
+    description = "Receiver email address 1"
+    type = string
+}
+
+variable "receiver_address_2" {
+    description = "Receiver email address 2"
+    type = string
+}
+
+variable "receiver_address_3" {
+    description = "Receiver email address 3"
+    type = string
+}
+
+variable "receiver_address_4" {
+    description = "Receiver email address 4"
+    type = string
+}
+
+## Sender email address
+variable "sender_address" {
+    description = "Sender email address"
+    type = string
+}

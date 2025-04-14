@@ -13,7 +13,7 @@ provider "aws" {
   region = var.region
 }
 
-# Archive lambda data
+# Email Lambda data source
 data "aws_lambda_function" "email_lambda" {
   function_name = var.lambda_email_name
 }
@@ -35,7 +35,6 @@ data "aws_iam_policy_document" "step_function_trust_policy" {
 data "aws_iam_policy_document" "step_function_permission-policy" {
   statement {
     effect="Allow"
-    # This might be the problem. You need to attach this invoke to lambda and the SES to seomthing else
       actions = [
         "lambda:InvokeFunction",
         "ses:SendEmail"
@@ -66,7 +65,6 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 }
 
 ## Create step function
-
 resource "aws_sfn_state_machine" "state_machine_email" {
   name     = var.state_machine_name
   role_arn = aws_iam_role.step-function-role.arn
@@ -81,7 +79,7 @@ resource "aws_sfn_state_machine" "state_machine_email" {
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-2:129033205317:function:c16-media-polarisation-email-lambda:$LATEST",
+        "FunctionName": "${data.aws_lambda_function.email_lambda.qualified_arn}",
         "Payload": "{% $states.input %}"
       },
       "Retry": [
@@ -121,13 +119,13 @@ resource "aws_sfn_state_machine" "state_machine_email" {
         },
         "Destination": {
           "ToAddresses": [
-            "trainee.antariksh.patel@sigmalabs.co.uk",
-            "trainee.joseph.sasaki@sigmalabs.co.uk",
-            "trainee.josh.allen@sigmalabs.co.uk",
-            "trainee.jake.hussey@sigmalabs.co.uk"
+            "${var.receiver_address_1}",
+            "${var.receiver_address_2}",
+            "${var.receiver_address_3}",
+            "${var.receiver_address_4}"
           ]
         },
-        "FromEmailAddress": "trainee.antariksh.patel@sigmalabs.co.uk"
+        "FromEmailAddress": "${var.sender_address}"
       }
     }
   },
