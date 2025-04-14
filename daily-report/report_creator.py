@@ -16,9 +16,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email import encoders
-import boto3
 from weasyprint import HTML
 import base64
+import boto3
 
 
 # once we have historic data AND a.article_published_date: : DATE = %s
@@ -100,7 +100,6 @@ TOP_POSITIVE_ARTICLES = '''
                     ORDER BY sentiment DESC
                     LIMIT 3;'''
 
-
 YESTERDAYS_DATE = date.today() - timedelta(days=1)
 
 
@@ -123,7 +122,7 @@ class ReportCreator:
         )
 
 # GET METHODS
-    def _get_frequent_topic(self, outlet):
+    def _get_frequent_topic(self, outlet: str) -> list[dict]:
         '''Retrieves the percentage that each topic has been covered by the given outlet'''
         with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(MOST_COVERED_TOPIC_QUERY,
@@ -131,7 +130,7 @@ class ReportCreator:
             topic_frequency = cur.fetchall()
             return topic_frequency
 
-    def _get_difference_in_topic(self):
+    def _get_difference_in_topic(self) -> list[dict]:
         '''Retrieves the difference in average topic sentiment between outlets'''
         with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(SENTIMENT_BY_TOPIC_QUERY,
@@ -162,17 +161,17 @@ class ReportCreator:
 
         if yesterdays_sentiment_scores['The Guardian'] > two_days_sentiment_score['The Guardian']:
             guard_change = increase
-
         if yesterdays_sentiment_scores['The Guardian'] < two_days_sentiment_score['The Guardian']:
             guard_change = decrease
-
         if yesterdays_sentiment_scores['Daily Express'] > two_days_sentiment_score['Daily Express']:
             express_change = increase
-
         if yesterdays_sentiment_scores['Daily Express'] < two_days_sentiment_score['Daily Express']:
             express_change = decrease
 
-        return f"{yesterdays_sentiment_scores['The Guardian']} {guard_change}", f"{yesterdays_sentiment_scores['Daily Express']} {express_change}"
+        guardian_score = f"{yesterdays_sentiment_scores['The Guardian']} {guard_change}"
+        express_score = f"{yesterdays_sentiment_scores['Daily Express']} {express_change}"
+
+        return guardian_score, express_score
 
     def top_articles(self, outlet: str) -> tuple[list[dict], list[dict]]:
         '''Finds the top polarising articles for the given outlet'''
@@ -188,9 +187,8 @@ class ReportCreator:
 
 # GRAPH METHODS
 
-
     def topics_sentiment_diff_bar_chart(self) -> list[str]:
-        '''Returns a bar chart displaying the average topic compound sentiment for each outlet'''
+        '''Returns a base64 encoded bar chart displaying the average topic sentiment for each outlet'''
         difference_in_topic = self._get_difference_in_topic()
         difference_in_topic_df = pd.DataFrame(difference_in_topic)
 
@@ -221,53 +219,32 @@ class ReportCreator:
             base_image = b64encode(img_file.read()).decode('utf-8')
         return base_image
 
-    def guardian_topics_freq_pie_chart(self) -> go.Figure:
-        '''Returns a pie chart for The Guardian showing frequent topics.'''
-        difference_in_topic = self._get_frequent_topic('The Guardian')
+    def topics_freq_pie_chart(self, outlet: str) -> go.Figure:
+        '''Returns a pie chart showing frequency of topics for the inputted outlet.'''
+        difference_in_topic = self._get_frequent_topic(outlet)
         difference_in_topic_df = pd.DataFrame(difference_in_topic)
-
-        fig_guardian = px.pie(difference_in_topic_df, names='topic_name', values='topic_percentage',
-                              title="Breakdown of topics covered by The Guardian yesterday")
-
-        fig_guardian.update_traces(
-            textinfo='label+percent',   # Shows only label and percent
+        print(difference_in_topic_df)
+        pie_fig = px.pie(difference_in_topic_df, names='topic_name', values='topic_percentage',
+                         title=f"Breakdown of topics covered by {outlet} yesterday")
+        pie_fig.update_traces(
+            textinfo='label+percent',
             insidetextorientation='radial',
             textposition='inside'
         )
-
-        return fig_guardian
-
-    def express_topics_freq_pie_chart(self) -> go.Figure:
-        '''Returns a pie chart for The Daily Express showing frequent topics.'''
-        difference_in_topic = self._get_frequent_topic('Daily Express')
-        difference_in_topic_df = pd.DataFrame(difference_in_topic)
-
-        fig_express = px.pie(difference_in_topic_df, names='topic_name', values='topic_percentage',
-                             title="Breakdown of topics covered by The Daily Express yesterday")
-
-        fig_express.update_traces(
-            textinfo='label+percent',   # Shows only label and percent
-            insidetextorientation='radial',
-            textposition='inside'
-        )
-
-        return fig_express
+        return pie_fig
 
     def combined_pie_charts(self) -> str:
-        '''Returns a combined bar chart displaying pie charts for The Guardian and The Daily Express'''
-        # Create a subplot layout (2 columns, 1 row)
-
+        '''Returns a combined chart displaying pie charts for The Guardian and The Daily
+        Express topics by coverage frequency'''
         specs = [[{'type': 'pie'}, {'type': 'pie'}]]
-
         fig = make_subplots(
             rows=1,
             cols=2,
             subplot_titles=("The Guardian", "Daily Express"),
             specs=specs
         )
-
-        fig_guardian = self.guardian_topics_freq_pie_chart()
-        fig_express = self.express_topics_freq_pie_chart()
+        fig_guardian = self.topics_freq_pie_chart('The Guardian')
+        fig_express = self.topics_freq_pie_chart('Daily Express')
 
         for trace in fig_guardian.data:
             fig.add_trace(trace, row=1, col=1)
@@ -275,23 +252,12 @@ class ReportCreator:
         for trace in fig_express.data:
             fig.add_trace(trace, row=1, col=2)
 
-        # Update layout to adjust spacing and appearance
         fig.update_layout(
             title_text="Topic Coverage per News Outlet",
-            showlegend=True,
+            showlegend=False,
             autosize=True,
-            title_x=0.5,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.6,
-                xanchor="center",
-                x=0.5,
-                font=dict(
-                    size=6)
-            ),
+            title_x=0.5
         )
-
         fig.write_image("/tmp/combined_topics_freq.png")
         with open("/tmp/combined_topics_freq.png", "rb") as img_file:
             base_image = b64encode(img_file.read()).decode('utf-8')
@@ -352,66 +318,67 @@ class ReportCreator:
         template = jinja_env.get_template('jinja_template.html')
         context = self.generate_report_context()
         rendered_html = template.render(context)
-        # return rendered_html
         with open('/tmp/report.html', 'w') as f:
             f.write(rendered_html)
         HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')
         with open('/tmp/report.pdf', "rb") as pdf_file:
-            pdf = b64encode(pdf_file.read())
+            # pdf = b64encode(pdf_file.read())
+            pdf = pdf_file.read()
         return pdf
 
-    # def email_generator(self):
-    #     pdf_data = self.generate_jinja_env()
+    def raw_email_generator(self):
+        pdf_data = self.generate_jinja_env()
 
-    #     from_email = "trainee.josh.allen@sigmalabs.co.uk"
-    #     to_emails = [
-    #         "trainee.antariksh.patel@sigmalabs.co.uk",
-    #         "trainee.joseph.sasaki@sigmalabs.co.uk",
-    #         "trainee.josh.allen@sigmalabs.co.uk",
-    #         "trainee.jake.hussey@sigmalabs.co.uk"
-    #     ]
+        from_email = "trainee.antariksh.patel@sigmalabs.co.uk"
+        to_emails = [
+            "trainee.antariksh.patel@sigmalabs.co.uk",
+            "trainee.joseph.sasaki@sigmalabs.co.uk",
+            "trainee.josh.allen@sigmalabs.co.uk",
+            "trainee.jake.hussey@sigmalabs.co.uk"
+        ]
 
-    #     # Set up the MIME message
-    #     msg = MIMEMultipart()
-    #     msg['From'] = from_email
-    #     # Don't list all addresses here
-    #     msg['To'] = "trainee.josh.allen@sigmalabs.co.uk"
-    #     msg['Subject'] = "Hello from SES"
+        # Set up the MIME message
+        msg = MIMEMultipart()
+        msg['From'] = from_email
+        # Don't list all addresses here
+        msg['To'] = ", ".join(to_emails)
+        msg['Subject'] = "Hello from SES"
 
-    #     # Email body
-    #     body = MIMEText("Today's daily report", 'html')
-    #     msg.attach(body)
+        # Email body
+        body = MIMEText("Today's daily report", 'html')
+        msg.attach(body)
 
-    #     # PDF attachment (raw, not base64 upfront!)
-    #     part = MIMEApplication(pdf_data)
-    #     part.add_header('Content-Disposition', 'attachment',
-    #                     filename="document.pdf")
-    #     msg.attach(part)
+        # PDF attachment (raw, not base64 upfront!)
+        part = MIMEApplication(pdf_data)
+        part.add_header('Content-Disposition', 'attachment',
+                        filename="document.pdf")
+        msg.attach(part)
 
-    #     # Return raw bytes, NOT base64 encoded
-    #     return msg.as_bytes()
+        # Return raw bytes, NOT base64 encoded
+        return msg.as_bytes()
 
-    # def send_email(self):
-    #     raw_email_bytes = self.email_generator()
+    def send_email(self):
+        raw_email_bytes = self.raw_email_generator()
 
-    #     # Create a boto3 client for SES
-    #     # Replace with your SES region
-    #     ses_client = boto3.client('ses', region_name='eu-west-2')
+        # Create a boto3 client for SES
+        # Replace with your SES region
+        ses_client = boto3.client('ses', region_name='eu-west-2', aws_access_key_id=os.environ['ACCESS_KEY'],
+                                  aws_secret_access_key=os.environ['SECRET_ACCESS_KEY'])
 
-    #     response = ses_client.send_raw_email(
-    #         RawMessage={
-    #             'Data': raw_email_bytes
-    #         },
-    #         Source="trainee.josh.allen@sigmalabs.co.uk",
-    #         Destinations=[
-    #             "trainee.antariksh.patel@sigmalabs.co.uk",
-    #             "trainee.joseph.sasaki@sigmalabs.co.uk",
-    #             "trainee.josh.allen@sigmalabs.co.uk",
-    #             "trainee.jake.hussey@sigmalabs.co.uk"
-    #         ]
+        response = ses_client.send_raw_email(
+            RawMessage={
+                'Data': raw_email_bytes
+            },
+            Source="trainee.antariksh.patel@sigmalabs.co.uk",
+            Destinations=[
+                "trainee.antariksh.patel@sigmalabs.co.uk",
+                "trainee.joseph.sasaki@sigmalabs.co.uk",
+                "trainee.josh.allen@sigmalabs.co.uk",
+                "trainee.jake.hussey@sigmalabs.co.uk"
+            ]
 
-    #     )
-    #     print("Email sent! Message ID:", response['MessageId'])
+        )
+        print("Email sent! Message ID:", response['MessageId'])
 
     def close_connection(self):
         '''Closes the database connection'''
@@ -422,9 +389,9 @@ def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        report.send_email()
+        email = report.send_email()
         return {'statusCode': 200,
-                'body': 'success'}
+                'body': email}
     except Exception as e:
         print(f"Error: {str(e)}")
         return {
@@ -436,5 +403,5 @@ def lambda_handler(event, context):
         report.close_connection()
 
 
-if __name__ == "__main__":
-    print(lambda_handler([1, 2, 3], [1, 2, 3]))
+# if __name__ == "__main__":
+#     print(lambda_handler([1, 2, 3], [1, 2, 3]))

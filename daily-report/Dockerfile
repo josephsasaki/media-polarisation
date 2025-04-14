@@ -19,7 +19,7 @@ RUN yum install -y \
     gcc \
     redhat-rpm-config \
     && yum clean all
-    
+
 ENV LD_LIBRARY_PATH="/opt/custom-libs/lib:${LD_LIBRARY_PATH}"
 
 COPY template/jinja_template.html template/

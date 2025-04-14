@@ -5,5 +5,4 @@ pandas
 kaleido
 Jinja2
 weasyprint==52.5
-email
 boto3
