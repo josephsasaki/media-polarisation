@@ -11,7 +11,7 @@ class S3Manager:
     # pylint: disable=too-few-public-methods
     '''Class that interacts with AWS S3 bucket'''
 
-    def __init__(self, output_path: str = 'tmp/data.csv'):
+    def __init__(self, output_path: str = '/tmp/data.csv'):
         '''Initialise the S3 manager class.'''
         self.__output_path = os.path.abspath(output_path)
         self.__client_s3 = self._get_s3_client()

@@ -20,12 +20,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pylint
-          pip install -r scraper-pipeline/requirements.txt
+          pip install -r scraper-pipeline/pipeline/requirements.txt
+          pip install -r scraper-pipeline/dispatcher/requirements.txt
           pip install -r archival-pipeline/requirements.txt
           pip install -r dashboard/requirements.txt
           pip install -r daily-report/requirements.txt
 
       - name: Run pylint
         run: |
-          pylint scraper-pipeline/*.py --fail-under=9.5
+          pylint scraper-pipeline/dispatcher/*.py --fail-under=9.5
+          pylint scraper-pipeline/pipeline/*.py --fail-under=9.5
           pylint archival-pipeline/*.py --fail-under=9.5
