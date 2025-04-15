@@ -48,7 +48,7 @@ class RSSFeedExtractor(ABC):
             print(f"Request failed: {e}")
             return None
 
-    def _rss_parser(self, feed_url: requests.Response) -> list[dict]:
+    def _rss_parser(self, feed_url: str) -> list[dict]:
         '''Parses the given RSS feed, and returns complete raw data for each article.'''
         combined_article = []
         feed = feedparser.parse(feed_url)

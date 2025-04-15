@@ -36,8 +36,10 @@ class TextAnalyser:
 
     def __init__(self, valid_topics: list[str]):
         '''Instantiate the TextAnalyser object.'''
-        nltk.download('punkt_tab', quiet=True)
-        nltk.download('vader_lexicon', quiet=True)
+        nltk_data_path = '/tmp/nltk_data'
+        nltk.download('punkt_tab', quiet=True, download_dir=nltk_data_path)
+        nltk.download('vader_lexicon', quiet=True, download_dir=nltk_data_path)
+        nltk.data.path.append(nltk_data_path)
         self.__client = OpenAI()
         self.__sentiment_analyser = SentimentIntensityAnalyzer()
         self.__valid_topics = valid_topics
@@ -50,7 +52,7 @@ class TextAnalyser:
             valid_topics=", ".join(self.__valid_topics),
             article_body=article.get_body(),
         )
-        # ask openai
+        # ask openai (if formatted wrong, allow 3 tries)
         response = self.__client.chat.completions.create(
             model=self.GPT_MODEL,
             messages=[{"role": "user", "content": prompt}],
