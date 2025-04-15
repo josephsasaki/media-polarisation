@@ -3,21 +3,18 @@ Script for extracting insights from the rds and writing them up into a report
 '''
 import os
 from datetime import date, timedelta
+from base64 import b64encode
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import pandas as pd
 import psycopg2.extras
 from psycopg2.extensions import connection
-from base64 import b64encode
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from jinja2 import Environment, FileSystemLoader
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
-from email import encoders
 from weasyprint import HTML
-import base64
+from jinja2 import Environment, FileSystemLoader
 import boto3
 
 
@@ -138,6 +135,15 @@ class ReportCreator:
             difference_in_topic = cur.fetchall()
         return difference_in_topic
 
+    def _get_most_polarised_topics(self):
+        '''Returns the top three most agreeable and polarised topics'''
+        difference_in_topic = self._get_difference_in_topic()
+        diff_topics = [topic.get('topic_name')
+                       for topic in difference_in_topic[:3]]
+        agree_topics = [topic.get('topic_name')
+                        for topic in difference_in_topic[-3:]]
+        return agree_topics, diff_topics
+
     def _get_outlet_sentiment(self, date_of_interest: date) -> dict[str:str]:
         '''Returns the average sentiment of each outlet for a given date'''
         with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -146,7 +152,8 @@ class ReportCreator:
         return {score.get('news_outlet_name'): score.get('compound') for score in sentiment_score}
 
     def _get_difference_in_outlet(self) -> tuple[str:str]:
-        '''Returns the average sentiment score for each day and whether this has changed since the previous day'''
+        '''Returns the average sentiment score for each day
+          and whether this has changed since the previous day'''
         increase = '🟢⬆️'
         decrease = '🔴⬇️'
         equal = '🟡⏸️'
@@ -184,14 +191,25 @@ class ReportCreator:
             guardian_negatives = cur.fetchall()
             return guardian_positives, guardian_negatives
 
+    def top_three_topics(self) -> tuple[dict, dict]:
+        '''Returns the top three covered topics for each outlet'''
+        express_freq_topics = self._get_frequent_topic('Daily Express')
+        guard_freq_topics = self._get_frequent_topic('The Guardian')
+
+        guard_topics = [topic.get('topic_name')
+                        for topic in guard_freq_topics[:3]]
+        express_topics = [topic.get('topic_name')
+                          for topic in express_freq_topics[:3]]
+        return guard_topics, express_topics
+
 
 # GRAPH METHODS
 
     def topics_sentiment_diff_bar_chart(self) -> list[str]:
-        '''Returns a base64 encoded bar chart displaying the average topic sentiment for each outlet'''
+        '''Returns a base64 encoded bar chart displaying
+          the average topic sentiment for each outlet'''
         difference_in_topic = self._get_difference_in_topic()
         difference_in_topic_df = pd.DataFrame(difference_in_topic)
-
         fig = px.bar(difference_in_topic_df,
                      x='topic_name',
                      y=['guardian_compound', 'express_compound'],
@@ -223,7 +241,6 @@ class ReportCreator:
         '''Returns a pie chart showing frequency of topics for the inputted outlet.'''
         difference_in_topic = self._get_frequent_topic(outlet)
         difference_in_topic_df = pd.DataFrame(difference_in_topic)
-        print(difference_in_topic_df)
         pie_fig = px.pie(difference_in_topic_df, names='topic_name', values='topic_percentage',
                          title=f"Breakdown of topics covered by {outlet} yesterday")
         pie_fig.update_traces(
@@ -264,25 +281,14 @@ class ReportCreator:
         return base_image
 
     def generate_report_context(self):
-        # Needs refactoring
+        '''Returns the context required for the jinja environment'''
         # Get sentiment differences between outlets
         guard_score, express_score = self._get_difference_in_outlet()
 
         # Get most polarised and agreed-upon topics
-        polarised_topics = self._get_difference_in_topic()
-        diff_topics = [topic.get('topic_name')
-                       for topic in polarised_topics[:3]]
-        agree_topics = [topic.get('topic_name')
-                        for topic in polarised_topics[-3:]]
+        diff_topics, agree_topics = self._get_most_polarised_topics()
 
-        # Get most frequently covered topics for each outlet
-        express_freq_topics = self._get_frequent_topic('Daily Express')
-        guard_freq_topics = self._get_frequent_topic('The Guardian')
-
-        guard_topics = [topic.get('topic_name')
-                        for topic in guard_freq_topics[:3]]
-        express_topics = [topic.get('topic_name')
-                          for topic in express_freq_topics[:3]]
+        guard_topics, express_topics = self.top_three_topics()
 
         # Polarising articles
         guardian_pos_art, guardian_neg_art = self.top_articles('The Guardian')
@@ -327,14 +333,15 @@ class ReportCreator:
         return pdf
 
     def raw_email_generator(self):
+        '''Generates raw email content ready to be sent'''
         pdf_data = self.generate_jinja_env()
 
         from_email = "trainee.antariksh.patel@sigmalabs.co.uk"
         to_emails = [
-            "trainee.antariksh.patel@sigmalabs.co.uk",
-            "trainee.joseph.sasaki@sigmalabs.co.uk",
-            "trainee.josh.allen@sigmalabs.co.uk",
-            "trainee.jake.hussey@sigmalabs.co.uk"
+            # "trainee.antariksh.patel@sigmalabs.co.uk",
+            # "trainee.joseph.sasaki@sigmalabs.co.uk",
+            "trainee.josh.allen@sigmalabs.co.uk"
+            # "trainee.jake.hussey@sigmalabs.co.uk"
         ]
 
         # Set up the MIME message
@@ -358,11 +365,13 @@ class ReportCreator:
         return msg.as_bytes()
 
     def send_email(self):
+        '''Sends the raw email to the target destinations'''
         raw_email_bytes = self.raw_email_generator()
 
         # Create a boto3 client for SES
         # Replace with your SES region
-        ses_client = boto3.client('ses', region_name='eu-west-2', aws_access_key_id=os.environ['ACCESS_KEY'],
+        ses_client = boto3.client('ses', region_name='eu-west-2',
+                                  aws_access_key_id=os.environ['ACCESS_KEY'],
                                   aws_secret_access_key=os.environ['SECRET_ACCESS_KEY'])
 
         response = ses_client.send_raw_email(
@@ -403,5 +412,5 @@ def lambda_handler(event, context):
         report.close_connection()
 
 
-# if __name__ == "__main__":
-#     print(lambda_handler([1, 2, 3], [1, 2, 3]))
+if __name__ == "__main__":
+    print(lambda_handler([1, 2, 3], [1, 2, 3]))
