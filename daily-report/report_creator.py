@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from base64 import b64encode
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from dotenv import load_dotenv
 import plotly.express as px
 import plotly.graph_objects as go
@@ -205,6 +206,7 @@ class ReportCreator:
 
 # GRAPH METHODS
 
+
     def topics_sentiment_diff_bar_chart(self) -> list[str]:
         '''Returns a base64 encoded bar chart displaying
           the average topic sentiment for each outlet'''
@@ -222,15 +224,14 @@ class ReportCreator:
             showlegend=True,
             autosize=True,
             title_x=0.5,
-            legend=dict(
-                orientation="h",  # Horizontal legend
-                yanchor="bottom",  # Align legend to the bottom
-                y=-0.8,  # Place the legend below the chart
-                xanchor="center",  # Center the legend horizontally
-                x=0.5,
-                font=dict(
-                    size=8)  # Center the legend horizontally
-            ),)
+            legend={
+                "orientation": "h",
+                "yanchor": "bottom",
+                "y": -0.8,
+                "xanchor": "center",
+                "x": 0.5,
+                "font": {"size": 8}
+            },)
 
         fig.write_image("/tmp/topics_compound.png")
         with open("/tmp/topics_compound.png", "rb") as img_file:
@@ -324,7 +325,7 @@ class ReportCreator:
         template = jinja_env.get_template('jinja_template.html')
         context = self.generate_report_context()
         rendered_html = template.render(context)
-        with open('/tmp/report.html', 'w') as f:
+        with open('/tmp/report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
         HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')
         with open('/tmp/report.pdf', "rb") as pdf_file:
@@ -393,14 +394,17 @@ class ReportCreator:
         '''Closes the database connection'''
         self.__connection.close()
 
+ # pylint: disable=unused-argument
+# pylint: disable=broad-exception-caught
+
 
 def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        email = report.send_email()
+        report.send_email()
         return {'statusCode': 200,
-                'body': email}
+                'body': ' sent'}
     except Exception as e:
         print(f"Error: {str(e)}")
         return {
@@ -412,5 +416,6 @@ def lambda_handler(event, context):
         report.close_connection()
 
 
-if __name__ == "__main__":
-    print(lambda_handler([1, 2, 3], [1, 2, 3]))
+# if __name__ == "__main__":
+#     print(lambda_handler([1, 2, 3], [1, 2, 3])
+#           )  # pylint: disable=unused-argument
