@@ -17,6 +17,7 @@ variable "lambda_permission_policy_name" {
     default = "c16-media-polarisation-permissions-lambda"
 }
 
+# from tfvars
 
 variable "SCRAPER_LAMBDA_NAME" {
     description = "Name for scraper lambda (worker)"
@@ -38,8 +39,6 @@ variable "ARCHIVE_LAMBDA_NAME" {
     description = "Name for archive lambda"
     type = string
 }
-
-# from tfvars
 
 variable "SCRAPER_ECR_NAME" {
     description = "ECR name containing scraper image"

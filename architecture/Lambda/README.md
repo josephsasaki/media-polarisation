@@ -1,7 +1,7 @@
 # **Lambda Directory - Terraform Configuration**
 
 This directory contains Terraform scripts to create and configure four Lambda functions which serve different purposes: 
-- Scraper Dispatcher Lambda - dispatches Scraper Lambdas.
+- Dispatcher Lambda - dispatches Scraper Lambdas.
 - Archive Lambda - archives six month old data from RDS into S3.
 - Scraper Lambdas - scrapes RSS feed and uploads analysis to RDS.
 - Email Lambda - emails a daily report to recipients.
