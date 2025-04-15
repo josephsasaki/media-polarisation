@@ -14,12 +14,12 @@ provider "aws" {
 
 # VPC data
 data "aws_vpc" "c16_vpc" {
-  id = var.vpc_id
+  id = var.VPC_ID
 }
 
 # Import ECR image
 data "aws_ecr_image" "dashboard_image" {
-  repository_name = var.dashboard_ecr_name
+  repository_name = var.DASHBOARD_ECR_NAME
   image_tag       = "latest"
 }
 
@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "dashboard-task-definition" {
   network_mode = "awsvpc"
   cpu                      = 1024
   memory                   = 2048
-  execution_role_arn = var.task_execution_role_arn
+  execution_role_arn = var.TASK_EXECUTION_ROLE_ARN
   container_definitions = jsonencode([
     {
       name      = var.container_definition_name
@@ -82,12 +82,12 @@ resource "aws_security_group" "dashboard_sg" {
 # Create ECS Service
 resource "aws_ecs_service" "dashboard_service" {
   name            = var.ecs_service_name
-  cluster         = var.ecs_cluster_name
+  cluster         = var.ECS_CLUSTER_NAME
   task_definition = aws_ecs_task_definition.dashboard-task-definition.arn
   desired_count   = 1
   launch_type = "FARGATE"
   network_configuration {
-    subnets = [var.subnet_id_1, var.subnet_id_2]
+    subnets = [var.SUBNET_ID_1, var.SUBNET_ID_2]
     security_groups = [aws_security_group.dashboard_sg.id]
     assign_public_ip = true
   }
