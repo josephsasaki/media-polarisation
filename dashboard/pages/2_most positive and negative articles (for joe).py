@@ -1,3 +1,4 @@
+from newspaper import Article
 import os
 from dotenv import load_dotenv
 import streamlit as st
@@ -9,6 +10,13 @@ from datetime import datetime, date
 load_dotenv()
 
 IMG_URL = "https://i.guim.co.uk/img/media/4db6b79d0a58121aa4d33520e7bdb06db3a62791/0_0_4724_2835/master/4724.jpg?width=460&quality=85&auto=format&fit=max&s=b36287f1daddc45cc2acd9e1b136d18b"
+
+
+def get_main_image(article_url):
+    article = Article(article_url)
+    article.download()
+    article.parse()
+    return article.top_image
 
 
 def connect_to_database() -> psycopg2.extensions.connection:
@@ -102,59 +110,51 @@ def show_article_block(rank: int, image_url: str, headline: str, article_url: st
     st.markdown("<br><br>", unsafe_allow_html=True)
 
 
-def show_chart():
+def show_chart(df: pd.DataFrame, metric: str):
     left_column, right_column = st.columns(2)
+
+    metric_column = {
+        "Positivity": "article_positive_sentiment",
+        "Negativity": "article_negative_sentiment",
+        "Compound": "article_compound_sentiment",
+        "Subjectivity": "article_subjectivity",
+        "Polarity": "article_polarity",
+    }[metric]
+
+    guardian_df = df[df['news_outlet_name'] == 'The Guardian'].sort_values(
+        by=metric_column, ascending=False).head(3)
+    express_df = df[df['news_outlet_name'] == 'Daily Express'].sort_values(
+        by=metric_column, ascending=False).head(3)
+
     with left_column:
         st.header("The Guardian")
         st.markdown("<br>", unsafe_allow_html=True)
-        show_article_block(
-            1,
-            "https://i.guim.co.uk/img/media/fd0cafe542a657ce939f4f43e37d753ea24e37ee/0_704_3648_2189/master/3648.jpg?width=140&quality=85&auto=format&fit=max&s=69bc48bf2e41ad0d4c66c8a9255119e3",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.9,
-        )
-        show_article_block(
-            2,
-            "https://i.guim.co.uk/img/media/afffdee907a94e4c44c7ce21f14dc0d79712c19a/0_116_3460_2075/master/3460.jpg?width=140&quality=85&auto=format&fit=max&s=6d92b3757ea606b1295affb9ad4722e1",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.7,
-        )
-        show_article_block(
-            3,
-            "https://i.guim.co.uk/img/media/4db6b79d0a58121aa4d33520e7bdb06db3a62791/0_0_4724_2835/master/4724.jpg?width=140&quality=85&auto=format&fit=max&s=26ec936ab153d5c31003e11c4232f859",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.4,
-        )
+        for rank, (_, row) in enumerate(guardian_df.iterrows(), start=1):
+            show_article_block(
+                rank,
+                get_main_image(row["article_url"]),
+                row["article_headline"],
+                row["article_url"],
+                row[metric_column]
+            )
+
     with right_column:
         st.header("Daily Express")
         st.markdown("<br>", unsafe_allow_html=True)
-        show_article_block(
-            1,
-            "https://i.guim.co.uk/img/media/a8289741785420bc2f68d0c3aa491d9ace09f8e0/0_0_7728_4637/master/7728.jpg?width=140&quality=85&auto=format&fit=max&s=649daf351078f037c32e50f3b37957bb",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.8,
-        )
-        show_article_block(
-            2,
-            "https://i.guim.co.uk/img/media/dad848f01725d976fe6449ff903ea195e3bb7eaf/0_0_6000_3600/master/6000.jpg?width=140&quality=85&auto=format&fit=max&s=67c2272c8fb41c43927285d24cb3fc52",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.6,
-        )
-        show_article_block(
-            3,
-            "https://i.guim.co.uk/img/media/85330df5cf76e7e6e9e19a9cbcc64240fc791c71/0_116_3500_2101/master/3500.jpg?width=140&quality=85&auto=format&fit=max&s=f88fd3ac3c34cdc9672aa2ce65186ea9",
-            "Some Headline: Something Has Happened",
-            "https://www.theguardian.com/uk",
-            0.5,
-        )
+        for rank, (_, row) in enumerate(express_df.iterrows(), start=1):
+            show_article_block(
+                rank,
+                get_main_image(row["article_url"]),
+                row["article_headline"],
+                row["article_url"],
+                row[metric_column]
+            )
 
 
 if __name__ == "__main__":
     day, metric = get_widget_inputs()
     df = get_chart_data(day, metric)
-    show_chart()
+    if df.empty:
+        st.warning("No articles found for the selected date.")
+    else:
+        show_chart(df, metric)
