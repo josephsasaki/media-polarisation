@@ -31,3 +31,6 @@ jobs:
           pylint scraper-pipeline/dispatcher/*.py --fail-under=9.5
           pylint scraper-pipeline/pipeline/*.py --fail-under=9.5
           pylint archival-pipeline/*.py --fail-under=9.5
+          pylint daily-report/*.py --fail-under=9.5
+          pylint dashboard/*.py --fail-under=9.5
+          pylint dashboard/pages/*.py --fail-under=9.5
