@@ -1,13 +1,17 @@
+'''
+    The welcome page.
+'''
+
 import streamlit as st
 
 
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.image("logo.png", width=150)
+    st.image("static/logo.png", width=150)
 
 
-st.image("logo.png")
+st.image("static/logo.png")
 st.title("Tilt")
 
 st.write("""
