@@ -1,4 +1,4 @@
-# **Elastic Container Repository - Terraform Configuration**
+# **ECR (Elastic Container Repository) - Terraform Configuration**
 
 This directory contains Terraform scripts to create five ECRs for each of the following: Dispatcher Lambda, Worker (scraper) Lambda, Archive Lambda, Email Lambda and the Dashboard.
 
@@ -7,7 +7,7 @@ This directory contains Terraform scripts to create five ECRs for each of the fo
 
 ## **Variables**
 
-The `variables.tf` file defines several variables used for configuring the AWS RDS instance. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
+The `variables.tf` file defines several variables used for configuring the ECR instances. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
 
 Below is a list of all the variables in `variables.tf`:
 

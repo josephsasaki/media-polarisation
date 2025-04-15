@@ -13,7 +13,7 @@ The required roles along with trust and permission policies are also defined. Th
 
 ## **Variables**
 
-The `variables.tf` file defines several variables used for configuring the AWS RDS instance. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
+The `variables.tf` file defines several variables used for configuring the AWS Lambda functions. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
 
 Below is a list of all the variables in `variables.tf`:
 

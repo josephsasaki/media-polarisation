@@ -1,4 +1,4 @@
-# **Elastic Container Service - Terraform Configuration**
+# **ECS (Elastic Container Service) - Terraform Configuration**
 
 This directory contains Terraform scripts to create and configure an ECS instance which will use FARGATE. To do this a task definition was first created and then used as an input into the ECS definition. A security group was also created and attached to the ECS to allow connections on only port **80**.
 
@@ -7,7 +7,7 @@ This directory contains Terraform scripts to create and configure an ECS instanc
 
 ## **Variables**
 
-The `variables.tf` file defines several variables used for configuring the AWS RDS instance. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
+The `variables.tf` file defines several variables used for configuring the ECS FARGATE service. Some of these variables have default values, but there are others that must be defined in the `terraform.tfvars` file for Terraform to successfully run. Only variables without default values are **essential** and must be included in the `terraform.tfvars` file.
 
 Below is a list of all the variables in `variables.tf`:
 
