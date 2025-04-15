@@ -11,55 +11,55 @@ The `variables.tf` file defines several variables used for configuring the AWS R
 
 Below is a list of all the variables in `variables.tf`:
 
-#### **1. region**
-- **Description**: The AWS region where the RDS will be deployed.
-- **Type**: `string`
-- **Optional**: Default = `"eu-west-2"`
-
-#### **2. sg_name**
-- **Description**: Name of security group used for the RDS.
-- **Type**: `string`
-- **Optional**: Default = `"c16-media-polarisation-rds-s"`
-
-#### **3. subnet_group_name**
-- **Description**: Name of subnet group to be created, this contains subnets which will host the RDS.
-- **Type**: `string`
-- **Optional**: Default = `"c16-media-polarisation-subnet-group"`
-
-#### **4. DB_NAME**
+#### **1. DB_NAME**
 - **Description**: Name of database.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **5. DB_USERNAME**
+#### **2. DB_USERNAME**
 - **Description**: Username used to log into the database.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **6. DB_PASSWORD**
+#### **3. DB_PASSWORD**
 - **Description**: Password used to log into the database.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **7. VPC_ID**
+#### **4. VPC_ID**
 - **Description**: The VPC ID of VPC which contains the defined subnets and where the RDS is deployed.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **8. SUBNET_ID_1**
+#### **5. SUBNET_ID_1**
 - **Description**: Subnet ID for first AWS subnet.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **9. SUBNET_ID_2**
+#### **6. SUBNET_ID_2**
 - **Description**: Subnet ID for second AWS subnet.
 - **Type**: `string`
 - **REQUIRED**
 
-#### **10. RDS_IDENTIFIER**
+#### **7. RDS_IDENTIFIER**
 - **Description**: The RDS identification name.
 - **Type**: `string`
 - **REQUIRED**
+
+#### **8. region**
+- **Description**: The AWS region where the RDS will be deployed.
+- **Type**: `string`
+- **Optional**: Default = `"eu-west-2"`
+
+#### **9. sg_name**
+- **Description**: Name of security group used for the RDS.
+- **Type**: `string`
+- **Optional**: Default = `"c16-media-polarisation-rds-s"`
+
+#### **10. subnet_group_name**
+- **Description**: Name of subnet group to be created, this contains subnets which will host the RDS.
+- **Type**: `string`
+- **Optional**: Default = `"c16-media-polarisation-subnet-group"`
 
 
 ---
