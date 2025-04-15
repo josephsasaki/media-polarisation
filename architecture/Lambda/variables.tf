@@ -105,3 +105,8 @@ variable "BUCKET_NAME" {
     description = "Name of step function that is used to send emails"
     type = string
 }
+
+variable "OPENAI_API_KEY" {
+    description = "OPENAI API Key"
+    type = string
+}

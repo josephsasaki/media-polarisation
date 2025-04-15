@@ -52,7 +52,7 @@ variable "lambda_archive_name" {
     type = string
 }
 
-variable "step_function_name" {
+variable "lambda_email_name" {
     description = "Name of step function that is used to send emails"
     type = string
 }
