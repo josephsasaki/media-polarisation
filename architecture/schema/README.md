@@ -1,6 +1,9 @@
 # **Schema Directory - Terraform Configuration**
 
-This directory contains the Schema used to define and seed the remote database as well a ERD diagram. In addition to this it includes some utilities such as inputting mock data older than three months into the database (so the archive pipeline can be tested) and a bash script that resets the RDS.
+This directory contains the Schema used to define and seed the remote database as well a ERD diagram shown in **Fig 1**. In addition to this it includes some utilities such as inputting mock data older than three months into the database (so the archive pipeline can be tested) and a bash script that resets the RDS.
+
+![ERD Diagram](ERD.png)
+Fig 1: Shows the ERD diagram used.
 
 - `ERD.png`: This picture is the ERD diagram and is identical to the structure of the database defined in `schema.sql`.
 - `mock_data.py`: Creates mock data so the archive pipeline can be tested.
