@@ -6,3 +6,5 @@ kaleido
 Jinja2
 weasyprint==52.5
 boto3
+newspaper3k
+lxml[html_clean]

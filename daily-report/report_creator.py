@@ -17,6 +17,7 @@ from psycopg2.extensions import connection
 from weasyprint import HTML
 from jinja2 import Environment, FileSystemLoader
 import boto3
+from newspaper import Article
 
 
 # once we have historic data AND a.article_published_date: : DATE = %s
@@ -181,18 +182,36 @@ class ReportCreator:
 
         return guardian_score, express_score
 
-    def top_articles(self, outlet: str) -> tuple[list[dict], list[dict]]:
+    def _get_main_image(self, article_url):
+        '''Returns the image from the link provided'''
+        article = Article(article_url)
+        article.download()
+        article.parse()
+        return article.top_image
+
+    def _combine_image_to_articles(self, articles: list[dict]) -> list[dict]:
+        '''Adds an image to each article dictionary'''
+        for article in articles:
+            image = self._get_main_image(article.get('article_url'))
+            article['image_url'] = image
+        return articles
+
+    def _get_top_polarising_articles(self, outlet: str) -> tuple[list[dict], list[dict]]:
         '''Finds the top polarising articles for the given outlet'''
         with self.__connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(TOP_NEGATIVE_ARTICLES,
                         (YESTERDAYS_DATE, outlet))
-            guardian_positives = cur.fetchall()
+            positives = cur.fetchall()
             cur.execute(TOP_POSITIVE_ARTICLES,
                         (YESTERDAYS_DATE, outlet))
-            guardian_negatives = cur.fetchall()
-            return guardian_positives, guardian_negatives
+            negatives = cur.fetchall()
 
-    def top_three_topics(self) -> tuple[dict, dict]:
+            positive_with_image = self._combine_image_to_articles(positives)
+            negative_with_image = self._combine_image_to_articles(negatives)
+
+            return positive_with_image, negative_with_image
+
+    def _get_top_three_covered_topics(self) -> tuple[dict, dict]:
         '''Returns the top three covered topics for each outlet'''
         express_freq_topics = self._get_frequent_topic('Daily Express')
         guard_freq_topics = self._get_frequent_topic('The Guardian')
@@ -203,9 +222,11 @@ class ReportCreator:
                           for topic in express_freq_topics[:3]]
         return guard_topics, express_topics
 
-
-# GRAPH METHODS
-
+    def _get_tilt_logo(self):
+        '''Returns the decoded tilt logo png'''
+        with open("tilt_logo.png", "rb") as img_file:
+            base_image = b64encode(img_file.read()).decode('utf-8')
+        return base_image
 
     def topics_sentiment_diff_bar_chart(self) -> list[str]:
         '''Returns a base64 encoded bar chart displaying
@@ -222,8 +243,9 @@ class ReportCreator:
                      color_discrete_map={'guardian_compound': 'red', 'express_compound': 'blue'})
         fig.update_layout(
             showlegend=True,
-            autosize=True,
+            width=700,
             title_x=0.5,
+            height=450,
             legend={
                 "orientation": "h",
                 "yanchor": "bottom",
@@ -273,9 +295,10 @@ class ReportCreator:
         fig.update_layout(
             title_text="Topic Coverage per News Outlet",
             showlegend=False,
-            autosize=True,
-            title_x=0.5
-        )
+            width=700,
+            title_x=0.5,
+            height=450)
+
         fig.write_image("/tmp/combined_topics_freq.png")
         with open("/tmp/combined_topics_freq.png", "rb") as img_file:
             base_image = b64encode(img_file.read()).decode('utf-8')
@@ -288,16 +311,19 @@ class ReportCreator:
 
         # Get most polarised and agreed-upon topics
         diff_topics, agree_topics = self._get_most_polarised_topics()
-
-        guard_topics, express_topics = self.top_three_topics()
+        guard_topics, express_topics = self._get_top_three_covered_topics()
 
         # Polarising articles
-        guardian_pos_art, guardian_neg_art = self.top_articles('The Guardian')
-        express_pos_art, express_neg_art = self.top_articles('Daily Express')
+        guardian_pos_art, guardian_neg_art = self._get_top_polarising_articles(
+            'The Guardian')
+        express_pos_art, express_neg_art = self._get_top_polarising_articles(
+            'Daily Express')
 
         # Generate charts (base64-encoded images)
         bar_chart = self.topics_sentiment_diff_bar_chart()
         combined_pie = self.combined_pie_charts()
+
+        logo = self._get_tilt_logo()
 
         # Build the Jinja context dictionary
         context = {
@@ -313,10 +339,8 @@ class ReportCreator:
             "guardian_neg_art": guardian_neg_art,
             "guardian_pos_art": guardian_pos_art,
             "express_pos_art": express_pos_art,
-            "express_neg_art": express_neg_art
-
-
-        }
+            "express_neg_art": express_neg_art,
+            "tilt_logo": logo}
         return context
 
     def generate_jinja_env(self):
@@ -327,50 +351,60 @@ class ReportCreator:
         rendered_html = template.render(context)
         with open('/tmp/report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
-        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')
+        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')  # add /tmp/
         with open('/tmp/report.pdf', "rb") as pdf_file:
-            # pdf = b64encode(pdf_file.read())
             pdf = pdf_file.read()
         return pdf
 
     def raw_email_generator(self):
         '''Generates raw email content ready to be sent'''
         pdf_data = self.generate_jinja_env()
-
-        from_email = "trainee.antariksh.patel@sigmalabs.co.uk"
+        from_email = "trainee.josh.allen@sigmalabs.co.uk"
         to_emails = [
             # "trainee.antariksh.patel@sigmalabs.co.uk",
             # "trainee.joseph.sasaki@sigmalabs.co.uk",
             "trainee.josh.allen@sigmalabs.co.uk"
             # "trainee.jake.hussey@sigmalabs.co.uk"
         ]
-
         # Set up the MIME message
         msg = MIMEMultipart()
         msg['From'] = from_email
-        # Don't list all addresses here
         msg['To'] = ", ".join(to_emails)
-        msg['Subject'] = "Hello from SES"
+        msg['Subject'] = f"TILT Sentiment Analysis Daily Report {YESTERDAYS_DATE}"
 
         # Email body
-        body = MIMEText("Today's daily report", 'html')
-        msg.attach(body)
+        body = MIMEText(
+            f"""\
+            <html>
+                <body>
+                    <p>Dear Customer,</p>
 
-        # PDF attachment (raw, not base64 upfront!)
+                    <p>
+                        Please find attached your sentiment analysis summary report for <strong>{YESTERDAYS_DATE}</strong>.
+                        This report includes an overview of the key topics discussed by The Guardian and Daily Express, overall sentiment trends, and notable changes compared to previous days.
+                    </p>
+                    <p>
+                        Thank you for choosing our service.<br>
+                        <br>
+                        Best regards,<br>
+                        The TILT Team
+                    </p>
+                </body>
+            </html>
+            """,
+            'html'
+        )
+
+        msg.attach(body)
         part = MIMEApplication(pdf_data)
         part.add_header('Content-Disposition', 'attachment',
                         filename="document.pdf")
         msg.attach(part)
-
-        # Return raw bytes, NOT base64 encoded
         return msg.as_bytes()
 
     def send_email(self):
         '''Sends the raw email to the target destinations'''
         raw_email_bytes = self.raw_email_generator()
-
-        # Create a boto3 client for SES
-        # Replace with your SES region
         ses_client = boto3.client('ses', region_name='eu-west-2',
                                   aws_access_key_id=os.environ['ACCESS_KEY'],
                                   aws_secret_access_key=os.environ['SECRET_ACCESS_KEY'])
@@ -384,10 +418,8 @@ class ReportCreator:
                 "trainee.antariksh.patel@sigmalabs.co.uk",
                 "trainee.joseph.sasaki@sigmalabs.co.uk",
                 "trainee.josh.allen@sigmalabs.co.uk",
-                "trainee.jake.hussey@sigmalabs.co.uk"
-            ]
+                "trainee.jake.hussey@sigmalabs.co.uk"])
 
-        )
         print("Email sent! Message ID:", response['MessageId'])
 
     def close_connection(self):
@@ -416,6 +448,6 @@ def lambda_handler(event, context):
         report.close_connection()
 
 
-# if __name__ == "__main__":
-#     print(lambda_handler([1, 2, 3], [1, 2, 3])
-#           )  # pylint: disable=unused-argument
+if __name__ == "__main__":
+    print(lambda_handler([1, 2, 3], [1, 2, 3])
+          )  # pylint: disable=unused-argument
