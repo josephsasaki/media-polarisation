@@ -17,29 +17,26 @@ variable "lambda_permission_policy_name" {
     default = "c16-media-polarisation-permissions-lambda"
 }
 
-variable "scraper_lambda_name" {
+
+variable "SCRAPER_LAMBDA_NAME" {
     description = "Name for scraper lambda (worker)"
     type = string
-    default = "c16-media-polarisation-scraper-lambda"
 }
 
 
-variable "scraper_dispatcher_lambda_name" {
+variable "SCRAPER_DISPATCHER_LAMBDA_NAME" {
     description = "Name for scraper lambda"
     type = string
-    default = "c16-media-polarisation-scraper-dispatcher-lambda"
 }
 
-variable "email_lambda_name" {
+variable "EMAIL_LAMBDA_NAME" {
     description = "Name for email lambda"
     type = string
-    default = "c16-media-polarisation-email-lambda"
 }
 
-variable "archive_lambda_name" {
+variable "ARCHIVE_LAMBDA_NAME" {
     description = "Name for archive lambda"
     type = string
-    default = "c16-media-polarisation-archive-lambda"
 }
 
 # from tfvars

@@ -1,8 +1,8 @@
-# **RDS Directory - Terraform Configuration**
+# **S3 Directory - Terraform Configuration**
 
-This directory contains Terraform scripts to create and configure an AWS RDS instance with a Postgres SQL engine. It includes:
+This directory contains Terraform scripts to create an S3 bucket on AWS which will be used to archive older data from the RDS.
 
-- `main.tf`: The main Terraform script to define and create the RDS instance.
+- `main.tf`: The main Terraform script to define and create the S3 instance.
 - `variables.tf`: A file that defines the variables used in the Terraform configuration.
 
 ## **Variables**

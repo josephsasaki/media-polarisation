@@ -82,24 +82,38 @@ Below is a list of all the variables in `variables.tf`:
 - **Type**: `string`
 - **REQUIRED**
 
+#### **14. SCRAPER_LAMBDA_NAME**
+- **Description**: Name of scraper (worker) Lambda.
+- **Type**: `string`
+- **REQUIRED**
 
-#### **14. region**
+#### **15. SCRAPER_DISPATCHER_LAMBDA_NAME**
+- **Description**: Name of dispatcher Lambda.
+- **Type**: `string`
+- **REQUIRED**
+
+#### **16. EMAIL_LAMBDA_NAME**
+- **Description**: Name of email Lambda.
+- **Type**: `string`
+- **REQUIRED**
+
+#### **17. ARCHIVE_LAMBDA_NAME**
+- **Description**: Name of archive Lambda.
+- **Type**: `string`
+- **REQUIRED**
+
+#### **18. region**
 - **Description**: The AWS region where the RDS will be deployed.
 - **Type**: `string`
 - **Optional**: Default = `"eu-west-2"`
 
-#### **15. lambda_policy_name**
+#### **19. lambda_policy_name**
 - **Description**: Name of created trust policy used for Lambdas.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-policy-lambda"`
 
-#### **16. lambda_permission_policy_name**
+#### **20. lambda_permission_policy_name**
 - **Description**: Name of created permission policy used for Lambdas.
-- **Type**: `string`
-- **Optional**: Default = `"c16-media-polarisation-permissions-lambda"`
-
-#### **17. scraper_lambda_name**
-- **Description**: Name of created trust policy used for Lambdas.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-permissions-lambda"`
 
@@ -112,13 +126,23 @@ The `terraform.tfvars` file is where you provide values for the variables that d
 The `terraform.tfvars` should have these variables along with relevant values:
 
 ```
+SCRAPER_ECR_NAME="..."
+EMAIL_ECR_NAME="..."
+ARCHIVE_ECR_NAME="..."
+SCRAPER_DISPATCHER_ECR_NAME="..."
+DB_HOST="..."
+DB_PORT="..."
+DB_NAME="..."
 DB_USERNAME="..."
 DB_PASSWORD="..."
-DB_NAME="..."
-VPC_ID="..."
-SUBNET_ID_1="..."
-SUBNET_ID_2="..."
-RDS_IDENTIFIER="..."
+ACCESS_KEY = "..."
+SECRET_ACCESS_KEY="..."
+BUCKET_NAME="..."
+OPENAI_API_KEY="..."
+SCRAPER_LAMBDA_NAME="..."
+SCRAPER_DISPATCHER_LAMBDA_NAME="..."
+EMAIL_LAMBDA_NAME="..."
+ARCHIVE_LAMBDA_NAME="..."
 ```
 
 ## **Steps to Run the Terraform Script**

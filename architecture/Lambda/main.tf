@@ -90,7 +90,7 @@ data "aws_ecr_image" "archive_pipeline_image" {
 
 resource "aws_lambda_function" "scraper_lambda" {
   image_uri = data.aws_ecr_image.scraper_pipeline_image.image_uri
-  function_name = var.scraper_lambda_name
+  function_name = var.SCRAPER_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
   timeout = 900
@@ -108,7 +108,7 @@ resource "aws_lambda_function" "scraper_lambda" {
 
 resource "aws_lambda_function" "email_lambda" {
   image_uri = data.aws_ecr_image.email_service_image.image_uri
-  function_name = var.email_lambda_name
+  function_name = var.EMAIL_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
   timeout = 300
@@ -128,7 +128,7 @@ resource "aws_lambda_function" "email_lambda" {
 
 resource "aws_lambda_function" "archive_lambda" {
   image_uri = data.aws_ecr_image.archive_pipeline_image.image_uri
-  function_name = var.archive_lambda_name
+  function_name = var.ARCHIVE_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
   timeout = 300
@@ -149,7 +149,7 @@ resource "aws_lambda_function" "archive_lambda" {
 
 resource "aws_lambda_function" "scraper_dispatcher_lambda" {
   image_uri = data.aws_ecr_image.scraper_dispatcher_pipeline_image.image_uri
-  function_name = var.scraper_dispatcher_lambda_name
+  function_name = var.SCRAPER_DISPATCHER_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
   timeout = 30
@@ -158,7 +158,7 @@ resource "aws_lambda_function" "scraper_dispatcher_lambda" {
        ACCESS_KEY = var.ACCESS_KEY,
        SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
        LAMBDA_REGION = var.region
-       WORKER_FUNCTION_NAME = var.scraper_lambda_name
+       WORKER_FUNCTION_NAME = var.SCRAPER_LAMBDA_NAME
     }
   }
 }
