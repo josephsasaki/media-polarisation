@@ -16,18 +16,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Homebrew
+      - name: Install Cairo dependencies (Ubuntu)
         run: |
-          if ! command -v brew &> /dev/null; then
-            echo "Homebrew not found, installing..."
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          else
-            echo "Homebrew is already installed."
-          fi
-
-      - name: Install Cairo dependencies (macOS)
-        run: |
-          brew install cairo
+          sudo apt-get update
+          sudo apt-get install -y libcairo2 libcairo2-dev
 
       - name: Set environment variable for macOS
         run: |
