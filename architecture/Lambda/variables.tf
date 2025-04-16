@@ -17,48 +17,45 @@ variable "lambda_permission_policy_name" {
     default = "c16-media-polarisation-permissions-lambda"
 }
 
-variable "scraper_lambda_name" {
-    description = "Name for scraper lambda"
-    type = string
-    default = "c16-media-polarisation-scraper-lambda"
-}
-
-variable "scraper_dispatcher_lambda_name" {
-    description = "Name for scraper lambda"
-    type = string
-    default = "c16-media-polarisation-scraper-dispatcher-lambda"
-}
-
-variable "email_lambda_name" {
-    description = "Name for email lambda"
-    type = string
-    default = "c16-media-polarisation-email-lambda"
-}
-
-variable "archive_lambda_name" {
-    description = "Name for archive lambda"
-    type = string
-    default = "c16-media-polarisation-archive-lambda"
-}
-
 # from tfvars
 
-variable "scraper_ecr_name" {
+variable "SCRAPER_LAMBDA_NAME" {
+    description = "Name for scraper lambda (worker)"
+    type = string
+}
+
+
+variable "SCRAPER_DISPATCHER_LAMBDA_NAME" {
+    description = "Name for scraper lambda"
+    type = string
+}
+
+variable "EMAIL_LAMBDA_NAME" {
+    description = "Name for email lambda"
+    type = string
+}
+
+variable "ARCHIVE_LAMBDA_NAME" {
+    description = "Name for archive lambda"
+    type = string
+}
+
+variable "SCRAPER_ECR_NAME" {
     description = "ECR name containing scraper image"
     type = string
 }
 
-variable "email_ecr_name" {
+variable "EMAIL_ECR_NAME" {
     description = "ECR name containing email image"
     type = string
 }
 
-variable "archive_ecr_name" {
+variable "ARCHIVE_ECR_NAME" {
     description = "ECR name containing archive image"
     type = string
 }
 
-variable "scraper_dispatcher_ecr_name" {
+variable "SCRAPER_DISPATCHER_ECR_NAME" {
     description = "ECR name containing archive image"
     type = string
 }
@@ -94,10 +91,6 @@ variable "ACCESS_KEY" {
 }
 variable "SECRET_ACCESS_KEY" {
     description = "SECRET ACCESS KEY for IAM"
-    type = string
-}
-variable "WORKER_FUNCTION_NAME" {
-    description = "Worker function for scraper pipeline name."
     type = string
 }
 
