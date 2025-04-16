@@ -62,8 +62,8 @@ resource "aws_security_group" "dashboard_sg" {
   vpc_id = data.aws_vpc.c16_vpc.id
 
   ingress {
-    from_port        = 8501
-    to_port          = 8501
+    from_port        = 80
+    to_port          = 80
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
