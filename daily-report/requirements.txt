@@ -9,4 +9,3 @@ boto3
 newspaper3k
 lxml[html_clean]
 pycairo
-cairocffi
