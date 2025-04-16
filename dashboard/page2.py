@@ -8,6 +8,7 @@ import streamlit as st
 import pandas as pd
 
 from database_manager import query_data
+from styling import top_bar, bottom_bar
 
 
 def get_widget_inputs() -> tuple[str]:
@@ -123,9 +124,11 @@ def show_article_block(rank: int, image_url: str, headline: str, article_url: st
 
 def show() -> None:
     '''From this method, the entire streamlit page is produced.'''
+    top_bar()
     inputs = get_widget_inputs()
     df = retrieve_data(inputs)
     write(df, inputs)
+    bottom_bar()
 
 
 if __name__ == "__main__":

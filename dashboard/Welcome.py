@@ -3,16 +3,9 @@
 '''
 
 import streamlit as st
+from styling import title_image, bottom_bar
 
-
-col1, col2 = st.columns([1, 5])
-
-with col1:
-    st.image("static/logo.png", width=150)
-
-
-st.image("static/logo.png")
-st.title("Tilt")
+title_image()
 
 st.write("""
     Welcome to the Tilts media bias database dashboard.
@@ -47,3 +40,5 @@ st.write("""
 
 
 """)
+
+bottom_bar()

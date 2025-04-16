@@ -6,6 +6,7 @@ import streamlit as st
 import plotly.express as px
 
 from database_manager import query_data
+from styling import top_bar, bottom_bar
 
 
 def average_subjectivity_line_graph() -> None:
@@ -102,9 +103,11 @@ def average_compound_line_graph() -> None:
 
 def show() -> None:
     '''Show the complete page.'''
+    top_bar()
     average_subjectivity_line_graph()
     average_polarity_line_graph()
     average_compound_line_graph()
+    bottom_bar()
 
 
 if __name__ == "__main__":

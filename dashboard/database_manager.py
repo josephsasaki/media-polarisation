@@ -6,10 +6,12 @@ import os
 import psycopg2
 import streamlit as st
 import pandas as pd
+from dotenv import load_dotenv
 
 
 def create_connection() -> psycopg2.extensions.connection:
     '''Connects to the PostgreSQL database.'''
+    load_dotenv()
     try:
         conn = psycopg2.connect(
             host=os.getenv('DB_HOST'),

@@ -8,6 +8,7 @@ import pandas as pd
 
 
 from database_manager import query_data
+from styling import top_bar, bottom_bar
 
 
 def retrieve_data() -> pd.DataFrame:
@@ -124,11 +125,13 @@ def make_disagreeable_chart(df: pd.DataFrame) -> None:
 
 def show() -> None:
     '''From this method, the entire streamlit page is produced.'''
+    top_bar()
     df = retrieve_data()
     inputs = get_widget_inputs(df)
     df = transform_data(df, inputs)
     make_agreeable_chart(df)
     make_disagreeable_chart(df)
+    bottom_bar()
 
 
 if __name__ == "__main__":

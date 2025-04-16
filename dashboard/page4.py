@@ -6,6 +6,7 @@ import streamlit as st
 import plotly.express as px
 
 from database_manager import query_data
+from styling import top_bar, bottom_bar
 
 
 def get_all_topics() -> list:
@@ -135,10 +136,12 @@ def average_negative_topic_line_graph(selected_topic: str) -> None:
 
 def show() -> None:
     '''Show the complete page.'''
+    top_bar()
     all_topics = get_all_topics()
     average_compound_topic_line_graph(all_topics)
     average_positive_topic_line_graph(all_topics)
     average_negative_topic_line_graph(all_topics)
+    bottom_bar()
 
 
 if __name__ == "__main__":
