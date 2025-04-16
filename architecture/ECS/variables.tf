@@ -10,20 +10,9 @@ variable "task_definition_name" {
     default = "c16-media-polarisation-dashboard-task-definition"
 }
 
-variable "task_execution_role_arn" {
-    description = "Permission policy ARN for container execution role"
-    type = string
-    default = "arn:aws:iam::129033205317:role/ecsTaskExecutionRole"
-}
-
-variable "task_role_name" {
-    description = "Task role for running dashboard."
-    type = string
-    default = "c16-media-polarisation-dashboard-task-role"
-}
 
 variable "container_definition_name" {
-    description = "Name for container definition in task definition"
+    description = "Name of container definition, used in task definition."
     type = string
     default = "c16-media-polarisation-container-definition"
 }
@@ -43,27 +32,27 @@ variable "sg_name" {
 
 # From tfvars
 
-variable "dashboard_ecr_name" {
+variable "DASHBOARD_ECR_NAME" {
     description = "Name of ECR for that has image of dashboard"
     type = string
 }
 
-variable "ecs_cluster_name" {
+variable "ECS_CLUSTER_NAME" {
     description = "Name of ECS cluster"
     type = string
 }
 
-variable "subnet_id_1" {
+variable "SUBNET_ID_1" {
     description = "Id of first public subnet"
     type = string
 }
 
-variable "subnet_id_2" {
+variable "SUBNET_ID_2" {
     description = "Id of second public subnet"
     type = string
 }
 
-variable "vpc_id" {
+variable "VPC_ID" {
     description = "VPC ID for RDS and SG"
     type = string
 }
@@ -90,5 +79,10 @@ variable "DB_USERNAME" {
 
 variable "DB_PASSWORD" {
     description = "Database Password"
+    type = string
+}
+
+variable "TASK_EXECUTION_ROLE_ARN" {
+    description = "Task definition role to with corresponding trust policy, also contains all permissions needed to run the task"
     type = string
 }

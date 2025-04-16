@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "permission-policy-doc" {
 }
 
 resource "aws_iam_role" "schedule_role" {
-  name               = var.lambda_schedule_policy_name
+  name               = var.lambda_schedule_role_name
   assume_role_policy = data.aws_iam_policy_document.trust-policy-doc.json
 }
 
@@ -60,11 +60,11 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 
 # Event scheduler scraper lambda
 data "aws_lambda_function" "scraper_dispatcher_lambda" {
-  function_name = var.lambda_scraper_dispatcher_name
+  function_name = var.SCRAPER_DISPATCHER_LAMBDA_NAME
 }
 
-resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
-  name       = var.lambda_scraper_dispatcher_name
+resource "aws_scheduler_schedule" "scraper_dispatcher_lambda_schedule" {
+  name       = var.lambda_scraper_dispatcher_schedule_name
   group_name = "default"
 
   flexible_time_window {
@@ -82,11 +82,11 @@ resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
 
 # Event scheduler archive lambda
 data "aws_lambda_function" "archive_lambda" {
-  function_name = var.lambda_archive_name
+  function_name = var.ARCHIVE_LAMBDA_NAME
 }
 
 resource "aws_scheduler_schedule" "archive_lambda_schedule" {
-  name       = var.lambda_archive_name
+  name       = var.lambda_archive_schedule_name
   group_name = "default"
 
   flexible_time_window {
@@ -105,11 +105,11 @@ resource "aws_scheduler_schedule" "archive_lambda_schedule" {
 ## Event schedule for step function emailing
 # The step function
 data "aws_lambda_function" "email_lambda" {
-  function_name = var.lambda_email_name
+  function_name = var.EMAIL_LAMBDA_NAME
 }
 
 resource "aws_scheduler_schedule" "step-function-email-schedule" {
-  name       = var.lambda_email_name
+  name       = var.lambda_email_schedule_name
   group_name = "default"
 
   flexible_time_window {
