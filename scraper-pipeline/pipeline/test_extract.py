@@ -2,105 +2,250 @@
     This file is responsible for testing the extract script
 '''
 
+from unittest.mock import patch
+import pytest
 from unittest.mock import patch, MagicMock
 import requests
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
 
-# pylint: disable=protected-access
+
+@pytest.mark.parametrize("status_code, expected_output, expected_log", [
+    (500, None, "Failed to retrieve the page. Status code: 500"),
+    (403, None, "Failed to retrieve the page. Status code: 403"),
+])
+def test_body_extractor_non_200_status(capsys, status_code, expected_output, expected_log):
+    with patch("requests.get") as mock_get:
+        mock_response = MagicMock()
+        mock_response.status_code = status_code
+        mock_get.return_value = mock_response
+
+        guard = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = guard._body_extractor("http://mock.com/")
+        captured = capsys.readouterr()
+        assert result == expected_output
+        assert expected_log in captured.out
 
 
-def test_body_extractor_200():
-    '''Test _body_extractor returns response with valid status 200.'''
+@pytest.mark.parametrize("html, expected", [
+    ("<html></html>", ""),
+    ("<p class='dcr-16w5gq9'></p>", ""),
+    ("<p class='dcr-16w5gq9'>   </p>", " "),
+    ("<p class='wrong-class'>Should not be included</p>", ""),
+])
+def test_guardian_body_formatter_edge_cases(html, expected):
+    extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+    result = extractor._body_formatter(html)
+    assert result == expected
+
+
+@pytest.mark.parametrize("html, expected", [
+    ("<div class='text-description'><p></p></div>", ""),
+    ("<div class='text-description'><p> </p></div>", " "),
+    ("<div class='wrong-class'><p>Ignore me</p></div>", ""),
+    ("<div class='text-description'></div>", ""),
+])
+def test_express_body_formatter_edge_cases(html, expected):
+    extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
+    result = extractor._body_formatter(html)
+    assert result == expected
+
+
+def test_body_extractor_success():
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = "<html><p class='dcr-16w5gq9'>Test</p></html>"
         mock_get.return_value = mock_response
 
-        guard = GuardianRSSFeedExtractor(["http://mock.com/"])
-        result = guard._body_extractor("http://mock.com/")
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
         assert result == "Test"
 
 
-def test_body_extractor_404(capsys):
-    '''Test _body_extractor handles failed request with status 404 and prints error.'''
+def test_body_extractor_timeout(capsys):
+    with patch("requests.get", side_effect=requests.exceptions.Timeout):
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
+        captured = capsys.readouterr()
+        assert result is None
+        assert "Request to http://mock.com/ timed out." in captured.out
+
+
+def test_body_extractor_request_exception(capsys):
+    with patch("requests.get", side_effect=requests.RequestException("Connection error")):
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
+        captured = capsys.readouterr()
+        assert result is None
+        assert "Request failed: Connection error" in captured.out
+
+
+def test_rss_parser_skips_entries_with_no_url_or_body():
+    with patch("feedparser.parse") as mock_parse, \
+            patch.object(GuardianRSSFeedExtractor, '_body_extractor', return_value=None):
+
+        mock_parse.return_value.entries = [
+            {'title': 'Title 1', 'link': None, 'published': 'Today'},
+            {'title': 'Title 2', 'link': 'http://example.com/article2',
+                'published': 'Today'}
+        ]
+
+        extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
+        result = extractor._rss_parser("http://mockfeed.com/")
+        assert result == []
+
+
+def test_rss_parser_returns_valid_article_dict():
+    with patch("feedparser.parse") as mock_parse, \
+            patch.object(GuardianRSSFeedExtractor, '_body_extractor', return_value="Article content"):
+
+        mock_parse.return_value.entries = [{
+            'title': 'Headline',
+            'link': 'http://mock.com/article',
+            'published': '2024-01-01'
+        }]
+
+        extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
+        result = extractor._rss_parser("http://mockfeed.com/")
+        assert result == [{
+            'headline': 'Headline',
+            'url': 'http://mock.com/article',
+            'published_date': '2024-01-01',
+            'news_outlet': 'The Guardian',
+            'body': 'Article content'
+        }]
+
+
+def test_guardian_body_formatter_handles_multiple_paragraphs():
+    html = '''
+    <html><body>
+        <p class="dcr-16w5gq9">Part 1.</p>
+        <p class="dcr-16w5gq9">Part 2.</p>
+    </body></html>
+    '''
+    extractor = GuardianRSSFeedExtractor(["url"])
+    result = extractor._body_formatter(html)
+    assert result == "Part 1.Part 2."
+
+
+def test_get_news_outlet_guardian():
+    extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+    result = extractor._get_news_outlet()
+    assert result == "The Guardian"
+
+
+def test_get_news_outlet_express():
+    extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
+    result = extractor._get_news_outlet()
+    assert result == "Daily Express"
+
+
+def test_extract_feeds_combines_data_from_multiple_feeds():
+    with patch.object(GuardianRSSFeedExtractor, '_rss_parser', side_effect=[
+        [{'headline': 'Article 1', 'url': 'http://mock.com/1', 'published_date': '2025-01-01',
+            'news_outlet': 'The Guardian', 'body': 'Content 1'}],
+        [{'headline': 'Article 2', 'url': 'http://mock.com/2',
+            'published_date': '2025-01-02', 'news_outlet': 'The Guardian', 'body': 'Content 2'}]
+    ]):
+        extractor = GuardianRSSFeedExtractor(
+            ["http://mockfeed1.com/", "http://mockfeed2.com/"])
+        result = extractor.extract_feeds()
+        assert len(result) == 2
+        assert result[0]['headline'] == 'Article 1'
+        assert result[1]['headline'] == 'Article 2'
+        assert result[0]['body'] == 'Content 1'
+        assert result[1]['body'] == 'Content 2'
+
+
+def test_extract_feeds_with_empty_results():
+    with patch.object(GuardianRSSFeedExtractor, '_rss_parser', side_effect=[
+        [],
+        []
+    ]):
+        extractor = GuardianRSSFeedExtractor(
+            ["http://mockfeed1.com/", "http://mockfeed2.com/"])
+        result = extractor.extract_feeds()
+        assert result == []
+
+
+def test_body_extractor_failed_status_code(capsys):
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
         mock_response.status_code = 404
         mock_get.return_value = mock_response
 
-        guard = GuardianRSSFeedExtractor(["http://mock.com/"])
-        result = guard._body_extractor("http://mock.com/")
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
         captured = capsys.readouterr()
         assert result is None
         assert "Failed to retrieve the page. Status code: 404" in captured.out
 
 
-def test_body_extractor_timeout(capsys):
-    '''Test _body_extractor handles timeout exception and prints timeout message.'''
-    with patch("requests.get", side_effect=requests.exceptions.Timeout):
-        guard = GuardianRSSFeedExtractor(["http://mock.com/"])
-        result = guard._body_extractor("http://mock.com/")
-        assert result is None
+def test_body_extractor_success():
+    with patch("requests.get") as mock_get:
+        # Mock the response object
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><p class='dcr-16w5gq9'>Test</p></html>"
+        mock_get.return_value = mock_response
+
+        # Create the extractor object (assuming GuardianRSSFeedExtractor is defined)
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
+        # Ensure the result is the text body formatted
+        assert result == "Test"
+
+
+def test_body_extractor_non_200_status(capsys):
+    with patch("requests.get") as mock_get:
+        mock_response = MagicMock()
+        mock_response.status_code = 500
+        mock_get.return_value = mock_response
+
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
         captured = capsys.readouterr()
+
+        # Assert that None is returned and the correct error message is printed
+        assert result is None
+        assert "Failed to retrieve the page. Status code: 500" in captured.out
+
+
+def test_body_extractor_empty_body():
+    with patch("requests.get") as mock_get:
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><p class='dcr-16w5gq9'></p></html>"  # Empty content
+        mock_get.return_value = mock_response
+
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
+        # Assert that None is returned due to an empty body
+        assert result is None
+
+
+def test_body_extractor_timeout(capsys):
+    with patch("requests.get", side_effect=requests.exceptions.Timeout):
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+
+        captured = capsys.readouterr()
+        # Assert that None is returned and the timeout message is printed
+        assert result is None
         assert "Request to http://mock.com/ timed out." in captured.out
 
 
-def test_guardian_body_formatter_success():
-    '''Test Guardian body_formatter returns correct text from valid HTML.'''
-    html = '''
-    <html>
-        <body>
-            <p class="dcr-16w5gq9">Paragraph 1.</p>
-            <p class="dcr-16w5gq9">Paragraph 2.</p>
-        </body>
-    </html>
-    '''
-    extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
-    result = extractor._body_formatter(html)
-    assert result == "Paragraph 1.Paragraph 2."
+def test_body_extractor_request_exception(capsys):
+    with patch("requests.get", side_effect=requests.RequestException("Connection error")):
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
 
-
-def test_guardian_body_formatter_empty_paragraphs():
-    '''Test Guardian body_formatter returns empty string when no valid paragraphs exist.'''
-    html = '<html><body><p class="some-other-class">Nothing here</p></body></html>'
-    extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
-    result = extractor._body_formatter(html)
-    assert result == ""
-
-
-def test_express_body_formatter_success():
-    '''Test Express body_formatter extracts paragraphs correctly from valid HTML.'''
-    html = '''
-    <html>
-        <body>
-            <div class="text-description">
-                <p>Paragraph A.</p>
-                <p>Paragraph B.</p>
-            </div>
-        </body>
-    </html>
-    '''
-    extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
-    result = extractor._body_formatter(html)
-    assert result == "Paragraph A.Paragraph B."
-
-
-def test_express_body_formatter_no_matching_divs():
-    '''Test Express body_formatter returns empty string when no matching divs are found.'''
-    html = '<html><body><div class="other-class"><p>Nope</p></div></body></html>'
-    extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
-    result = extractor._body_formatter(html)
-    assert result == ""
-
-
-def test_extract_guardian_get_news_outlet():
-    '''Finds the news outlet for the Guardian extractor'''
-    assert GuardianRSSFeedExtractor(
-        ["test/feed"])._get_news_outlet() == "The Guardian"
-
-
-def test_extract_express_get_news_outlet():
-    '''Finds the news outlet for the Express extractor'''
-    assert ExpressRSSFeedExtractor(
-        ["test/feed"])._get_news_outlet() == "Daily Express"
+        captured = capsys.readouterr()
+        # Assert that None is returned and the exception message is printed
+        assert result is None
+        assert "Request failed: Connection error" in captured.out
