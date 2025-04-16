@@ -349,10 +349,10 @@ class ReportCreator:
         template = jinja_env.get_template('jinja_template.html')
         context = self.generate_report_context()
         rendered_html = template.render(context)
-        with open('/tmp/report.html', 'w', encoding='utf-8') as f:
+        with open('report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
-        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')  # add /tmp/
-        with open('/tmp/report.pdf', "rb") as pdf_file:
+        HTML('report.html').write_pdf('report.pdf')  # add /tmp/
+        with open('report.pdf', "rb") as pdf_file:
             pdf = pdf_file.read()
         return pdf
 
@@ -361,10 +361,10 @@ class ReportCreator:
         pdf_data = self.generate_jinja_env()
         from_email = "trainee.josh.allen@sigmalabs.co.uk"
         to_emails = [
-            # "trainee.antariksh.patel@sigmalabs.co.uk",
-            # "trainee.joseph.sasaki@sigmalabs.co.uk",
-            "trainee.josh.allen@sigmalabs.co.uk"
-            # "trainee.jake.hussey@sigmalabs.co.uk"
+            "trainee.antariksh.patel@sigmalabs.co.uk",
+            "trainee.joseph.sasaki@sigmalabs.co.uk",
+            "trainee.josh.allen@sigmalabs.co.uk",
+            "trainee.jake.hussey@sigmalabs.co.uk"
         ]
         # Set up the MIME message
         msg = MIMEMultipart()
@@ -380,8 +380,10 @@ class ReportCreator:
                     <p>Dear Customer,</p>
 
                     <p>
-                        Please find attached your sentiment analysis summary report for <strong>{YESTERDAYS_DATE}</strong>.
-                        This report includes an overview of the key topics discussed by The Guardian and Daily Express, overall sentiment trends, and notable changes compared to previous days.
+                        Please find attached your sentiment analysis summary report
+                          for <strong>{YESTERDAYS_DATE}</strong>.
+                        This report includes an overview of the key topics discussed
+                          by The Guardian and Daily Express, overall sentiment trends, and notable changes compared to previous days.
                     </p>
                     <p>
                         Thank you for choosing our service.<br>
@@ -415,10 +417,11 @@ class ReportCreator:
             },
             Source="trainee.antariksh.patel@sigmalabs.co.uk",
             Destinations=[
-                "trainee.antariksh.patel@sigmalabs.co.uk",
-                "trainee.joseph.sasaki@sigmalabs.co.uk",
-                "trainee.josh.allen@sigmalabs.co.uk",
-                "trainee.jake.hussey@sigmalabs.co.uk"])
+                # "trainee.antariksh.patel@sigmalabs.co.uk",
+                # "trainee.joseph.sasaki@sigmalabs.co.uk",
+                "trainee.josh.allen@sigmalabs.co.uk"
+                # "trainee.jake.hussey@sigmalabs.co.uk"
+            ])
 
         print("Email sent! Message ID:", response['MessageId'])
 
@@ -434,7 +437,7 @@ def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        report.send_email()
+        report.generate_jinja_env()
         return {'statusCode': 200,
                 'body': ' sent'}
     except Exception as e:
