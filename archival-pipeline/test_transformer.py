@@ -75,6 +75,7 @@ def test_to_csv_raises_exception_if_fails(mock_to_csv):
 
 
 def test_save_to_nested_directory(tmp_path):
+    '''Tests that the data frame will save with a nested dictionary'''
     df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
     nested_dir = tmp_path / "folder" / "subfolder"
     nested_dir.mkdir(parents=True, exist_ok=True)
@@ -85,6 +86,7 @@ def test_save_to_nested_directory(tmp_path):
 
 
 def test_save_dataframe_with_special_characters(tmp_path):
+    '''Tests that the dataframe saves with special characters'''
     df = pd.DataFrame({"text": ["hello, world!", "goodbye; world?"]})
     file_path = tmp_path / "special_chars.csv"
     transformer = DataFrameToCSVTransformer(str(file_path))
@@ -95,6 +97,7 @@ def test_save_dataframe_with_special_characters(tmp_path):
 
 
 def test_save_dataframe_with_non_utf8_encoding(tmp_path):
+    '''Test the dataframe saves with non utf8 encoding.'''
     df = pd.DataFrame({"text": ["hello", "world"]})
     file_path = tmp_path / "non_utf8.csv"
     transformer = DataFrameToCSVTransformer(str(file_path))
@@ -106,6 +109,7 @@ def test_save_dataframe_with_non_utf8_encoding(tmp_path):
 
 
 def test_save_large_dataframe(tmp_path):
+    '''Tests the dataframe saves with a large dataframe'''
     df = pd.DataFrame({"a": range(1000000), "b": range(1000000)})
     file_path = tmp_path / "large_data.csv"
     transformer = DataFrameToCSVTransformer(str(file_path))
@@ -116,6 +120,7 @@ def test_save_large_dataframe(tmp_path):
 
 
 def test_save_dataframe_with_mixed_types(tmp_path):
+    '''Tests dataframe saves with mixed types'''
     df = pd.DataFrame({"int": [1, 2], "float": [1.1, 2.2], "str": ["a", "b"]})
     file_path = tmp_path / "mixed_types.csv"
     transformer = DataFrameToCSVTransformer(str(file_path))
@@ -126,6 +131,7 @@ def test_save_dataframe_with_mixed_types(tmp_path):
 
 
 def test_save_dataframe_with_nan(tmp_path):
+    '''tests dataframe saves with NaN values'''
     df = pd.DataFrame({"a": [1, 2, None], "b": [None, 4, 5]})
     file_path = tmp_path / "nan_values.csv"
     transformer = DataFrameToCSVTransformer(str(file_path))

@@ -7,7 +7,6 @@ from datetime import date
 from unittest.mock import patch, MagicMock, mock_open
 import pytest
 from s3_manager import S3Manager
-import boto3
 
 
 @pytest.fixture(autouse=True)
@@ -88,7 +87,7 @@ def test_missing_env_vars(monkeypatch):
 
 
 @patch("s3_manager.boto3.client")
-def test_get_bucket_name(mock_boto_client):
+def test_get_bucket_name(mock_boto_client):  # pylint: disable=protected-access
     '''Test _get_bucket_name returns correct bucket name.'''
     s3 = S3Manager("tmp/test.csv")
     # pylint: disable=protected-access
@@ -105,7 +104,7 @@ def test_bucket_key_generation_leap_year():
 
 
 @patch("s3_manager.boto3.client")
-def test_upload_csv_file_not_found(mock_boto_client):
+def test_upload_csv_file_not_found(mock_boto_client):  # pylint: disable=protected-access
     '''Ensure FileNotFoundError is raised if output CSV does not exist.'''
     s3 = S3Manager("nonexistent.csv")
     with pytest.raises(FileNotFoundError):
