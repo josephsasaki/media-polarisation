@@ -72,3 +72,64 @@ def test_to_csv_raises_exception_if_fails(mock_to_csv):
 
     with pytest.raises(IOError, match="Disk full!"):
         transformer.save_dataframe_to_csv(df)
+
+
+def test_save_to_nested_directory(tmp_path):
+    df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+    nested_dir = tmp_path / "folder" / "subfolder"
+    nested_dir.mkdir(parents=True, exist_ok=True)
+    file_path = nested_dir / "data.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+
+
+def test_save_dataframe_with_special_characters(tmp_path):
+    df = pd.DataFrame({"text": ["hello, world!", "goodbye; world?"]})
+    file_path = tmp_path / "special_chars.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+    written_df = pd.read_csv(file_path)
+    pd.testing.assert_frame_equal(df, written_df)
+
+
+def test_save_dataframe_with_non_utf8_encoding(tmp_path):
+    df = pd.DataFrame({"text": ["hello", "world"]})
+    file_path = tmp_path / "non_utf8.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    assert content == "text\nhello\nworld\n"
+
+
+def test_save_large_dataframe(tmp_path):
+    df = pd.DataFrame({"a": range(1000000), "b": range(1000000)})
+    file_path = tmp_path / "large_data.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+    written_df = pd.read_csv(file_path)
+    pd.testing.assert_frame_equal(df, written_df)
+
+
+def test_save_dataframe_with_mixed_types(tmp_path):
+    df = pd.DataFrame({"int": [1, 2], "float": [1.1, 2.2], "str": ["a", "b"]})
+    file_path = tmp_path / "mixed_types.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+    written_df = pd.read_csv(file_path)
+    pd.testing.assert_frame_equal(df, written_df)
+
+
+def test_save_dataframe_with_nan(tmp_path):
+    df = pd.DataFrame({"a": [1, 2, None], "b": [None, 4, 5]})
+    file_path = tmp_path / "nan_values.csv"
+    transformer = DataFrameToCSVTransformer(str(file_path))
+    transformer.save_dataframe_to_csv(df)
+    assert file_path.exists()
+    written_df = pd.read_csv(file_path)
+    pd.testing.assert_frame_equal(df, written_df)
