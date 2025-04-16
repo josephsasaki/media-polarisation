@@ -39,12 +39,12 @@ def metrics_explainer():
     st.header("Metrics Explanation:")
     st.subheader("Sentiment")
     st.write("""
-there are four sentiment scores: positive, negative, neutral, and compound. The compound score combines all of these into a single number from -1.0 (most negative) to 1.0 (most positive), with 0.0 being neutral. VADER doesn’t just detect sentiment—it also accounts for the intensity of the language. Stronger or more emotionally charged words (like “fantastic” or “horrible”) have a bigger impact than milder terms (like “good” or “bad”), making the compound score a reflection of both the direction and strength of sentiment.
+There are four sentiment scores: positive, negative, neutral, and compound. The compound score combines all of these into a single number from -1.0 (most negative) to 1.0 (most positive), with 0.0 being neutral. VADER doesn’t just detect sentiment—it also accounts for the intensity of the language. Stronger or more emotionally charged words (like “fantastic” or “horrible”) have a bigger impact than milder terms (like “good” or “bad”), making the compound score a reflection of both the direction and strength of sentiment.
     """)
     st.subheader("Subjectivity")
-    st.write("is a value provided by TextBlob that measures how subjective or opinion-based a piece of text is. The value ranges from 0.0 to 1.0, where 0.0 represents completely objective statements and 1.0 indicates highly subjective content. Objective text tends to present facts, while subjective text includes personal opinions, emotions, or judgments.")
+    st.write("Is a value provided by TextBlob that measures how subjective or opinion-based a piece of text is. The value ranges from 0.0 to 1.0, where 0.0 represents completely objective statements and 1.0 indicates highly subjective content. Objective text tends to present facts, while subjective text includes personal opinions, emotions, or judgments.")
     st.subheader("Polarity")
-    st.write("is a value from TextBlob that measures the emotional tone of a piece of text. It ranges from -1.0 to 1.0, where -1.0 represents a very negative sentiment, 0.0 is neutral, and 1.0 indicates a very positive sentiment. This score helps identify whether the language used in a sentence or article expresses negative, neutral, or positive emotion.")
+    st.write("Is a value from TextBlob that measures the emotional tone of a piece of text. It ranges from -1.0 to 1.0, where -1.0 represents a very negative sentiment, 0.0 is neutral, and 1.0 indicates a very positive sentiment. This score helps identify whether the language used in a sentence or article expresses negative, neutral, or positive emotion.")
 
     bottom_bar()
 
