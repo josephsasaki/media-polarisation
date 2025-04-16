@@ -1,15 +1,17 @@
+'''
+    The following script defines functions for accessing the database.
+'''
+
 import os
-from dotenv import load_dotenv
-import streamlit as st
 import psycopg2
+import streamlit as st
 import pandas as pd
-import plotly.express as px
-
-load_dotenv()
+from dotenv import load_dotenv
 
 
-def connect_to_database() -> psycopg2.extensions.connection:
-    """Connects to the PostgreSQL database"""
+def create_connection() -> psycopg2.extensions.connection:
+    '''Connects to the PostgreSQL database.'''
+    load_dotenv()
     try:
         conn = psycopg2.connect(
             host=os.getenv('DB_HOST'),
@@ -25,12 +27,11 @@ def connect_to_database() -> psycopg2.extensions.connection:
 
 
 @st.cache_data()
-def get_data_from_database(query: str) -> pd.DataFrame:
-    """Fetches data from the PostgreSQL database and returns it as a pandas DataFrame"""
-    conn = connect_to_database()
+def query_data(query: str, params: tuple = None) -> pd.DataFrame:
+    '''Fetches data from the PostgreSQL database and returns it as a pandas DataFrame.'''
+    conn = create_connection()
     try:
-        df = pd.read_sql_query(query, conn)
-        return df
+        return pd.read_sql_query(query, conn, params=params)
     except Exception as e:
         st.error(f"Error occurred while fetching data: {e}")
         return pd.DataFrame()
