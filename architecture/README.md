@@ -1,9 +1,8 @@
 # Architecture
 
 ### Architecture Diagram  
-![Architecture-diagram](cloud_architecture.png) 
-
-– Cloud Architecture diagram of the implemented services and pipelines.
+![Architecture-diagram](cloud_architecture.png)
+**Fig 1**: Cloud Architecture diagram of the implemented services and pipelines.
 
 This data pipeline is designed for efficiency, scalability, and cost-effectiveness using AWS services. EventBridge serves as the central scheduler, triggering key processes at different intervals.
 
