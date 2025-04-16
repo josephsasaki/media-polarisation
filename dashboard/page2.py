@@ -11,15 +11,37 @@ from database_manager import query_data
 from styling import top_bar, bottom_bar
 
 
+METRIC_COLUMN_MAP = {
+    "Positivity": "article_positive_sentiment",
+    "Negativity": "article_negative_sentiment",
+    "Subjectivity": "article_subjectivity",
+    "Polarity": "article_polarity",
+}
+
+
+def info() -> None:
+    '''Print the page information.'''
+    st.header("Article Extremes", )
+    st.write('''
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
+            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
+            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
+            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
+            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        '''
+             )
+
+
 def get_widget_inputs() -> tuple[str]:
     '''Get the specified day and metric.'''
     left_column, right_column, _, _ = st.columns(4)
     with left_column:
-        day = st.date_input("Date", datetime.now().date())
+        day = st.date_input("Date", datetime.now().date(),
+                            max_value=datetime.now().date())
     with right_column:
         metric = st.selectbox(
             "Metric",
-            ("Positivity", "Negativity", "Compound", "Subjectivity", "Polarity"),
+            METRIC_COLUMN_MAP.keys(),
         )
     return {'day': day, 'metric': metric}
 
@@ -27,13 +49,7 @@ def get_widget_inputs() -> tuple[str]:
 def retrieve_data(inputs: dict) -> pd.DataFrame:
     '''Retrieve the required data from the database.'''
     # Convert the chosen metric into a column name
-    metric_column = {
-        "Positivity": "a.article_positive_sentiment",
-        "Negativity": "a.article_negative_sentiment",
-        "Compound": "a.article_compound_sentiment",
-        "Subjectivity": "a.article_subjectivity",
-        "Polarity": "a.article_polarity",
-    }[inputs['metric']]
+    metric_column = METRIC_COLUMN_MAP[inputs['metric']]
     # define the sql query with the chosen metric
     query = f'''
         SELECT
@@ -48,37 +64,43 @@ def retrieve_data(inputs: dict) -> pd.DataFrame:
     return query_data(query=query, params=(inputs['day'],))
 
 
-def write(df: pd.DataFrame, inputs: dict) -> None:
-    '''Write the streamlit page elements (except widgets).'''
-    left_column, right_column = st.columns(2)
-    metric_column = {
-        "Positivity": "article_positive_sentiment",
-        "Negativity": "article_negative_sentiment",
-        "Compound": "article_compound_sentiment",
-        "Subjectivity": "article_subjectivity",
-        "Polarity": "article_polarity",
-    }[inputs['metric']]
+def transform(df: pd.DataFrame, inputs: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
+    '''Transform the dataframe.'''
+    metric_column = METRIC_COLUMN_MAP[inputs['metric']]
     guardian_df = df[df['news_outlet_name'] == 'The Guardian'].sort_values(
         by=metric_column, ascending=False).head(3)
     express_df = df[df['news_outlet_name'] == 'Daily Express'].sort_values(
         by=metric_column, ascending=False).head(3)
-    with left_column:
-        st.header("The Guardian")
-        st.markdown("<br>", unsafe_allow_html=True)
-        for rank, (_, row) in enumerate(guardian_df.iterrows(), start=1):
+    return guardian_df, express_df
+
+
+def write(guardian_df: pd.DataFrame, express_df: pd.DataFrame, inputs: dict) -> None:
+    '''Write the streamlit page elements (except widgets).'''
+    metric_column = METRIC_COLUMN_MAP[inputs['metric']]
+    _, guardian_column, express_column = st.columns(
+        [1, 8, 8],)
+    with guardian_column:
+        st.subheader("The Guardian")
+    with express_column:
+        st.subheader("Daily Express")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    for rank in range(1, 4):
+        rank_col, left_column, right_column = st.columns(
+            [1, 8, 8], vertical_alignment='center')
+        with rank_col:
+            st.subheader(str(rank))
+        with left_column:
+            row = guardian_df.iloc[rank-1]
             show_article_block(
-                rank,
                 get_main_image(row["article_url"]),
                 row["article_headline"],
                 row["article_url"],
                 row[metric_column]
             )
-    with right_column:
-        st.header("Daily Express")
-        st.markdown("<br>", unsafe_allow_html=True)
-        for rank, (_, row) in enumerate(express_df.iterrows(), start=1):
+        with right_column:
+            row = express_df.iloc[rank-1]
             show_article_block(
-                rank,
                 get_main_image(row["article_url"]),
                 row["article_headline"],
                 row["article_url"],
@@ -97,37 +119,34 @@ def get_main_image(article_url: str):
 def article_bar_html(normal_value: float) -> str:
     '''Create the article metric bar above the article.'''
     return f'''
-        <div style="
-        height: 10px; 
-        width: {normal_value*100}%; 
-        background-color: #e06767;
-        border-radius: 3px;
-        "></div>
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <div style="height: 10px; width: {normal_value*100}%; background-color: #3d85c6; border-radius: 3px; margin-right: 0.2em;"></div>
+            <span style="color: #3d85c6; font-size: smaller;">{normal_value:.1%}</span>
+        </div>
     '''
 
 
-def show_article_block(rank: int, image_url: str, headline: str, article_url: str, metric_value: float) -> None:
+def show_article_block(image_url: str, headline: str, article_url: str, metric_value: float) -> None:
     '''Write to the dashboard a single article block.'''
     st.markdown(article_bar_html(
         metric_value), unsafe_allow_html=True)
-    rank_col, image, info = st.columns(
-        [0.1, 0.3, 0.6], vertical_alignment='center')
-    with rank_col:
-        st.write(str(rank))
+    image, info = st.columns([0.4, 0.6])
     with image:
         st.image(image_url)
     with info:
         st.write(headline)
         st.write(f"[Article link]({article_url})")
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
 
 def show() -> None:
     '''From this method, the entire streamlit page is produced.'''
     top_bar()
+    info()
     inputs = get_widget_inputs()
     df = retrieve_data(inputs)
-    write(df, inputs)
+    guardian_df, express_df = transform(df, inputs)
+    write(guardian_df, express_df, inputs)
     bottom_bar()
 
 

@@ -11,6 +11,19 @@ from database_manager import query_data
 from styling import top_bar, bottom_bar
 
 
+def info() -> None:
+    '''Print the page information.'''
+    st.header("Topic Polarisation", )
+    st.write('''
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
+            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
+            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
+            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
+            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        '''
+             )
+
+
 def retrieve_data() -> pd.DataFrame:
     '''Method for querying data using the query_data method.'''
     query = """
@@ -27,12 +40,14 @@ def get_widget_inputs(df: pd.DataFrame) -> tuple:
     '''Get the date range.'''
     min_date = df['article_published_date'].min()
     max_date = df['article_published_date'].max()
-    date_range = st.date_input(
-        "Select date range:",
-        value=[min_date, max_date],
-        min_value=min_date,
-        max_value=max_date
-    )
+    col1, _ = st.columns([1, 2])
+    with col1:
+        date_range = st.date_input(
+            "Select date range:",
+            value=[min_date, max_date],
+            min_value=min_date,
+            max_value=max_date
+        )
     start_date, end_date = date_range
     return {"start_date": start_date, "end_date": end_date}
 
@@ -77,7 +92,7 @@ def make_agreeable_chart(df: pd.DataFrame) -> None:
         marker_color='firebrick'
     ))
     fig.update_layout(
-        title='Sentiment of Closest 5 Topics for Two Papers',
+        title='Most Agreed Topic Sentiments',
         xaxis_title='Sentiment Score (-1 to +1)',
         yaxis_title='Topic',
         xaxis=dict(range=[-1, 1], zeroline=True,
@@ -110,7 +125,7 @@ def make_disagreeable_chart(df: pd.DataFrame) -> None:
         marker_color='firebrick'
     ))
     fig.update_layout(
-        title='Sentiment of Closest 5 Topics for Two Papers',
+        title='Most Disagreed Topic Sentiments',
         xaxis_title='Sentiment Score (-1 to +1)',
         yaxis_title='Topic',
         xaxis=dict(range=[-1, 1], zeroline=True,
@@ -126,6 +141,7 @@ def make_disagreeable_chart(df: pd.DataFrame) -> None:
 def show() -> None:
     '''From this method, the entire streamlit page is produced.'''
     top_bar()
+    info()
     df = retrieve_data()
     inputs = get_widget_inputs(df)
     df = transform_data(df, inputs)

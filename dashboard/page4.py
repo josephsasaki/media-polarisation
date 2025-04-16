@@ -9,13 +9,33 @@ from database_manager import query_data
 from styling import top_bar, bottom_bar
 
 
-def get_all_topics() -> list:
+def info() -> None:
+    '''Print the page information.'''
+    st.header("Topic Sentiment", )
+    st.write('''
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
+            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
+            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
+            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
+            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        '''
+             )
+
+
+def get_all_topics() -> list[str]:
     '''Get all the topics.'''
     query = "SELECT DISTINCT topic_name FROM topic"
     data = query_data(query)
     unique_topics = sorted(data['topic_name'].dropna().unique().tolist())
-    topic_multi = st.selectbox('Select Topic', unique_topics)
-    return topic_multi
+    return unique_topics
+
+
+def get_widget_inputs(all_topics: list[str]) -> str:
+    '''Get the specified day and metric.'''
+    left_column, _, = st.columns([1, 2])
+    with left_column:
+        selected_topic = st.selectbox('Select Topic', all_topics)
+    return selected_topic
 
 
 def average_compound_topic_line_graph(selected_topic: str) -> None:
@@ -43,7 +63,7 @@ def average_compound_topic_line_graph(selected_topic: str) -> None:
         x='article_published_day',
         y='article_topic_compound_sentiment',
         color='news_outlet_name',
-        title='Average Topic Compound Sentiment Over Time by News Outlet',
+        title='Topic Compound Sentiment',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -82,7 +102,7 @@ def average_positive_topic_line_graph(selected_topic: str) -> None:
         x='article_published_day',
         y='article_topic_positive_sentiment',
         color='news_outlet_name',
-        title='Average Topic Positive Sentiment Over Time by News Outlet',
+        title='Topic Positive Sentiment',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -122,7 +142,7 @@ def average_negative_topic_line_graph(selected_topic: str) -> None:
         x='article_published_day',
         y='article_topic_negative_sentiment',
         color='news_outlet_name',
-        title='Average Topic Negative Sentiment Over Time by News Outlet',
+        title='Topic Negative Sentiment',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -137,10 +157,12 @@ def average_negative_topic_line_graph(selected_topic: str) -> None:
 def show() -> None:
     '''Show the complete page.'''
     top_bar()
+    info()
     all_topics = get_all_topics()
-    average_compound_topic_line_graph(all_topics)
-    average_positive_topic_line_graph(all_topics)
-    average_negative_topic_line_graph(all_topics)
+    selected_topic = get_widget_inputs(all_topics)
+    average_compound_topic_line_graph(selected_topic)
+    average_positive_topic_line_graph(selected_topic)
+    average_negative_topic_line_graph(selected_topic)
     bottom_bar()
 
 

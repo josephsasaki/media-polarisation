@@ -9,6 +9,19 @@ from database_manager import query_data
 from styling import top_bar, bottom_bar
 
 
+def info() -> None:
+    '''Print the page information.'''
+    st.header("News Outlet Sentiment", )
+    st.write('''
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
+            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
+            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
+            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
+            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        '''
+             )
+
+
 def average_subjectivity_line_graph() -> None:
     '''Line graph for average subjectivity by day per paper'''
     query = """SELECT article_subjectivity, news_outlet_name, article_published_date FROM article
@@ -25,7 +38,7 @@ def average_subjectivity_line_graph() -> None:
         x='article_published_day',
         y='article_subjectivity',
         color='news_outlet_name',
-        title='Average Article Subjectivity Over Time by News Outlet',
+        title='News Outlet Subjectivity',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -56,7 +69,7 @@ def average_polarity_line_graph() -> None:
         x='article_published_day',
         y='article_polarity',
         color='news_outlet_name',
-        title='Average Article Polarity Over Time by News Outlet',
+        title='News Outlet Polarity',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -89,7 +102,7 @@ def average_compound_line_graph() -> None:
         x='article_published_day',
         y='article_compound_sentiment',
         color='news_outlet_name',
-        title='Average Article Compound Sentiment Over Time by News Outlet',
+        title='News Outlet Compound Sentiment',
         markers=True,
         color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
     )
@@ -104,6 +117,7 @@ def average_compound_line_graph() -> None:
 def show() -> None:
     '''Show the complete page.'''
     top_bar()
+    info()
     average_subjectivity_line_graph()
     average_polarity_line_graph()
     average_compound_line_graph()
