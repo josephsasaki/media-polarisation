@@ -1,8 +1,9 @@
 '''
     This file is responsible for testing the extract script
 '''
-import pytest
+
 from unittest.mock import patch, MagicMock
+import pytest
 import requests
 from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
 
@@ -13,20 +14,19 @@ from extract import GuardianRSSFeedExtractor, ExpressRSSFeedExtractor
     (500, None, "Failed to retrieve the page. Status code: 500"),
     (403, None, "Failed to retrieve the page. Status code: 403"),
 ])
-def test_body_extractor_non_200_status(capsys, status_code, expected_output, expected_log):
+def test_body_extractor_success():
     """
-    Test that _body_extractor returns None and logs an appropriate error message
-    when the HTTP status code is not 200.
+    Test that _body_extractor returns parsed text when the request is successful (status code 200).
     """
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
-        mock_response.status_code = status_code
+        mock_response.status_code = 200
+        mock_response.text = "<html><p class='dcr-16w5gq9'>Test</p></html>"
         mock_get.return_value = mock_response
-        guard = GuardianRSSFeedExtractor(["http://mock.com/"])
-        result = guard._body_extractor("http://mock.com/")
-        captured = capsys.readouterr()
-        assert result == expected_output
-        assert expected_log in captured.out
+
+        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
+        result = extractor._body_extractor("http://mock.com/")
+        assert result == "Test"
 
 
 @pytest.mark.parametrize("html, expected", [
@@ -59,21 +59,6 @@ def test_express_body_formatter_edge_cases(html, expected):
     extractor = ExpressRSSFeedExtractor(["http://mockexpress.com/"])
     result = extractor._body_formatter(html)
     assert result == expected
-
-
-def test_body_extractor_success():
-    """
-    Test that _body_extractor returns parsed text when the request is successful (status code 200).
-    """
-    with patch("requests.get") as mock_get:
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.text = "<html><p class='dcr-16w5gq9'>Test</p></html>"
-        mock_get.return_value = mock_response
-
-        extractor = GuardianRSSFeedExtractor(["http://mock.com/"])
-        result = extractor._body_extractor("http://mock.com/")
-        assert result == "Test"
 
 
 def test_body_extractor_timeout(capsys):
@@ -118,7 +103,7 @@ def test_rss_parser_skips_entries_with_no_url_or_body():
 
         extractor = GuardianRSSFeedExtractor(["http://mockfeed.com/"])
         result = extractor._rss_parser("http://mockfeed.com/")
-        assert result == []
+        assert not result
 
 
 def test_rss_parser_returns_valid_article_dict():
@@ -210,7 +195,7 @@ def test_extract_feeds_with_empty_results():
         extractor = GuardianRSSFeedExtractor(
             ["http://mockfeed1.com/", "http://mockfeed2.com/"])
         result = extractor.extract_feeds()
-        assert result == []
+        assert not result
 
 
 def test_body_extractor_failed_status_code(capsys):
