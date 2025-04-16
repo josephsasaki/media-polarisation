@@ -1,8 +1,8 @@
-# **ECR (Elastic Container Repository) - Terraform Configuration**
+# **ECR (Elastic Container Registry) - Terraform Configuration**
 
 This directory contains Terraform scripts to create five ECRs for each of the following: Dispatcher Lambda, Worker (scraper) Lambda, Archive Lambda, Email Lambda and the Dashboard.
 
-- `main.tf`: The main Terraform script to define and create the Lambda functions and their associated roles.
+- `main.tf`: The main Terraform script to define and create the ECRs needed for the Lambda functions and the ECS service.
 - `variables.tf`: A file that defines the variables used in the Terraform configuration.
 
 ## **Variables**
@@ -11,32 +11,32 @@ The `variables.tf` file defines several variables used for configuring the ECR i
 
 Below is a list of all the variables in `variables.tf`:
 
-#### **12. region**
+#### **1. region**
 - **Description**: The AWS region where the RDS will be deployed.
 - **Type**: `string`
 - **Optional**: Default = `"eu-west-2"`
 
-#### **12. ecr_name_scraper**
+#### **2. ecr_name_scraper**
 - **Description**: ECR name which contains the worker (scraper) Lambda image.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-scraper-ecr"`
 
-#### **13. ecr_name_scraper_dispatcher**
+#### **3. ecr_name_scraper_dispatcher**
 - **Description**: ECR name of which contains the dispatcher Lambda image.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-dispatcher-scraper-ecr"`
 
-#### **14. ecr_name_email**
+#### **4. ecr_name_email**
 - **Description**: ECR name of which contains the Email Lambda image.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-email-ecr"`
 
-#### **15. ecr_name_archive**
+#### **5. ecr_name_archive**
 - **Description**: ECR name of which contains the archive Lambda image.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-archive-ecr"`
 
-#### **16. ecr_name_dashboard**
+#### **6. ecr_name_dashboard**
 - **Description**: ECR name of which contains the dashboard image.
 - **Type**: `string`
 - **Optional**: Default = `"c16-media-polarisation-dashboard-ecr"`

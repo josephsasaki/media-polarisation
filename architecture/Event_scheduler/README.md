@@ -4,7 +4,7 @@ This directory contains Terraform scripts to create three EventBridge Schedules 
 
 The required roles along with trust and permission policies are also defined. The trust policy allows any EventBridge Scheduler to take on the role and the permission run all the relevant Lambdas.
 
-- `main.tf`: The main Terraform script to define and create the Lambda functions and their associated roles.
+- `main.tf`: The main Terraform script to define and create the EventBridge schedulers and their associated roles.
 - `variables.tf`: A file that defines the variables used in the Terraform configuration.
 
 ## **Variables**

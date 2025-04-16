@@ -6,7 +6,7 @@ This directory contains Terraform scripts to create and configure four Lambda fu
 - Scraper Lambdas - scrapes RSS feed and uploads analysis to RDS.
 - Email Lambda - emails a daily report to recipients.
 
-The required roles along with trust and permission policies are also defined. The trust policy allows any Lambda to take on the role and the permission allow these lambdas to create and write to CloudWatch logs.
+The required roles along with trust and permission policies are also defined. The trust policy allows any Lambda to take on the role and the permissions allow these lambdas to create and write to CloudWatch logs.
 
 - `main.tf`: The main Terraform script to define and create the Lambda functions and their associated roles.
 - `variables.tf`: A file that defines the variables used in the Terraform configuration.
