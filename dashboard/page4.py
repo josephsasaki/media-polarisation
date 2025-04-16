@@ -13,11 +13,11 @@ def info() -> None:
     '''Print the page information.'''
     st.header("Topic Sentiment", )
     st.write('''
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
-            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
-            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
-            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
-            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+            This page presents a deep dive into how The Guardian and The Daily Express express sentiment on 
+            specific topics. Use the dropdown menu above to choose a topic. Three line charts below show 
+            how sentiment evolves over time for that topic: positive sentiment, negative sentiment, and 
+            compound sentiment. Each graph includes a line for each publication, allowing direct comparison 
+            of tone and framing across media sources.
         '''
              )
 

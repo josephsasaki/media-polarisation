@@ -23,11 +23,10 @@ def info() -> None:
     '''Print the page information.'''
     st.header("Article Extremes", )
     st.write('''
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
-            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
-            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
-            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
-            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        This page lets you explore how The Guardian and The Daily Express report on the news. 
+        Use the dropdowns above to filter articles by date and ranking metric—such as positivity, 
+        negativity, polarity, or subjectivity. 
+        The top 3 articles from each publication will then be shown side by side for easy comparison.
         '''
              )
 

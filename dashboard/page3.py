@@ -13,11 +13,12 @@ def info() -> None:
     '''Print the page information.'''
     st.header("News Outlet Sentiment", )
     st.write('''
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
-            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
-            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
-            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
-            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        This page visualizes how the tone and writing style of The Guardian and The Daily Express 
+        have changed over time. Three graphs display trends in subjectivity, polarity, and negativity, 
+        with separate lines for each publication. 
+        These charts offer a clear comparison of how each outlet’s language and framing evolve 
+        across the selected time period.
+
         '''
              )
 

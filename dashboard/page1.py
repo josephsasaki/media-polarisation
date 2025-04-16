@@ -15,11 +15,10 @@ def info() -> None:
     '''Print the page information.'''
     st.header("Topic Polarisation", )
     st.write('''
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum nulla in tempor vulputate. 
-            Nam a porta orci, non tempor enim. Ut finibus aliquam orci, eu faucibus nunc ultrices at. 
-            Suspendisse porttitor ligula vitae auctor porta. Fusce non ante aliquam, convallis mauris nec, 
-            rutrum ante. Nullam vel arcu leo. Suspendisse pharetra, neque in viverra lacinia, est ex cursus 
-            leo, nec tempor nulla nunc sit amet magna. Cras fermentum maximus orci, a tempus dui interdum ut.
+        This page explores how The Guardian and The Express cover news topics differently. 
+        The first chart highlights the top five topics where the two publications disagree the most, 
+        showcasing areas of strong editorial contrast. 
+        The second chart reveals the top five topics where they show the most agreement, providing insight into shared narratives across divergent media outlets.
         '''
              )
 
