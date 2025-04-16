@@ -16,6 +16,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install Cairo dependencies (macOS)
+        run: |
+          brew install cairo
+
+      - name: Set environment variable for macOS
+        run: |
+          echo "DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
