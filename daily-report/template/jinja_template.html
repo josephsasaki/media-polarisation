@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News Polarisation Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            font-family: "Source Sans 3", sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            background-color: white;
+        }
+        .container {
+            width: 100%;
+            /*max-width: 1200px;*/
+            margin: auto;
+            /*padding: 20px;*/
+        }
+        .banner {
+            width: 100%;
+            height: auto;
+        }
+        .thumb-img {
+            width: 100px;
+            height: auto;
+            margin-right: 20px; /* ← increase this for more space */
+            border-radius: 4px;
+        }
+        .article-container {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            margin-bottom: 20px;
+        }
+        .sentiment-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .chart1 {
+            height: 420px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="data:image/png;base64,{{ tilt_logo }}" class="banner" alt="Tilt Logo"/>
+        <h1>News Polarisation Analysis {{ YESTERDAYS_DATE }}</h1>
+        <div class="sentiment-container">
+            <h2>The Guardian's Overall Sentiment: <strong>{{ guard_score }}</strong></h2>
+            <h2>The Daily Express' Overall Sentiment: <strong>{{ express_score }}</strong></h2>
+        </div>
+        <br>
+            <h2>Most Polarised Topics Today</h2>
+        <p>
+            Yesterday's news coverage from two prominent UK outlets—the left-leaning
+            <em>Guardian</em> and the right-leaning <em>Daily Express</em>—has been analyzed
+            for potential bias. The analysis revealed significant disparities in perspective
+            on the following topics: 
+            {% for topic in diff_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}.
+            Conversely, the following topics were found to have
+            the most agreement between the two sources: 
+            {% for topic in agree_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}.
+        </p>
+        <br>
+
+        <img src="data:image/png;base64,{{ bar_chart }}" alt="Polarisation Chart" class="chart1"/>
+        <h2>Topic Coverage</h2>
+        <p>
+            Both Newspaper Outlets covered a broad range of topics in their news coverage, with 
+            {% for topic in guard_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+            being covered most frequently for The Guardian and 
+            {% for topic in express_topics[:3] %}
+                <strong>{{ topic }}</strong>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+            being covered most frequently for the Daily Express.
+        </p>
+        <img src="data:image/png;base64,{{ combined_pie }}" alt="Polarisation Chart"/> 
+                <h2>The Guardian's Most Polarised Articles</h2>
+        <p> 
+            <strong>Articles with the highest negative sentiment:</strong><br><br>
+            {% for neg in guardian_neg_art %}
+                
+            <div class="article-container">
+                <img src="{{ neg.get('image_url') }}" class="thumb-img" alt="article_image" />
+                <div class="article-text">
+                      {{ neg.get('article_headline') }}
+                      <a href="{{ neg.get('article_url') }}" target="_blank">Link</a><br>
+                    Sentiment: {{ neg.get('sentiment') }}<br>
+                    
+                </div>
+            </div>
+            {% endfor %}
+            <br><br>
+            <br><br>
+            <strong>Articles with the highest positive sentiment:</strong> <br><br>
+            {% for pos in guardian_pos_art %}
+             <div class="article-container">
+                <img src="{{ pos.get('image_url') }}" class="thumb-img" alt="article_image" />
+                <div class="article-text">
+                      {{ pos.get('article_headline') }}
+                      <a href="{{ pos.get('article_url') }}" target="_blank">Link</a><br>
+                    Sentiment: {{ pos.get('sentiment') }}<br>
+                </div>
+            </div>
+            {% endfor %}
+        </p>
+
+                <h2>Daily Express' Most Polarised Articles</h2>
+        <p> 
+            <strong>Articles with the highest negative sentiment:</strong><br><br>
+            {% for neg in express_neg_art %}
+            <div class="article-container">
+                <img src="{{ neg.get('image_url') }}" class="thumb-img" alt="article_image" />
+                <div class="article-text">
+                     {{ neg.get('article_headline') }}
+                     <a href="{{ neg.get('article_url') }}" target="_blank">Link</a><br>
+                    Sentiment: {{ neg.get('sentiment') }}<br>
+                </div>
+            </div>
+            {% endfor %}
+
+            <br>
+            <strong>Articles with the highest positive sentiment:</strong>
+            <br><br>
+            {% for pos in express_pos_art %}
+            <div class="article-container">
+                <img src="{{ pos.get('image_url') }}" class="thumb-img" alt="article_image" />
+                <div class="article-text">
+                     {{ pos.get('article_headline') }}
+                     <a href="{{ pos.get('article_url') }}" target="_blank">Link</a><br>
+                    Sentiment: {{ pos.get('sentiment') }}<br>
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </p>
+        <br>
+</body>
+</html>
