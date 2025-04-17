@@ -66,6 +66,7 @@ archival-pipeline/
 ├── README.md           # This file
 ├── archiver.py         # Script for running the entire archival pipeline
 ├── database_manager.py          # Script for extracting article data from the database
+├── Dockerfile          # File for dockerising the code for AWS Lambda
 ├── s3_manager.py   # Script for defining the class that interacts with the aws s3 bucket
 ├── transformer.py   # Script for transforming the data so it is ready to be loaded into the s3
 ├── test_database_manager.py        # Unit-testing for loading
