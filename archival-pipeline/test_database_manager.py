@@ -7,6 +7,7 @@ from unittest.mock import patch, MagicMock
 import pandas as pd
 import pytest
 from database_manager import DatabaseManager
+import psycopg2
 
 
 @pytest.fixture(autouse=True)
@@ -100,3 +101,104 @@ def test_close_connection(mock_connect):
     db.close_connection()
 
     mock_conn.close.assert_called_once()
+
+
+@patch("database_manager.psycopg2.connect")
+def test_create_connection_invalid_credentials(mock_connect):
+    '''Test that an invalid database connection raises an exception.'''
+
+    mock_connect.side_effect = psycopg2.OperationalError(
+        "Faked database connection error")
+
+    with pytest.raises(psycopg2.OperationalError, match="Faked database connection error"):
+        db = DatabaseManager()
+
+
+@patch("database_manager.psycopg2.connect")
+def test_remove_archived_rows_with_duplicate_ids(mock_connect):
+    '''Test that remove_archived_rows handles duplicate article IDs correctly.'''
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connect.return_value = mock_conn
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    db = DatabaseManager()
+
+    # Simulate data with duplicate article IDs
+    test_df = pd.DataFrame({
+        "article_id": [101, 102, 102, 103],
+        "article_headline": ["a", "b", "c", "d"]
+    })
+    db._DatabaseManager__data_to_archive = test_df
+
+    db.remove_archived_rows()
+
+    expected_ids = (101, 102, 103)  # Only unique IDs should be used
+    mock_cursor.execute.assert_called_once_with(
+        db.DELETE_ARTICLES_QUERY,
+        (expected_ids,)
+    )
+    mock_conn.commit.assert_called_once()
+
+
+@patch("database_manager.psycopg2.connect")
+@patch("database_manager.pd.read_sql")
+def test_fetch_data_to_archive_raises_error(mock_read_sql, mock_connect):
+    '''Test that fetch_data_to_archive raises an error when the query fails.'''
+    mock_conn = MagicMock()
+    mock_connect.return_value = mock_conn
+    mock_read_sql.side_effect = pd.io.sql.DatabaseError(
+        "Faked SQL query error")
+
+    db = DatabaseManager()
+
+    with pytest.raises(pd.io.sql.DatabaseError, match="Faked SQL query error"):
+        db.fetch_data_to_archive(cut_off_date=date(2025, 1, 1))
+
+
+@patch("database_manager.psycopg2.connect")
+@patch("database_manager.pd.read_sql")
+def test_fetch_data_to_archive_empty_dataframe(mock_read_sql, mock_connect):
+    '''Test that fetch_data_to_archive returns an empty dataframe if no rows match the query.'''
+    mock_conn = MagicMock()
+    mock_connect.return_value = mock_conn
+    # Simulate an empty result set
+    mock_read_sql.return_value = pd.DataFrame(columns=[
+        "article_id", "article_headline", "article_url", "article_published_date",
+        "article_subjectivity", "article_polarity", "news_outlet_name", "topic_name",
+        "article_topic_positive_sentiment", "article_topic_negative_sentiment",
+        "article_topic_neutral_sentiment", "article_topic_compound_sentiment"
+    ])
+
+    db = DatabaseManager()
+    result = db.fetch_data_to_archive(cut_off_date=date(2025, 1, 1))
+
+    # Ensure that an empty dataframe is returned
+    assert result.empty
+
+
+@patch("database_manager.psycopg2.connect")
+def test_remove_archived_rows_commits_once_for_duplicate_ids(mock_connect):
+    '''Test that remove_archived_rows commits only once, even for duplicate article IDs.'''
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connect.return_value = mock_conn
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    db = DatabaseManager()
+
+    # Simulate data with duplicate article IDs
+    test_df = pd.DataFrame({
+        "article_id": [101, 102, 102, 103, 103],
+        "article_headline": ["a", "b", "c", "d", "e"]
+    })
+    db._DatabaseManager__data_to_archive = test_df
+
+    db.remove_archived_rows()
+
+    expected_ids = (101, 102, 103)  # Only unique IDs should be used
+    mock_cursor.execute.assert_called_once_with(
+        db.DELETE_ARTICLES_QUERY,
+        (expected_ids,)
+    )
+    mock_conn.commit.assert_called_once()
