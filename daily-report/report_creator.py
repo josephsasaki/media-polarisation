@@ -351,8 +351,8 @@ class ReportCreator:
         rendered_html = template.render(context)
         with open('/tmp/report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
-        HTML('/tmp/report.html').write_pdf('report.pdf')  # add /tmp/
-        with open('report.pdf', "rb") as pdf_file:
+        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')  # add /tmp/
+        with open('/tmp/report.pdf', "rb") as pdf_file:
             pdf = pdf_file.read()
         return pdf
 
@@ -437,8 +437,7 @@ def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        _ = report.generate_jinja_env()
-        # report.send_email()
+        report.send_email()
         return {'statusCode': 200,
                 'body': ' sent'}
     except Exception as e:
