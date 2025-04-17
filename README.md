@@ -1,5 +1,55 @@
 # media-polarisation
 
+This project aims to measure the bias from different media outlets in their articles and the topics they mention in them. This project is created with the main purpose of helping people who regularly view the news and want to understand how polarised and biased different news outlets are on important and overarching topics like "Donald Trump" or "Amazon". However, there are many more user groups which could potentially use this project.
+
+![Architecture-diagram](/architecture/cloud_architecture.png)
+**Fig 1**: Cloud architecture diagram for the project.
+
+![ERD-diagram](/architecture/schema/ERD.png)
+**Fig 1**: Cloud architecture diagram for the project.
+
+**Fig 1** shows the cloud architecture diagram used. The central part of the architecture is the RDS used on AWS. This database used PostgresSQL. The ERD for the database is shown in **Fig 2**, which was what the schema was based off. The four boxes indicate the four main sections of the architecture:
+- Scraper pipeline
+- Archival pipeline
+- Emailing service
+- Dashboard service
+
+## Directory Structure
+
+### **1. Architecture**
+
+The [`architecture`](architecture/) directory contains Terraform scripts to provision AWS resources (such as the Lambda's, RDS and S3) and also includes the ERD and cloud architecture diagrams. All cloud resources in this project were provisioned using Terraform to ensure the cloud resources are reliable and re-deployable.
+For details, see [Architecture README](architecture/README.md).
+
+---
+
+### **2. Scraper pipeline**
+
+The [scraper pipeline](/scraper-pipeline/) contains the code to define the two lambda handlers used for this pipeline. The first is the dispatcher Lambda, which is triggered by an event scheduler. This then further triggers the worker Lambdas, one for each media outlet, which complete the ETL process and inserts the analysis into the remote RDS.
+For details, see [Scraper pipeline README](scraper-pipeline/README.md).
+
+---
+
+### **3. Archival pipeline**
+
+The [archival pipeline](/archival-pipeline/) contains the code to define the Lambda function used in archival pipeline. The goal is to archive data older than three months into a CSV on the S3 bucket which is a more cost-effective and long term storage solution in comparison to the RDS.
+For details, see [Archival pipeline README](archival-pipeline/README.md).
+
+---
+
+### **4. Daily report**
+
+The [daily report](/daily-report/) contains the code to define the Lambda functiona used in the Emailing service. It utilises AWS's Simple Email Service (SES) to send emails to subscribed users. These emails contain a PDF attachment of the daily report which contains summary and analytics from the previous day.
+For details, see [Daily report README](daily-report/README.md).
+
+---
+
+### **5. Dashboard**
+
+The [dashboard](/dashboard/) contains the code to define the streamlit dashboard which contains graphs and statistics derived from the data in the RDS.
+For details, see [Dashboard README](dashboard/README.md).
+
+---
 
 ## User Stories
 
@@ -30,4 +80,3 @@ As an admin, I want to monitor the health of the data pipeline so that I can ens
 As an admin, I want to monitor the health of the data pipeline so that I can ensure article ingestion is running smoothly.
 
 As an admin, I want to run tests which ensure the pipelines are working as expected.
-
