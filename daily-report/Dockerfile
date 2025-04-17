@@ -4,10 +4,6 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 
 RUN mkdir template
 
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
-
 RUN yum install -y \
     libffi-devel \
     cairo \
@@ -19,6 +15,10 @@ RUN yum install -y \
     gcc \
     redhat-rpm-config \
     && yum clean all
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
 
 ENV LD_LIBRARY_PATH="/opt/custom-libs/lib:${LD_LIBRARY_PATH}"
 
