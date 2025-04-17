@@ -224,7 +224,7 @@ class ReportCreator:
 
     def _get_tilt_logo(self):
         '''Returns the decoded tilt logo png'''
-        with open("tilt_logo.png", "rb") as img_file:
+        with open("images/banner.png", "rb") as img_file:
             base_image = b64encode(img_file.read()).decode('utf-8')
         return base_image
 
@@ -429,7 +429,7 @@ class ReportCreator:
         '''Closes the database connection'''
         self.__connection.close()
 
- # pylint: disable=unused-argument
+# pylint: disable=unused-argument
 # pylint: disable=broad-exception-caught
 
 
