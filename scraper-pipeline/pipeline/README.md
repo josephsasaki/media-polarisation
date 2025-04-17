@@ -61,10 +61,11 @@ Make sure to include your `.env` in a `.gitignore` file.
 ## Project Structure
 
 ```text
-yourproject/
+pipeline/
 .
+├── .env                # Environment variables file created by user
 ├── Dockerfile          # File for dockerising the code for AWS Lambda
-├── README.md           
+├── README.md           # This file
 ├── analysis.py         # Script for performing analysis on articles
 ├── extract.py          # Script for extracting article data from RSS feeds
 ├── lambda_handler.py   # Entry-point for AWS Lambda
