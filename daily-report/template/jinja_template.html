@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>News Polarisation Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <style>
         html, body {
+            font-family: "Source Sans 3", sans-serif;
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
-            font-family: Arial, sans-serif;
             text-align: center;
             background-color: white;
         }
         .container {
             width: 100%;
-            max-width: 1200px;
+            /*max-width: 1200px;*/
             margin: auto;
-            padding: 20px;
+            /*padding: 20px;*/
         }
         .banner {
             width: 100%;
@@ -35,7 +38,6 @@
             gap: 60px;
             margin-bottom: 20px;
         }
-
         .sentiment-container {
             display: flex;
             justify-content: space-between;
@@ -43,6 +45,9 @@
         }
         h1, h2 {
             color: #333;
+        }
+        .chart1 {
+            height: 420px;
         }
     </style>
 </head>
@@ -73,7 +78,7 @@
         </p>
         <br>
 
-        <img src="data:image/png;base64,{{ bar_chart }}" alt="Polarisation Chart"/>
+        <img src="data:image/png;base64,{{ bar_chart }}" alt="Polarisation Chart" class="chart1"/>
         <h2>Topic Coverage</h2>
         <p>
             Both Newspaper Outlets covered a broad range of topics in their news coverage, with 

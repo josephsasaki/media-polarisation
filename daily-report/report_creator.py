@@ -224,7 +224,7 @@ class ReportCreator:
 
     def _get_tilt_logo(self):
         '''Returns the decoded tilt logo png'''
-        with open("tilt_logo.png", "rb") as img_file:
+        with open("images/banner.png", "rb") as img_file:
             base_image = b64encode(img_file.read()).decode('utf-8')
         return base_image
 
@@ -351,8 +351,8 @@ class ReportCreator:
         rendered_html = template.render(context)
         with open('/tmp/report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
-        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')  # add /tmp/
-        with open('/tmp/report.pdf', "rb") as pdf_file:
+        HTML('/tmp/report.html').write_pdf('report.pdf')  # add /tmp/
+        with open('report.pdf', "rb") as pdf_file:
             pdf = pdf_file.read()
         return pdf
 
@@ -429,7 +429,7 @@ class ReportCreator:
         '''Closes the database connection'''
         self.__connection.close()
 
- # pylint: disable=unused-argument
+# pylint: disable=unused-argument
 # pylint: disable=broad-exception-caught
 
 
@@ -437,7 +437,8 @@ def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        report.send_email()
+        _ = report.generate_jinja_env()
+        # report.send_email()
         return {'statusCode': 200,
                 'body': ' sent'}
     except Exception as e:
