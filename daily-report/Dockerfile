@@ -6,8 +6,6 @@ RUN mkdir template
 
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
-
 RUN yum install -y \
     libffi-devel \
     cairo \
@@ -22,8 +20,13 @@ RUN yum install -y \
 
 ENV LD_LIBRARY_PATH="/opt/custom-libs/lib:${LD_LIBRARY_PATH}"
 
+RUN pip install -r requirements.txt
+
 COPY template/jinja_template.html template/
 
 COPY report_creator.py .
+
+COPY tilt_logo.png .
+
 
 CMD [ "report_creator.lambda_handler" ]
