@@ -1,0 +1,7 @@
+streamlit
+plotly
+newspaper3k
+lxml_html_clean
+psycopg2-binary
+pandas
+python-dotenv

@@ -14,7 +14,7 @@ provider "aws" {
 
 # VPC data
 data "aws_vpc" "c16_vpc" {
-  id = var.vpc_id
+  id = var.VPC_ID
 }
 
 
@@ -43,7 +43,7 @@ resource "aws_security_group" "RDS-SG" {
 # Create subnet group to specify VPC and subnets
 resource "aws_db_subnet_group" "c16-public-subnets" {
   name       = var.subnet_group_name
-  subnet_ids = [var.subnet_id_1, var.subnet_id_2]
+  subnet_ids = [var.SUBNET_ID_1, var.SUBNET_ID_2]
 
   tags = {
     Name = var.subnet_group_name
@@ -53,14 +53,14 @@ resource "aws_db_subnet_group" "c16-public-subnets" {
 
 # Create RDS
 resource "aws_db_instance" "RDS-media-polarisation" {
-  identifier = var.rds_identifier
+  identifier = var.RDS_IDENTIFIER
   allocated_storage    = 30
-  db_name              = var.db_name
+  db_name              = var.DB_NAME
   engine               = "postgres"
   engine_version       = "17.2"
   instance_class       = "db.t3.micro"
-  username             = var.db_username
-  password             = var.db_password
+  username             = var.DB_USERNAME
+  password             = var.DB_PASSWORD
   vpc_security_group_ids = [resource.aws_security_group.RDS-SG.id]
   db_subnet_group_name = resource.aws_db_subnet_group.c16-public-subnets.name
   publicly_accessible = true

@@ -4,3 +4,5 @@ requests
 openai
 textblob
 nltk
+python-dotenv
+psycopg2-binary

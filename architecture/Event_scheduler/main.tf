@@ -33,14 +33,15 @@ data "aws_iam_policy_document" "permission-policy-doc" {
 
       actions = ["lambda:InvokeFunction"]
       resources = [
-        data.aws_lambda_function.scraper_lambda.arn,
-        data.aws_lambda_function.archive_lambda.arn
+        data.aws_lambda_function.scraper_dispatcher_lambda.arn,
+        data.aws_lambda_function.archive_lambda.arn,
+        data.aws_lambda_function.email_lambda.arn
       ]
     }
 }
 
 resource "aws_iam_role" "schedule_role" {
-  name               = var.lambda_schedule_policy_name
+  name               = var.lambda_schedule_role_name
   assume_role_policy = data.aws_iam_policy_document.trust-policy-doc.json
 }
 
@@ -58,12 +59,12 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 
 
 # Event scheduler scraper lambda
-data "aws_lambda_function" "scraper_lambda" {
-  function_name = var.lambda_scraper_name
+data "aws_lambda_function" "scraper_dispatcher_lambda" {
+  function_name = var.SCRAPER_DISPATCHER_LAMBDA_NAME
 }
 
-resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
-  name       = var.lambda_scraper_name
+resource "aws_scheduler_schedule" "scraper_dispatcher_lambda_schedule" {
+  name       = var.lambda_scraper_dispatcher_schedule_name
   group_name = "default"
 
   flexible_time_window {
@@ -74,18 +75,18 @@ resource "aws_scheduler_schedule" "scraper_lambda_schedule" {
   schedule_expression = "cron(15 * * * ? *)"
 
   target {
-    arn      = data.aws_lambda_function.scraper_lambda.arn
+    arn      = data.aws_lambda_function.scraper_dispatcher_lambda.arn
     role_arn = aws_iam_role.schedule_role.arn
   }
 }
 
 # Event scheduler archive lambda
 data "aws_lambda_function" "archive_lambda" {
-  function_name = var.lambda_archive_name
+  function_name = var.ARCHIVE_LAMBDA_NAME
 }
 
 resource "aws_scheduler_schedule" "archive_lambda_schedule" {
-  name       = var.lambda_archive_name
+  name       = var.lambda_archive_schedule_name
   group_name = "default"
 
   flexible_time_window {
@@ -103,40 +104,12 @@ resource "aws_scheduler_schedule" "archive_lambda_schedule" {
 
 ## Event schedule for step function emailing
 # The step function
-data "aws_sfn_state_machine" "step-function-email" {
-  name = var.step_function_name
-}
-
-data "aws_iam_policy_document" "permission-policy-doc-step-function" {
-  statement {
-    effect="Allow"
-
-      actions = ["states:StartExecution"]
-      resources = [
-        data.aws_sfn_state_machine.step-function-email.arn
-      ]
-    }
-}
-
-resource "aws_iam_role" "schedule-role-step-function" {
-  name               = var.step_function_schedule
-  assume_role_policy = data.aws_iam_policy_document.trust-policy-doc.json
-}
-
-# Permissions policy
-resource "aws_iam_policy" "schedule-role-permissions-policy-step-function" {
-  name = var.step_function_schedule_permission_policy_name
-  policy = data.aws_iam_policy_document.permission-policy-doc-step-function.json
-}
-
-# Attach permission policy
-resource "aws_iam_role_policy_attachment" "step-function-role-policy-connection" {
-  role = aws_iam_role.schedule-role-step-function.name
-  policy_arn = aws_iam_policy.schedule-role-permissions-policy-step-function.arn
+data "aws_lambda_function" "email_lambda" {
+  function_name = var.EMAIL_LAMBDA_NAME
 }
 
 resource "aws_scheduler_schedule" "step-function-email-schedule" {
-  name       = var.step_function_name
+  name       = var.lambda_email_schedule_name
   group_name = "default"
 
   flexible_time_window {
@@ -146,7 +119,7 @@ resource "aws_scheduler_schedule" "step-function-email-schedule" {
   schedule_expression = "cron(0 9 * * ? *)"
 
   target {
-    arn      = data.aws_sfn_state_machine.step-function-email.arn
-    role_arn = aws_iam_role.schedule-role-step-function.arn
+    arn      = data.aws_lambda_function.email_lambda.arn
+    role_arn = aws_iam_role.schedule_role.arn
   }
 }

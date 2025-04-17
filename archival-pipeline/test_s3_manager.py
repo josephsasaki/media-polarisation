@@ -73,3 +73,39 @@ def test_output_path_is_absolute(_):
     s3 = S3Manager("tmp/test.csv")
     assert os.path.isabs(
         s3._S3Manager__output_path)  # pylint: disable=protected-access
+
+
+def test_missing_env_vars(monkeypatch):
+    '''Ensure missing environment variables raise KeyError.'''
+    monkeypatch.delenv("ACCESS_KEY", raising=False)
+    monkeypatch.delenv("SECRET_ACCESS_KEY", raising=False)
+    monkeypatch.delenv("BUCKET_REGION", raising=False)
+    monkeypatch.delenv("BUCKET_NAME", raising=False)
+
+    with pytest.raises(KeyError):
+        S3Manager("tmp/test.csv")
+
+
+@patch("s3_manager.boto3.client")
+def test_get_bucket_name(mock_boto_client):  # pylint: disable=protected-access
+    '''Test _get_bucket_name returns correct bucket name.'''
+    s3 = S3Manager("tmp/test.csv")
+    # pylint: disable=protected-access
+    assert s3._get_bucket_name() == "my-fake-bucket"
+
+
+def test_bucket_key_generation_leap_year():
+    '''Ensure bucket key is generated correctly for leap year cutoff.'''
+    s3 = S3Manager("tmp/test.csv")
+    cutoff = date(2024, 3, 1)
+    expected_key = "2024/02/29.csv"  # Leap day
+    # pylint: disable=protected-access
+    assert s3._create_bucket_key(cutoff) == expected_key
+
+
+@patch("s3_manager.boto3.client")
+def test_upload_csv_file_not_found(mock_boto_client):  # pylint: disable=protected-access
+    '''Ensure FileNotFoundError is raised if output CSV does not exist.'''
+    s3 = S3Manager("nonexistent.csv")
+    with pytest.raises(FileNotFoundError):
+        s3.upload_csv_to_bucket(date(2025, 4, 5))

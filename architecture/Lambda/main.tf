@@ -62,21 +62,27 @@ resource "aws_iam_role_policy_attachment" "lambda-role-policy-connection" {
 
 
 ### ECR
-# Scraper pipeline ECR
+# Scraper worker pipeline ECR
 data "aws_ecr_image" "scraper_pipeline_image" {
-  repository_name = var.scraper_ecr_name
+  repository_name = var.SCRAPER_ECR_NAME
+  image_tag = "latest"
+}
+
+# Scraper dispatcher pipeline ECR
+data "aws_ecr_image" "scraper_dispatcher_pipeline_image" {
+  repository_name = var.SCRAPER_DISPATCHER_ECR_NAME
   image_tag = "latest"
 }
 
 # # email service ECR
 data "aws_ecr_image" "email_service_image" {
-  repository_name = var.email_ecr_name
+  repository_name = var.EMAIL_ECR_NAME
   image_tag = "latest"
 }
 
 # # Archive pipeline ECR
 data "aws_ecr_image" "archive_pipeline_image" {
-  repository_name = var.archive_ecr_name
+  repository_name = var.ARCHIVE_ECR_NAME
   image_tag = "latest"
 }
 
@@ -84,51 +90,75 @@ data "aws_ecr_image" "archive_pipeline_image" {
 
 resource "aws_lambda_function" "scraper_lambda" {
   image_uri = data.aws_ecr_image.scraper_pipeline_image.image_uri
-  function_name = var.scraper_lambda_name
+  function_name = var.SCRAPER_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 900
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       OPENAI_API_KEY = var.OPENAI_API_KEY
     }
   }
 }
 
 resource "aws_lambda_function" "email_lambda" {
   image_uri = data.aws_ecr_image.email_service_image.image_uri
-  function_name = var.email_lambda_name
+  function_name = var.EMAIL_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 300
+  memory_size = 1024
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY
+       ACCESS_KEY = var.ACCESS_KEY
     }
   }
 }
 
 resource "aws_lambda_function" "archive_lambda" {
   image_uri = data.aws_ecr_image.archive_pipeline_image.image_uri
-  function_name = var.archive_lambda_name
+  function_name = var.ARCHIVE_LAMBDA_NAME
   role          = aws_iam_role.lambda_role.arn
   package_type = "Image"
-
+  timeout = 300
   environment {
     variables = {
        DB_HOST = var.DB_HOST,
        DB_PORT = var.DB_PORT,
        DB_NAME = var.DB_NAME,
        DB_USERNAME = var.DB_USERNAME,
-       DB_PASSWORD = var.DB_PASSWORD
+       DB_PASSWORD = var.DB_PASSWORD,
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       BUCKET_REGION = var.region,
+       BUCKET_NAME = var.BUCKET_NAME
+    }
+  }
+}
+
+resource "aws_lambda_function" "scraper_dispatcher_lambda" {
+  image_uri = data.aws_ecr_image.scraper_dispatcher_pipeline_image.image_uri
+  function_name = var.SCRAPER_DISPATCHER_LAMBDA_NAME
+  role          = aws_iam_role.lambda_role.arn
+  package_type = "Image"
+  timeout = 30
+  environment {
+    variables = {
+       ACCESS_KEY = var.ACCESS_KEY,
+       SECRET_ACCESS_KEY = var.SECRET_ACCESS_KEY,
+       LAMBDA_REGION = var.region
+       WORKER_FUNCTION_NAME = var.SCRAPER_LAMBDA_NAME
     }
   }
 }

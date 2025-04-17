@@ -20,37 +20,37 @@ variable "subnet_group_name" {
 
 # From Tfvars 
 
-variable "db_name" {
+variable "DB_NAME" {
     description = "Database name"
     type = string
 }
 
-variable "db_username" {
+variable "DB_USERNAME" {
     description = "Database username"
     type=string
 }
 
-variable "db_password" {
+variable "DB_PASSWORD" {
     description = "Database password"
     type = string
 }
 
-variable "vpc_id" {
+variable "VPC_ID" {
     description = "VPC ID for RDS and SG"
     type = string
 }
 
-variable "subnet_id_1" {
+variable "SUBNET_ID_1" {
     description = "First subnet id"
     type = string
 }
 
-variable "subnet_id_2" {
+variable "SUBNET_ID_2" {
     description = "Second subnet id"
     type = string
 }
 
-variable "rds_identifier" {
+variable "RDS_IDENTIFIER" {
     description = "Identification name for RDS"
     type = string
 }

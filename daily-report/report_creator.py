@@ -156,9 +156,9 @@ class ReportCreator:
     def _get_difference_in_outlet(self) -> tuple[str:str]:
         '''Returns the average sentiment score for each day
           and whether this has changed since the previous day'''
-        increase = '🟢⬆️'
-        decrease = '🔴⬇️'
-        equal = '🟡⏸️'
+        increase = '⬆️'
+        decrease = '⬇️'
+        equal = '⏸️'
         express_change = equal
         guard_change = equal
 
@@ -349,10 +349,10 @@ class ReportCreator:
         template = jinja_env.get_template('jinja_template.html')
         context = self.generate_report_context()
         rendered_html = template.render(context)
-        with open('report.html', 'w', encoding='utf-8') as f:
+        with open('/tmp/report.html', 'w', encoding='utf-8') as f:
             f.write(rendered_html)
-        HTML('report.html').write_pdf('report.pdf')  # add /tmp/
-        with open('report.pdf', "rb") as pdf_file:
+        HTML('/tmp/report.html').write_pdf('/tmp/report.pdf')  # add /tmp/
+        with open('/tmp/report.pdf', "rb") as pdf_file:
             pdf = pdf_file.read()
         return pdf
 
@@ -417,10 +417,10 @@ class ReportCreator:
             },
             Source="trainee.antariksh.patel@sigmalabs.co.uk",
             Destinations=[
-                # "trainee.antariksh.patel@sigmalabs.co.uk",
-                # "trainee.joseph.sasaki@sigmalabs.co.uk",
-                "trainee.josh.allen@sigmalabs.co.uk"
-                # "trainee.jake.hussey@sigmalabs.co.uk"
+                "trainee.antariksh.patel@sigmalabs.co.uk",
+                "trainee.joseph.sasaki@sigmalabs.co.uk",
+                "trainee.josh.allen@sigmalabs.co.uk",
+                "trainee.jake.hussey@sigmalabs.co.uk"
             ])
 
         print("Email sent! Message ID:", response['MessageId'])
@@ -437,7 +437,7 @@ def lambda_handler(event, context):
     '''Lambda function handler'''
     report = ReportCreator()
     try:
-        report.generate_jinja_env()
+        report.send_email()
         return {'statusCode': 200,
                 'body': ' sent'}
     except Exception as e:
