@@ -32,10 +32,9 @@ def db_manager(mock_connection):
     '''Mock database manager.'''
     mock_cursor = MagicMock()
     mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
-    # Mock query return values
     mock_cursor.fetchall.side_effect = [
-        [("Guardian", 1), ("Express", 2)],  # news outlet map
-        [("Politics", 10), ("Economy", 20)]  # topic map
+        [("Guardian", 1), ("Express", 2)],
+        [("Politics", 10), ("Economy", 20)]
     ]
     return DatabaseManager()
 
@@ -100,3 +99,42 @@ def test_insert_into_database_combines_inserts(db_manager, mock_connection):
 
     db_manager.insert_into_database([article])
     assert article._Article__article_id == 42
+
+
+def test_close_connection(db_manager, mock_connection):
+    """
+    Test that `close_connection` calls close() on the internal database connection.
+    """
+    db_manager.close_connection()
+    mock_connection.close.assert_called_once()
+
+
+# def test_get_article_urls(db_manager, mock_connection):
+#     """
+#     Test that `get_article_urls` retrieves a flat list of article URLs from the database.
+#     """
+#     # Get the mock cursor
+#     mock_cursor = mock_connection.cursor.return_value.__enter__.return_value
+
+#     # Mock fetchall to return a list of single-element tuples (as DB would return)
+#     mock_cursor.fetchall.return_value = [
+#         ("http://article1.com",),
+#         ("http://article2.com",),
+#         ("http://article3.com",)
+#     ]
+
+#     # Optionally check what query should be run (if known)
+#     expected_query = db_manager.ARTICLE_URLS_QUERY
+
+#     # Call the method
+#     result = db_manager.get_article_urls()
+
+#     # Assert the query was run
+#     mock_cursor.execute.assert_called_once_with(expected_query)
+
+#     # Assert the result matches the expected flat list
+#     assert result == [
+#         "http://article1.com",
+#         "http://article2.com",
+#         "http://article3.com"
+#     ]
