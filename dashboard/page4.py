@@ -34,7 +34,9 @@ def get_widget_inputs(all_topics: list[str]) -> str:
     '''Get the specified day and metric.'''
     left_column, _, = st.columns([1, 2])
     with left_column:
-        selected_topic = st.selectbox('Select Topic', all_topics)
+        trump_index = all_topics.index('Donald Trump')
+        selected_topic = st.selectbox(
+            'Select Topic', all_topics, index=trump_index)
     return selected_topic
 
 
