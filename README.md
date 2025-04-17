@@ -6,7 +6,7 @@ This project aims to measure the bias from different media outlets in their arti
 **Fig 1**: Cloud architecture diagram for the project.
 
 ![ERD-diagram](/architecture/schema/ERD.png)
-**Fig 1**: Cloud architecture diagram for the project.
+**Fig 2**: Cloud architecture diagram for the project.
 
 **Fig 1** shows the cloud architecture diagram used. The central part of the architecture is the RDS used on AWS. This database used PostgresSQL. The ERD for the database is shown in **Fig 2**, which was what the schema was based off. The four boxes indicate the four main sections of the architecture:
 - Scraper pipeline
