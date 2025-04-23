@@ -47,8 +47,10 @@ def get_widget_inputs(df: pd.DataFrame) -> tuple:
             min_value=min_date,
             max_value=max_date
         )
-    start_date, end_date = date_range
-    return {"start_date": start_date, "end_date": end_date}
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+        return {"start_date": start_date, "end_date": end_date}
+    return None
 
 
 def transform_data(df: pd.DataFrame, inputs: dict) -> pd.DataFrame:
@@ -143,10 +145,11 @@ def show() -> None:
     info()
     df = retrieve_data()
     inputs = get_widget_inputs(df)
-    df = transform_data(df, inputs)
-    make_agreeable_chart(df)
-    make_disagreeable_chart(df)
-    bottom_bar()
+    if inputs is not None:
+        df = transform_data(df, inputs)
+        make_agreeable_chart(df)
+        make_disagreeable_chart(df)
+        bottom_bar()
 
 
 if __name__ == "__main__":
