@@ -41,7 +41,8 @@ def average_subjectivity_line_graph() -> None:
         color='news_outlet_name',
         title='News Outlet Subjectivity',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',
@@ -72,7 +73,8 @@ def average_polarity_line_graph() -> None:
         color='news_outlet_name',
         title='News Outlet Polarity',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',
@@ -105,7 +107,8 @@ def average_compound_line_graph() -> None:
         color='news_outlet_name',
         title='News Outlet Compound Sentiment',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',

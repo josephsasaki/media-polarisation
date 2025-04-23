@@ -67,7 +67,8 @@ def average_compound_topic_line_graph(selected_topic: str) -> None:
         color='news_outlet_name',
         title='Topic Compound Sentiment',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',
@@ -106,7 +107,8 @@ def average_positive_topic_line_graph(selected_topic: str) -> None:
         color='news_outlet_name',
         title='Topic Positive Sentiment',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',
@@ -146,7 +148,8 @@ def average_negative_topic_line_graph(selected_topic: str) -> None:
         color='news_outlet_name',
         title='Topic Negative Sentiment',
         markers=True,
-        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"}
+        color_discrete_map={"The Guardian": "red", "Daily Express": "blue"},
+        labels={"news_outlet_name": "News Outlet"}
     )
     fig.update_layout(
         xaxis_title='Date',
